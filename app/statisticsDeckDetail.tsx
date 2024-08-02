@@ -3,6 +3,7 @@ import { StyleSheet, ScrollView } from 'react-native';
 import { DeckDetail } from '../types/LoggingTypes';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+import { ThemedScreen } from '@/components/ThemedScreen';
 import { useLocalSearchParams } from 'expo-router';
 
 export default function StatisticsDeckDetail() {
@@ -14,11 +15,8 @@ export default function StatisticsDeckDetail() {
   const details = JSON.parse(detailsStr);
 
   return (
-    <ThemedView style={styles.container}>
+    <ThemedScreen title="Deck Detail Statistics">
       <ThemedText style={styles.title}>{deckName} History</ThemedText>
-      <ThemedText style={styles.centerText}>
-        Items from deck not yet seen in game may not be shown.
-      </ThemedText>
       <ScrollView style={styles.scrollContainer}>
         {details.map((detail: DeckDetail, index: number) => (
           <ThemedView key={index} style={styles.detailContainer}>
@@ -36,15 +34,11 @@ export default function StatisticsDeckDetail() {
           </ThemedView>
         ))}
       </ScrollView>
-    </ThemedView>
+    </ThemedScreen>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
-  },
   title: {
     fontSize: 24,
     fontWeight: 'bold',

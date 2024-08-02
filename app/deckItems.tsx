@@ -2,6 +2,8 @@ import React, { useState, useCallback } from 'react';
 import { Pressable, View, Text, Alert, StyleSheet, TouchableOpacity } from 'react-native';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
+import { ThemedScreen } from '@/components/ThemedScreen';
+import { ThemedPressable } from '@/components/ThemedPressable';
 import { router } from 'expo-router';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { useFocusEffect } from '@react-navigation/native';
@@ -159,7 +161,21 @@ export default function DeckItems() {
   );
 
   return (
-    <ThemedView style={styles.container}>
+    <ThemedScreen
+      title='Deck Items'
+      headerRight={
+        <ThemedPressable
+          title="Add Item"
+          fontSize={16}
+          isTransparent={true}
+          onPress={() => router.navigate({
+            pathname: './editDeckItem',
+            params: {
+              deckName,
+              categoriesStr: categories
+            }
+          }) }
+        /> } >
       <SwipeListView
         data={items}
         keyExtractor={(item) => item.text}
@@ -168,26 +184,17 @@ export default function DeckItems() {
         rightOpenValue={-155}
         contentContainerStyle={styles.listContent}
       />
-    </ThemedView>
+    </ThemedScreen>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 16,
-  },
   listContent: {
+    flexGrow: 1,
     paddingBottom: 20,
   },
   item: {
     padding: 12,
-    // backgroundColor: '#f9c2ff',
     borderRadius: 8,
     justifyContent: 'center',
   },
@@ -203,9 +210,6 @@ const styles = StyleSheet.create({
   },
   rowFront: {
     alignItems: 'flex-start',
-    // backgroundColor: '#f9c2ff',
-    // borderBottomColor: '#DDD',
-    // borderBottomWidth: 1,
     justifyContent: 'center',
     marginBottom: 10,
     borderRadius: 8,
@@ -214,7 +218,6 @@ const styles = StyleSheet.create({
   },
   rowBack: {
     alignItems: 'center',
-    // backgroundColor: '#DDD',
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',

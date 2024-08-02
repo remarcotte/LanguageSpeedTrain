@@ -3,6 +3,7 @@ import { TextInput as RTextInput, StyleSheet } from 'react-native';
 import { ThemedPressable } from '@/components/ThemedPressable';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+import { ThemedScreen } from '@/components/ThemedScreen';
 import { router } from 'expo-router';
 import { TurnAnswer } from '../types/LoggingTypes';
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -49,7 +50,7 @@ export default function GameSummary() {
   }, [percentCorrect]);
 
   return (
-    <ThemedView style={styles.container}>
+    <ThemedScreen title='Game Summary' style={styles.container}>
       <ThemedView style={styles.header}>
         <ThemedPressable
           title="New Game"
@@ -126,7 +127,7 @@ export default function GameSummary() {
           onPress={() => router.navigate('/home')}
         />
       </ThemedView>
-    </ThemedView>
+    </ThemedScreen>
   );
 };
 

@@ -4,6 +4,7 @@ import { ThemedTextInput } from '@/components/ThemedTextInput';
 import { ThemedPressable } from '@/components/ThemedPressable';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+import { ThemedScreen } from '@/components/ThemedScreen';
 import { router } from 'expo-router';
 import LoggingService from '../services/LoggingService';
 import DeckService from '../services/DeckService';
@@ -253,7 +254,7 @@ export default function StartGame() {
   };
 
   return (
-    <ThemedView style={styles.container}>
+    <ThemedScreen title='Start Game'>
       {showGameOver && (
         <ThemedView style={[styles.overlay, { backgroundColor: inputBackgroundColor }]}>
           <ThemedText style={[styles.gameOverText , { backgroundColor: inputBackgroundColor }]}>Game Over</ThemedText>
@@ -307,7 +308,7 @@ export default function StartGame() {
           />
         </ThemedView>
       </Modal>
-    </ThemedView>
+    </ThemedScreen>
   );
 };
 

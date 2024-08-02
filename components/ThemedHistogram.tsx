@@ -7,7 +7,8 @@ import { useThemeColor } from '@/hooks/useThemeColor';
 
 const screenWidth = Dimensions.get('window').width;
 
-const SimpleHistogram = ({ data }: { data: number[] }) => {
+export function SimpleHistogram(
+  { data }: { data: number[] }) {
   const chartBackgroundColor = useThemeColor({}, 'chartBackground');
   const chartTextColor = useThemeColor({}, 'chartText');
 
@@ -43,9 +44,6 @@ const chartConfig = {
       if (numericLabel === 0) {
         return ''; // Remove the "0" label
       }
-      // if (numericLabel === minDataValue || numericLabel === maxDataValue) {
-      //   return `${Math.round(numericLabel)}`;
-      // }
       return '';
     },
     propsForBackgroundLines: {
@@ -97,5 +95,3 @@ const styles = StyleSheet.create({
     marginLeft: -40,
   },
 });
-
-export default SimpleHistogram;

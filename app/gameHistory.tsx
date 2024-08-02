@@ -3,14 +3,16 @@ import { StyleSheet, ScrollView } from 'react-native';
 import { TurnAnswer } from '../types/LoggingTypes';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+import { ThemedScreen } from '@/components/ThemedScreen';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { useLocalSearchParams } from 'expo-router';
+import { Stack, useLocalSearchParams } from 'expo-router';
 import { useThemeColor } from '@/hooks/useThemeColor';
 
 type IoniconName = keyof typeof Ionicons.glyphMap;
 
-export default function GameHistory() {
-  const inputBackgroundColor = useThemeColor({}, 'inputBackground');
+export function GameHistory() {
+  const backgroundColor = useThemeColor({}, 'background');
+  const textColor = useThemeColor({}, 'text');
 
   const { turnsStr } = useLocalSearchParams<{
     turnsStr: string;
@@ -19,7 +21,7 @@ export default function GameHistory() {
   const turns: TurnAnswer[] = JSON.parse(turnsStr);
 
   return (
-    <ThemedView style={styles.container}>
+    <ThemedScreen title='Game History'>
       <ThemedText style={styles.title}>Game History</ThemedText>
       <ScrollView style={styles.scrollContainer}>
         {turns.map((turn: TurnAnswer, index: number) => (
@@ -52,15 +54,11 @@ export default function GameHistory() {
           </ThemedView>
         ))}
       </ScrollView>
-    </ThemedView>
+    </ThemedScreen>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
-  },
   title: {
     fontSize: 24,
     fontWeight: 'bold',

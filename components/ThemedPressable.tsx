@@ -1,11 +1,14 @@
-import { Text, Pressable, PressableProps, StyleSheet } from 'react-native';
+import React from 'react';
+import { Text, Pressable, PressableProps, StyleSheet, ViewStyle } from 'react-native';
 import { useThemeColor } from '@/hooks/useThemeColor';
 
 export type ThemedPressableProps = PressableProps & {
-  title: string,
+  title: string;
   lightColor?: string;
   darkColor?: string;
   fontSize?: number;
+  isTransparent?: boolean;
+  style?: ViewStyle | ((state: { pressed: boolean }) => ViewStyle);
 };
 
 export function ThemedPressable({
@@ -14,17 +17,35 @@ export function ThemedPressable({
   disabled,
   lightColor,
   darkColor,
+  isTransparent = false,
+  style,
   ...props
 }: ThemedPressableProps) {
-  const buttonBackgroundColor = useThemeColor({ light: lightColor, dark: darkColor }, 'button');
-  const buttonTextColor = useThemeColor({ light: lightColor, dark: darkColor }, 'buttonText');
+  const buttonBackgroundColor =
+    isTransparent
+      ? useThemeColor({ light: lightColor, dark: darkColor }, 'background')
+      : useThemeColor({ light: lightColor, dark: darkColor }, 'button');
+
+  const buttonTextColor =
+    isTransparent
+      ? useThemeColor({ light: lightColor, dark: darkColor }, 'text')
+      : useThemeColor({ light: lightColor, dark: darkColor }, 'buttonText');
 
   return (
     <Pressable
-      style={[styles.button, { backgroundColor: buttonBackgroundColor }]}
-       {...props}>
+      style={({ pressed }) => [
+        styles.button,
+        { backgroundColor: buttonBackgroundColor },
+        typeof style === 'function' ? style({ pressed }) : style,
+      ]}
+      disabled={disabled}
+      {...props}
+    >
       <Text
-        style={[styles.buttonText, { backgroundColor: buttonBackgroundColor, color: buttonTextColor, fontSize }]}
+        style={[
+          styles.buttonText,
+          { color: buttonTextColor, fontSize },
+        ]}
       >
         {title}
       </Text>
@@ -33,29 +54,13 @@ export function ThemedPressable({
 }
 
 const styles = StyleSheet.create({
-  buttonContainer: {
-    width: 320,
-    height: 68,
-    marginHorizontal: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 3,
-  },
   button: {
     padding: 8,
     margin: 2,
     borderRadius: 5,
     alignItems: 'center',
-    // justifyContent: 'center',
-    // paddingVertical: 12,
-    // paddingHorizontal: 32,
-    // borderRadius: 4,
-    // elevation: 3,
   },
   buttonText: {
     fontSize: 16,
-    // lineHeight: 21,
-    // fontWeight: 'bold',
-    // letterSpacing: 0.25,
   },
 });

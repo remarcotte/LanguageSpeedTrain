@@ -5,10 +5,11 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedPressable } from '@/components/ThemedPressable';
 import { ThemedDropdownPicker } from '@/components/ThemedDropdownPicker';
+import { ThemedScreen } from '@/components/ThemedScreen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import LoggingService from '@/services/LoggingService'; // Adjust the import based on your project structure
 import DeckService from '@/services/DeckService'; // Adjust the import based on your project structure
-import Histogram from '@/components/ThemedHistogram'; // Import your histogram component
+import { SimpleHistogram } from '@/components/ThemedHistogram'; // Import your histogram component
 import { LogDeckSummary, GameSummary, DeckDetail } from '../types/LoggingTypes'; // Adjust the import based on your project structure
 
 type DropDownItem = { label: string; value: string };
@@ -134,7 +135,8 @@ export default function Statistics() {
     : [];
 
   return (
-    <ThemedView style={styles.container}>
+    <ThemedScreen title="Statistics">
+      <ThemedText style={styles.label}>Select Deck</ThemedText>
       <ThemedDropdownPicker
         open={open}
         value={selectedDeck}
@@ -161,7 +163,7 @@ export default function Statistics() {
               if (item.key === 'summary') {
                 return (
                   <ThemedView>
-                    <ThemedText style={styles.label}>Statistics</ThemedText>
+                    <ThemedText style={styles.label}>Deck Statistics</ThemedText>
                     <ThemedText style={styles.detail}>Plays: {logDeckSummary.timesPlayed}</ThemedText>
                     <ThemedText  style={styles.detail}>
                       Least Correct: {logDeckSummary.minCorrect}
@@ -187,11 +189,11 @@ export default function Statistics() {
                 return (
                   <ThemedView>
                     <ThemedText style={styles.label}>Recent Correct/Minute</ThemedText>
-                    <Histogram
+                    <SimpleHistogram
                       data={histogramData.length ? histogramData : [0]}
                     />
                     <ThemedText style={styles.label}>Recent Percent Correct</ThemedText>
-                    <Histogram
+                    <SimpleHistogram
                       data={histogramData.length ? lineChartData : [0]}
                     />
                   </ThemedView>
@@ -200,24 +202,28 @@ export default function Statistics() {
                 return (
                   <ThemedView>
                     <ThemedPressable
-                      title="Show Detail Statistics"
+                      title="Deck Detail Statistics"
                       onPress={showDeckDetail}
                       fontSize={20}
+                      style={styles.bottomButton}
                     />
                     <ThemedPressable
                       title="Clear Deck Statistics"
                       onPress={() => verifyClear(true)}
                       fontSize={20}
+                      style={styles.bottomButton}
                     />
                     <ThemedPressable
                       title="Clear All Statistics"
                       onPress={() => verifyClear(false)}
                       fontSize={20}
+                      style={styles.bottomButton}
                     />
                     <ThemedPressable
                       title="Home"
                       fontSize={20}
                       onPress={() => router.navigate('/home')}
+                      style={styles.bottomButton}
                     />
                   </ThemedView>
                 );
@@ -229,15 +235,11 @@ export default function Statistics() {
           />
         )
       )}
-    </ThemedView>
+    </ThemedScreen>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
-  },
   button: {
     marginBottom: 6,
   },
@@ -262,5 +264,8 @@ const styles = StyleSheet.create({
   detail: {
     fontSize: 18,
     paddingBottom: 2,
+  },
+  bottomButton: {
+    marginHorizontal: 16,
   },
 });

@@ -5,11 +5,7 @@ class InitAll {
   dbService = DBService.getInstance();
   deckService = DeckService.getInstance();
 
-  constructor() {
-    this.init();
-  }
-
-  async init() {
+  async initialize() {
     await this.dbService.initDB();
     await this.deckService.initDecks();
   }

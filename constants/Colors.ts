@@ -21,7 +21,8 @@ export const Colors = {
     inputBackground: '#D1DACE',
     listButtonBackground: '#C1CABE',
     toastText: '#000000',
-    toastBackground: '#f0f0f0',
+    toastBackground: 'red',
+    // toastBackground: '#f0f0f0',
   },
   dark: {
     text: '#ECEDEE',
@@ -37,6 +38,7 @@ export const Colors = {
     inputBackground: '#323232',
     listButtonBackground: '#424242',
     toastText: '#303030',
-    toastBackground: '#ffffff',
+    // toastBackground: '#ffffff',
+    toastBackground: 'red',
   },
 };

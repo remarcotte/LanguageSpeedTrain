@@ -3,6 +3,7 @@ import { StyleSheet, Alert } from 'react-native';
 import { ThemedText } from '../components/ThemedText';
 import { ThemedView } from '../components/ThemedView';
 import { ThemedPressable } from '../components/ThemedPressable';
+import { ThemedScreen } from '@/components/ThemedScreen';
 import { router } from 'expo-router';
 import { ThemedDropdownPicker } from '../components/ThemedDropdownPicker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -125,7 +126,7 @@ export default function NewGameScreen() {
   };
 
   return (
-    <ThemedView style={styles.container}>
+    <ThemedScreen title="New Game">
       <ThemedView style={styles.innerContainer}>
         <ThemedText style={styles.label}>Deck</ThemedText>
         {decks.length > 1 ? (
@@ -195,13 +196,12 @@ export default function NewGameScreen() {
           onPress={handleStart}
         />
       </ThemedView>
-    </ThemedView>
+    </ThemedScreen>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     justifyContent: 'space-between',
     padding: 16,
   },
@@ -209,9 +209,10 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   label: {
-    fontSize: 18,
+    fontSize: 20,
+    textAlign: 'center',
     fontWeight: 'bold',
-    marginBottom: 8,
+    marginVertical: 12,
   },
   dropdown: {
     marginBottom: 16,

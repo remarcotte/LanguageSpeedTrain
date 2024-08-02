@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ScrollView, StyleSheet } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+import { ThemedScreen } from '@/components/ThemedScreen';
 import LoggingService from '../services/LoggingService';
 
 
@@ -35,8 +35,7 @@ export default function Debug() {
   }, []);
 
   return (
-    <ThemedView style={styles.container}>
-      <ThemedText style={styles.title}>Debug</ThemedText>
+    <ThemedScreen title='Debug'>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <ThemedText style={styles.title}>Logging getDeckSummary</ThemedText>
         <ThemedText style={styles.label}>Summary</ThemedText>
@@ -58,14 +57,13 @@ export default function Debug() {
         <ThemedText style={styles.label}>Game_Detail</ThemedText>
         <ThemedText style={styles.normal}>{JSON.stringify(item5)}</ThemedText>
       </ScrollView>
-    </ThemedView>
+    </ThemedScreen>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
   },
   title: {
     fontSize: 24,

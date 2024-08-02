@@ -1,12 +1,19 @@
 import { StyleSheet } from 'react-native';
 import { ThemedPressable } from '@/components/ThemedPressable';
-import { ThemedView } from '@/components/ThemedView';
+import { ThemedScreen } from '@/components/ThemedScreen';
 import { Image } from 'expo-image';
-import { router } from 'expo-router';
+import { router, Stack } from 'expo-router';
+import { useThemeColor } from '@/hooks/useThemeColor';
 
 export default function Home() {
+  const backgroundColor = useThemeColor({}, 'background');
+  const textColor = useThemeColor({}, 'text');
+
   return (
-      <ThemedView style={styles.container}>
+      <ThemedScreen
+        style={styles.container}
+        title='Home'
+      >
         <Image
         style={styles.logoImage}
         source={require('@/assets/images/logo.png')}
@@ -36,22 +43,19 @@ export default function Home() {
           style={styles.button}
           onPress={() => { router.navigate('/about');}}
         />
-        <ThemedPressable
+        {/* <ThemedPressable
           title="Debug"
           fontSize={32}
           style={styles.button}
           onPress={() => { router.navigate('/debug');}}
-        />
-      </ThemedView>
+        /> */}
+      </ThemedScreen>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     alignItems: 'center',
-    justifyContent: 'flex-start',
-    marginTop: '10%', // Start 15% down from the top
   },
   button: {
     paddingVertical: 10,
@@ -63,5 +67,6 @@ const styles = StyleSheet.create({
     width: '60%',
     height: undefined,
     aspectRatio: 1,
+    marginTop: '10%',
   },
 });

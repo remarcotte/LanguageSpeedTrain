@@ -4,16 +4,28 @@ import DeckManager from '../services/DeckService';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedPressable } from '@/components/ThemedPressable';
+import { ThemedScreen } from '@/components/ThemedScreen';
+import Toast from 'react-native-toast-message';
 
-export default function About() {
+const About = () => {
   const deckManager = DeckManager.getInstance();
 
   const resetAllData = async () => {
-    await deckManager.resetDecks();
-    Alert.alert('App data has been reset');
-  }
+    try {
+      await deckManager.resetDecks();
+      Toast.show({
+        type: 'success',
+        text1: 'App data has been reset.',
+      });
+    } catch (error) {
+      Toast.show({
+        type: 'error',
+        text1: 'Failed to reset app data.',
+      });
+    }
+  };
 
-  const verifyReset = async () => {
+  const verifyReset = () => {
     Alert.alert(
       'Reset All Data?',
       'Resetting all data deletes decks and statistics. Default decks will be loaded. Continue?',
@@ -21,43 +33,49 @@ export default function About() {
         { text: 'Cancel', style: 'cancel' },
         {
           text: 'Continue',
-          onPress: () => resetAllData(),
+          onPress: async () => {
+            try {
+              await resetAllData();
+            } catch (error) {
+              console.error('Error in resetAllData:', error);
+            }
+          },
           style: 'destructive',
         },
       ],
-      { cancelable: false },
+      { cancelable: false }
     );
-  }
+  };
 
   return (
-    <ThemedView style={styles.container}>
-    <ThemedView style={styles.innerContainer}>
-      <ThemedText style={styles.title}>Language Speed Train</ThemedText>
-      <ThemedText style={styles.normal}>Version 1.0</ThemedText>
-      <ThemedText style={styles.normal}>Developed by Elasting</ThemedText>
-      <ThemedText style={styles.normal}>
-        All data collected in playing the game resides in the application on the
-        phone. Your data is not sent to Elasting or anyone else.
-      </ThemedText>
-        <ThemedText style={styles.copyright}>© 2024, Elasting. All rights reserved.</ThemedText>
-    </ThemedView>
-      <ThemedView style={styles.footer}>
-      <ThemedPressable
-        title="Reset App Data"
-        onPress={verifyReset}
-        fontSize={20}
-      />
+    <ThemedScreen title="About">
+      <ThemedView style={styles.innerContainer}>
+        <ThemedText style={styles.title}>Language Speed Train</ThemedText>
+        <ThemedText style={styles.normal}>Version 1.0</ThemedText>
+        <ThemedText style={styles.normal}>Developed by Elasting</ThemedText>
+        <ThemedText style={styles.normal}>
+          All data collected in playing the game resides in the application on
+          the phone. Your data is not sent to Elasting or anyone else.
+        </ThemedText>
+        <ThemedText style={styles.copyright}>
+          © 2024, Elasting. All rights reserved.
+        </ThemedText>
       </ThemedView>
-    </ThemedView>
+      <ThemedView style={styles.footer}>
+        <ThemedPressable
+          title="Reset App Data"
+          onPress={verifyReset}
+          fontSize={20}
+        />
+      </ThemedView>
+    </ThemedScreen>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 10,
   },
   innerContainer: {
     marginBottom: 16,
@@ -86,3 +104,5 @@ const styles = StyleSheet.create({
     right: 0,
   },
 });
+
+export default About;

@@ -1,8 +1,9 @@
 import React, { useState, useCallback } from 'react';
-import { Pressable, View, Text, Alert, StyleSheet, TouchableOpacity } from 'react-native';
+import { Button, Pressable, View, Text, Alert, StyleSheet, TouchableOpacity } from 'react-native';
 import { ThemedPressable } from '@/components/ThemedPressable';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
+import { ThemedScreen } from '@/components/ThemedScreen';
 import { router } from 'expo-router';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { useFocusEffect } from '@react-navigation/native';
@@ -72,7 +73,7 @@ export default function ManageDecksScreen() {
           { pathname: './deckItems',
             params: {
               deckName: item.deckName,
-              categories: item.categories,
+              categories: item.categories,  // still string, never parsed
             }
         })
       }
@@ -113,7 +114,15 @@ export default function ManageDecksScreen() {
   );
 
   return (
-    <ThemedView style={styles.container}>
+    <ThemedScreen
+      title='Manage Decks'
+      headerRight={
+        <ThemedPressable
+          title="New Deck"
+          fontSize={16}
+          isTransparent={true}
+          onPress={() => router.navigate('./addNewDeck') }
+        /> } >
       <SwipeListView
         data={decks}
         keyExtractor={(item) => item.deckName}
@@ -129,15 +138,11 @@ export default function ManageDecksScreen() {
           onPress={() => resetDecks()}
         />
       </ThemedView>
-    </ThemedView>
+    </ThemedScreen>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
-  },
   deckItem: {
     padding: 12,
     borderRadius: 8,

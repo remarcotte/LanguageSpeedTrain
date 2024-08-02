@@ -3,6 +3,7 @@ import { ThemedTextInput } from '@/components/ThemedTextInput';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedScrollView } from '@/components/ThemedScrollView';
+import { ThemedScreen } from '@/components/ThemedScreen';
 import { Alert, StyleSheet, ScrollView } from 'react-native';
 import { ThemedPressable } from '@/components/ThemedPressable';
 import { router } from 'expo-router';
@@ -19,7 +20,7 @@ export default function EditDeckItem() {
   }>();
 
   const categories = categoriesStr.split(',');
-  const item = JSON.parse(itemStr);
+  const item = itemStr ? JSON.parse(itemStr) : undefined;
 
   const [text, setText] = useState(item?.text || '');
   const [categoryValues, setCategoryValues] = useState<string[]>(
@@ -64,6 +65,7 @@ export default function EditDeckItem() {
   };
 
   return (
+    <ThemedScreen title='Edit Items'>
     <ThemedScrollView contentContainerStyle={styles.container}>
       <ThemedText style={styles.label}>Text</ThemedText>
       <ThemedTextInput style={styles.input} value={text} onChangeText={setText} />
@@ -82,6 +84,7 @@ export default function EditDeckItem() {
         onPress={() => handleSave() }
       />
     </ThemedScrollView>
+    </ThemedScreen>
   );
 };
 

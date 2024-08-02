@@ -4,7 +4,7 @@
     "slug": "LanguageSpeedTrain",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/userInterfaceStyle.png",
+    "icon": "./assets/images/icon.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "splash": {
@@ -18,7 +18,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/images/icon.png",
         "backgroundColor": "#ffffff"
       }
     },
