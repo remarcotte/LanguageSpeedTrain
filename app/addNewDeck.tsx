@@ -6,6 +6,7 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedTextInput } from '@/components/ThemedTextInput';
 import { ThemedPressable } from '@/components/ThemedPressable';
 import { ThemedScreen } from '@/components/ThemedScreen';
+import { showToast } from '@/components/ThemedToast';
 
 export default function AddNewDeck() {
   const deckService = DeckService.getInstance();
@@ -19,9 +20,9 @@ export default function AddNewDeck() {
       router.navigate('/manageDecks');
     } catch (error) {
       if (error instanceof Error) {
-        Alert.alert('Error', error.message);
+        showToast('warning', error.message);
       } else {
-        Alert.alert('Error', 'An unexpected error occurred');
+        showToast('warning', 'An unexpected error occurred');
       }
     }
   };
@@ -29,7 +30,7 @@ export default function AddNewDeck() {
   return (
     <ThemedScreen title="Add New Deck">
       <ThemedText style={styles.normal}>
-       Themed First name your new deck. No two decks may share the same name.
+        Themed First name your new deck. No two decks may share the same name.
       </ThemedText>
       <ThemedTextInput
         placeholder="Deck Name"
@@ -42,11 +43,15 @@ export default function AddNewDeck() {
       <ThemedText style={styles.normal}>
         Here's a sample of the format for your deck data.
       </ThemedText>
-      <ThemedText style={styles.example}>text,English,Français,Español</ThemedText>
+      <ThemedText style={styles.example}>
+        text,English,Français,Español
+      </ThemedText>
       <ThemedText style={styles.example}>1,one,un,uno</ThemedText>
       <ThemedText style={styles.example}>2,two,deux,dos</ThemedText>
       <ThemedText style={styles.example}>3,three,trois,tres</ThemedText>
-      <ThemedText style={styles.normal}>Follow same format for your deck.</ThemedText>
+      <ThemedText style={styles.normal}>
+        Follow same format for your deck.
+      </ThemedText>
       <ThemedText style={styles.normal}>
         Note: The only commas allowed in the data are those separating the
         different categories
@@ -63,7 +68,11 @@ export default function AddNewDeck() {
         style={[styles.input, styles.multilineInput]}
         multiline
       />
-      <ThemedPressable title="Add" onPress={addNewDeck} disabled={!name || !data} />
+      <ThemedPressable
+        title="Add"
+        onPress={addNewDeck}
+        disabled={!name || !data}
+      />
     </ThemedScreen>
   );
 }

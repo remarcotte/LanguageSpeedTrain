@@ -81,7 +81,6 @@ class DBService {
     await this.execAsync(dropTableDeckDetail);
 
     await this.initDB();
-    // console.log('init complete');
   }
 
   async initDB() {
@@ -141,7 +140,6 @@ class DBService {
         'SELECT count(*) cnt from deck',
       )) as any;
 
-      // console.log('Initialization complete');
     } catch (error) {
       console.error('Failed to initialize database tables', error);
     }

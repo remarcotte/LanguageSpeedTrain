@@ -9,6 +9,7 @@ import { ThemedPressable } from '@/components/ThemedPressable';
 import { router } from 'expo-router';
 import DeckService from '../services/DeckService';
 import { useLocalSearchParams } from 'expo-router';
+import { showToast } from '@/components/ThemedToast';
 
 export default function EditDeckItem() {
   const deckService = DeckService.getInstance();
@@ -16,7 +17,7 @@ export default function EditDeckItem() {
   const { deckName, categoriesStr, itemStr } = useLocalSearchParams<{
     deckName: string;
     categoriesStr: string;
-    itemStr: string
+    itemStr: string;
   }>();
 
   const categories = categoriesStr.split(',');
@@ -24,17 +25,17 @@ export default function EditDeckItem() {
 
   const [text, setText] = useState(item?.text || '');
   const [categoryValues, setCategoryValues] = useState<string[]>(
-    item ? item.categories : categories.map(() => ''),
+    item ? item.categories : categories.map(() => '')
   );
 
   const handleSave = async () => {
     try {
       if (!text) {
-        Alert.alert('Error', 'Text is required.');
+        showToast('danger', 'Text is required.');
         return;
       }
       if (categoryValues.includes('')) {
-        Alert.alert('Error', 'All category fields are required.');
+        showToast('danger', 'All category fields are required.');
         return;
       }
 
@@ -42,18 +43,15 @@ export default function EditDeckItem() {
 
       if (item) {
         await deckService.updateDeckItem(deckName, item.text, newItem);
-        Alert.alert(
-          'Information',
-          'Prior versions of deck items may appear in statistics. If this is undesirable, you may clear deck statistics on the Statistics screen.',
-        );
+        showToast('success', 'Item updated.');
       } else {
         await deckService.addDeckItem(deckName, newItem);
       }
       router.back();
     } catch (error) {
-      Alert.alert(
-        'Error',
-        error instanceof Error ? error.message : 'An unexpected error occurred',
+      showToast(
+        'warning',
+        error instanceof Error ? error.message : 'An unexpected error occurred'
       );
     }
   };
@@ -65,28 +63,29 @@ export default function EditDeckItem() {
   };
 
   return (
-    <ThemedScreen title='Edit Items'>
-    <ThemedScrollView contentContainerStyle={styles.container}>
-      <ThemedText style={styles.label}>Text</ThemedText>
-      <ThemedTextInput style={styles.input} value={text} onChangeText={setText} />
-      {categories.map((category: string, index: number) => (
-        <ThemedView key={index}>
-          <ThemedText style={styles.label}>{category}</ThemedText>
-          <ThemedTextInput
-            style={styles.input}
-            value={categoryValues[index]}
-            onChangeText={(value) => handleCategoryChange(index, value)}
-          />
-        </ThemedView>
-      ))}
-      <ThemedPressable
-        title="Save"
-        onPress={() => handleSave() }
-      />
-    </ThemedScrollView>
+    <ThemedScreen title="Edit Items">
+      <ThemedScrollView contentContainerStyle={styles.container}>
+        <ThemedText style={styles.label}>Text</ThemedText>
+        <ThemedTextInput
+          style={styles.input}
+          value={text}
+          onChangeText={setText}
+        />
+        {categories.map((category: string, index: number) => (
+          <ThemedView key={index}>
+            <ThemedText style={styles.label}>{category}</ThemedText>
+            <ThemedTextInput
+              style={styles.input}
+              value={categoryValues[index]}
+              onChangeText={(value) => handleCategoryChange(index, value)}
+            />
+          </ThemedView>
+        ))}
+        <ThemedPressable title="Save" onPress={() => handleSave()} />
+      </ThemedScrollView>
     </ThemedScreen>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {

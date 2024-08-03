@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Alert } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { ThemedText } from '../components/ThemedText';
 import { ThemedView } from '../components/ThemedView';
 import { ThemedPressable } from '../components/ThemedPressable';
@@ -10,6 +10,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import DeckService from '../services/DeckService';
 import { DeckSummary } from '../types/DeckTypes';
+import { showToast } from '@/components/ThemedToast';
 
 type Deck = { name: string; categories: string[] };
 
@@ -24,7 +25,9 @@ export default function NewGameScreen() {
   const [openDecks, setOpenDecks] = useState(false);
   const [openCategories, setOpenCategories] = useState(false);
   const [openDurations, setOpenDurations] = useState(false);
-  const [categoryItems, setCategoryItems] = useState<{ label: string; value: string }[]>([]);
+  const [categoryItems, setCategoryItems] = useState<
+    { label: string; value: string }[]
+  >([]);
 
   const durations = [
     'Sprint (90 seconds)',
@@ -36,7 +39,9 @@ export default function NewGameScreen() {
     const fetchDecks = async () => {
       const loadedDecks = await deckService.getDecksSummary();
       setDecks(
-        loadedDecks.sort((a, b) => a.deckName.toLowerCase().localeCompare(b.deckName.toLowerCase())),
+        loadedDecks.sort((a, b) =>
+          a.deckName.toLowerCase().localeCompare(b.deckName.toLowerCase())
+        )
       );
 
       const storedDeck = await AsyncStorage.getItem('selectedDeck');
@@ -59,20 +64,27 @@ export default function NewGameScreen() {
 
   useEffect(() => {
     if (selectedDeck) {
-      const selectedDeckObj = decks.find((deck) => deck.deckName === selectedDeck);
+      const selectedDeckObj = decks.find(
+        (deck) => deck.deckName === selectedDeck
+      );
       if (selectedDeckObj) {
         const sortedCategories = selectedDeckObj.categories.sort((a, b) =>
-          a.toLowerCase().localeCompare(b.toLowerCase()),
+          a.toLowerCase().localeCompare(b.toLowerCase())
         );
         const categoryOptions =
           sortedCategories.length === 1
             ? [{ label: sortedCategories[0], value: sortedCategories[0] }]
             : [
-                ...sortedCategories.map((category) => ({ label: category, value: category })),
+                ...sortedCategories.map((category) => ({
+                  label: category,
+                  value: category,
+                })),
                 { label: 'Random', value: 'Random' },
               ];
         setCategoryItems(categoryOptions);
-        setSelectedCategory(categoryOptions.length === 1 ? categoryOptions[0].value : 'Random');
+        setSelectedCategory(
+          categoryOptions.length === 1 ? categoryOptions[0].value : 'Random'
+        );
       }
     }
   }, [selectedDeck, decks]);
@@ -80,7 +92,7 @@ export default function NewGameScreen() {
   const handleStart = async () => {
     try {
       if (!selectedDeck || !selectedCategory || !selectedDuration) {
-        Alert.alert('Error', 'Please make all selections');
+        showToast('warning', 'Please make all selections');
         return;
       }
 
@@ -101,10 +113,10 @@ export default function NewGameScreen() {
           deckName: selectedDeck,
           category: selectedCategory,
           duration: durationInSeconds,
-        }
+        },
       });
     } catch (error) {
-      Alert.alert('Error', 'Failed to start the game');
+      showToast('warning', 'Failed to start the game');
     }
   };
 
@@ -165,10 +177,14 @@ export default function NewGameScreen() {
               zIndex={2000}
             />
           ) : (
-            <ThemedText style={styles.centeredText}>{selectedCategory}</ThemedText>
+            <ThemedText style={styles.centeredText}>
+              {selectedCategory}
+            </ThemedText>
           )
         ) : (
-          <ThemedText style={[styles.label, styles.centeredText]}>{selectedCategory}</ThemedText>
+          <ThemedText style={[styles.label, styles.centeredText]}>
+            {selectedCategory}
+          </ThemedText>
         )}
 
         <ThemedText style={styles.label}>Duration</ThemedText>
@@ -189,7 +205,9 @@ export default function NewGameScreen() {
         />
       </ThemedView>
 
-      <ThemedView style={[styles.footer, { borderTopColor: listButtonBackgroundColor}]}>
+      <ThemedView
+        style={[styles.footer, { borderTopColor: listButtonBackgroundColor }]}
+      >
         <ThemedPressable
           title="Start Game"
           fontSize={20}
@@ -198,7 +216,7 @@ export default function NewGameScreen() {
       </ThemedView>
     </ThemedScreen>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {

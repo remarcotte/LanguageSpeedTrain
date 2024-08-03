@@ -1,6 +1,6 @@
 import { Stack } from 'expo-router';
 import { ThemedPressable } from '../components/ThemedPressable';
-import Toast from 'react-native-toast-message';
+import { ThemedToast } from '@/components/ThemedToast';
 
 export default function Layout() {
   return (
@@ -22,7 +22,7 @@ export default function Layout() {
             ),
         })}
       ></Stack>
-      <Toast />
+      <ThemedToast />
     </>
   );
 }

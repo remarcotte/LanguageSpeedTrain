@@ -1,5 +1,13 @@
 import React, { useState, useCallback } from 'react';
-import { Button, Pressable, View, Text, Alert, StyleSheet, TouchableOpacity } from 'react-native';
+import {
+  Button,
+  Pressable,
+  View,
+  Text,
+  Alert,
+  StyleSheet,
+  TouchableOpacity,
+} from 'react-native';
 import { ThemedPressable } from '@/components/ThemedPressable';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
@@ -10,6 +18,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import DeckService from '../services/DeckService';
 import { DeckSummary } from '../types/DeckTypes';
 import { SwipeListView } from 'react-native-swipe-list-view';
+import { showToast } from '@/components/ThemedToast';
 
 export default function ManageDecksScreen() {
   const deckService = DeckService.getInstance();
@@ -25,12 +34,13 @@ export default function ManageDecksScreen() {
   useFocusEffect(
     useCallback(() => {
       loadDecks();
-    }, []),
+    }, [])
   );
 
   const deleteDeck = async (deckName: string) => {
     await deckService.deleteDeck(deckName);
     await loadDecks();
+    showToast('success', 'Deck deleted.');
   };
 
   const confirmDelete = (deckName: string) => {
@@ -45,13 +55,14 @@ export default function ManageDecksScreen() {
           style: 'destructive',
         },
       ],
-      { cancelable: false },
+      { cancelable: false }
     );
   };
 
   const doResetDecks = async () => {
     await deckService.resetDecks();
     await loadDecks();
+    showToast('success', 'Reset complete.');
   };
 
   const resetDecks = () => {
@@ -62,26 +73,38 @@ export default function ManageDecksScreen() {
         { text: 'Cancel', style: 'cancel' },
         { text: 'Reset', onPress: () => doResetDecks(), style: 'destructive' },
       ],
-      { cancelable: false },
+      { cancelable: false }
     );
   };
 
   const renderItem = ({ item }: { item: DeckSummary }) => (
     <TouchableOpacity
       onPress={() =>
-        router.navigate(
-          { pathname: './deckItems',
-            params: {
-              deckName: item.deckName,
-              categories: item.categories,  // still string, never parsed
-            }
+        router.navigate({
+          pathname: './deckItems',
+          params: {
+            deckName: item.deckName,
+            categories: item.categories, // still string, never parsed
+          },
         })
       }
       style={[styles.rowFront, { backgroundColor: listButtonBackgroundColor }]}
     >
       <View style={styles.deckItem}>
-        <ThemedText style={[styles.deckName, { backgroundColor: listButtonBackgroundColor }]}>{item.deckName}</ThemedText>
-        <ThemedText style={[styles.deckInfo, { backgroundColor: listButtonBackgroundColor }]}>
+        <ThemedText
+          style={[
+            styles.deckName,
+            { backgroundColor: listButtonBackgroundColor },
+          ]}
+        >
+          {item.deckName}
+        </ThemedText>
+        <ThemedText
+          style={[
+            styles.deckInfo,
+            { backgroundColor: listButtonBackgroundColor },
+          ]}
+        >
           {item.itemCount} items, Categories: {item.categories.join(', ')}
         </ThemedText>
       </View>
@@ -92,21 +115,21 @@ export default function ManageDecksScreen() {
     <ThemedView style={styles.rowBack}>
       <Pressable
         style={[styles.backRightBtn, styles.backRightBtnLeft]}
-      onPress={() =>
-        router.navigate(
-          { pathname: './deckItems',
+        onPress={() =>
+          router.navigate({
+            pathname: './deckItems',
             params: {
               deckName: item.deckName,
               categories: item.categories,
-            }
-        })
+            },
+          })
         }
       >
         <Text style={styles.backTextWhite}>Edit</Text>
       </Pressable>
       <Pressable
         style={[styles.backRightBtn, styles.backRightBtnRight]}
-        onPress={() => confirmDelete(item.deckName) }
+        onPress={() => confirmDelete(item.deckName)}
       >
         <Text style={styles.backTextWhite}>Delete</Text>
       </Pressable>
@@ -115,14 +138,16 @@ export default function ManageDecksScreen() {
 
   return (
     <ThemedScreen
-      title='Manage Decks'
+      title="Manage Decks"
       headerRight={
         <ThemedPressable
           title="New Deck"
           fontSize={16}
           isTransparent={true}
-          onPress={() => router.navigate('./addNewDeck') }
-        /> } >
+          onPress={() => router.navigate('./addNewDeck')}
+        />
+      }
+    >
       <SwipeListView
         data={decks}
         keyExtractor={(item) => item.deckName}
@@ -131,7 +156,9 @@ export default function ManageDecksScreen() {
         rightOpenValue={-155}
         contentContainerStyle={styles.listContent}
       />
-      <ThemedView style={[styles.footer, { borderTopColor: listButtonBackgroundColor}]}>
+      <ThemedView
+        style={[styles.footer, { borderTopColor: listButtonBackgroundColor }]}
+      >
         <ThemedPressable
           title="Reset Decks"
           fontSize={20}
@@ -140,7 +167,7 @@ export default function ManageDecksScreen() {
       </ThemedView>
     </ThemedScreen>
   );
-};
+}
 
 const styles = StyleSheet.create({
   deckItem: {

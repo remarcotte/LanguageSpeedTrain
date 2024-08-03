@@ -11,6 +11,7 @@ import LoggingService from '@/services/LoggingService'; // Adjust the import bas
 import DeckService from '@/services/DeckService'; // Adjust the import based on your project structure
 import { SimpleHistogram } from '@/components/ThemedHistogram'; // Import your histogram component
 import { LogDeckSummary, GameSummary, DeckDetail } from '../types/LoggingTypes'; // Adjust the import based on your project structure
+import { showToast } from '@/components/ThemedToast';
 
 type DropDownItem = { label: string; value: string };
 
@@ -21,7 +22,7 @@ export default function Statistics() {
   const [open, setOpen] = useState(false);
   const [selectedDeck, setSelectedDeck] = useState<string | null>(null);
   const [logDeckSummary, setLogDeckSummary] = useState<LogDeckSummary | null>(
-    null,
+    null
   );
   const [deckDetail, setDeckDetail] = useState<DeckDetail[] | null>(null);
   const [games, setGames] = useState<GameSummary[] | null>(null);
@@ -60,20 +61,20 @@ export default function Statistics() {
 
   const clearStatistics = async (deckOnly: boolean) => {
     try {
-    if (deckOnly) {
-      if (!selectedDeck) return;
-      await loggingService.clearDeck(selectedDeck);
-      Alert.alert('Statistics cleared for deck: ' + selectedDeck);
-    } else {
-      await loggingService.clearAll();
-      Alert.alert('All statistics cleared');
-      setSelectedDeck(null);
+      if (deckOnly) {
+        if (!selectedDeck) return;
+        await loggingService.clearDeck(selectedDeck);
+        showToast('success', 'Statistics cleared for deck: ' + selectedDeck);
+      } else {
+        await loggingService.clearAll();
+        showToast('success', 'All statistics cleared');
+        setSelectedDeck(null);
+      }
+      setLogDeckSummary(null);
+      setDeckDetail(null);
+    } catch (error) {
+      showToast('warning', 'Error deleting statistics.');
     }
-    setLogDeckSummary(null);
-    setDeckDetail(null);
-  } catch (error) {
-    console.error('Error deleting statistics.', error);
-  }
   };
 
   const verifyClear = async (deckOnly: boolean) => {
@@ -92,9 +93,9 @@ export default function Statistics() {
           style: 'destructive',
         },
       ],
-      { cancelable: false },
+      { cancelable: false }
     );
-  }
+  };
 
   const showDeckDetail = async () => {
     if (selectedDeck && deckDetail) {
@@ -103,7 +104,7 @@ export default function Statistics() {
         params: {
           deckName: selectedDeck,
           detailsStr: JSON.stringify(deckDetail),
-        }
+        },
       });
     }
   };
@@ -115,8 +116,8 @@ export default function Statistics() {
           game?.attempted === 0
             ? 0
             : parseFloat(
-                ((60 * (game?.correct ?? 0)) / game?.duration).toFixed(2),
-              ),
+                ((60 * (game?.correct ?? 0)) / game?.duration).toFixed(2)
+              )
         )
         .reverse()
     : [];
@@ -128,8 +129,8 @@ export default function Statistics() {
           game?.attempted === 0
             ? 0
             : parseFloat(
-                ((100 * (game?.correct ?? 0)) / game?.attempted).toFixed(2),
-              ),
+                ((100 * (game?.correct ?? 0)) / game?.attempted).toFixed(2)
+              )
         )
         .reverse()
     : [];
@@ -163,15 +164,19 @@ export default function Statistics() {
               if (item.key === 'summary') {
                 return (
                   <ThemedView>
-                    <ThemedText style={styles.label}>Deck Statistics</ThemedText>
-                    <ThemedText style={styles.detail}>Plays: {logDeckSummary.timesPlayed}</ThemedText>
-                    <ThemedText  style={styles.detail}>
+                    <ThemedText style={styles.label}>
+                      Deck Statistics
+                    </ThemedText>
+                    <ThemedText style={styles.detail}>
+                      Plays: {logDeckSummary.timesPlayed}
+                    </ThemedText>
+                    <ThemedText style={styles.detail}>
                       Least Correct: {logDeckSummary.minCorrect}
                     </ThemedText>
                     <ThemedText style={styles.detail}>
                       Most Correct: {logDeckSummary.maxCorrect}
                     </ThemedText>
-                    <ThemedText  style={styles.detail}>
+                    <ThemedText style={styles.detail}>
                       Least Correct %: {logDeckSummary.minCorrectPerAttempt}%
                     </ThemedText>
                     <ThemedText style={styles.detail}>
@@ -188,11 +193,15 @@ export default function Statistics() {
               } else if (deckDetail && item.key === 'charts') {
                 return (
                   <ThemedView>
-                    <ThemedText style={styles.label}>Recent Correct/Minute</ThemedText>
+                    <ThemedText style={styles.label}>
+                      Recent Correct/Minute
+                    </ThemedText>
                     <SimpleHistogram
                       data={histogramData.length ? histogramData : [0]}
                     />
-                    <ThemedText style={styles.label}>Recent Percent Correct</ThemedText>
+                    <ThemedText style={styles.label}>
+                      Recent Percent Correct
+                    </ThemedText>
                     <SimpleHistogram
                       data={histogramData.length ? lineChartData : [0]}
                     />
@@ -237,7 +246,7 @@ export default function Statistics() {
       )}
     </ThemedScreen>
   );
-};
+}
 
 const styles = StyleSheet.create({
   button: {

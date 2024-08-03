@@ -1,5 +1,7 @@
 import React, { useEffect } from 'react';
-import DropDownPicker, { DropDownPickerProps } from 'react-native-dropdown-picker';
+import DropDownPicker, {
+  DropDownPickerProps,
+} from 'react-native-dropdown-picker';
 import { Ionicons } from '@expo/vector-icons';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { ThemedText } from '@/components/ThemedText';
@@ -24,21 +26,24 @@ const TickIcon = ({ color, size }: { color: string; size: number }) => (
   <Ionicons name="checkmark-outline" color={color} size={size} />
 );
 
-const ThemedDropdownPicker: React.FC<ThemedDropdownPickerProps> = ({
+export const ThemedDropdownPicker: React.FC<ThemedDropdownPickerProps> = ({
   style,
   textStyle,
   dropDownContainerStyle,
   lightColor,
   darkColor,
   iconSize = 18, // Default size for icons
-  emptyListText = "No items available",
+  emptyListText = 'No items available',
   items,
   setValue,
   value,
   ...props
 }) => {
   // Use the provided colors if available, otherwise fallback to theme colors
-  const backgroundColor = useThemeColor({ light: lightColor, dark: darkColor }, 'inputBackground');
+  const backgroundColor = useThemeColor(
+    { light: lightColor, dark: darkColor },
+    'inputBackground'
+  );
   const color = useThemeColor({ light: lightColor, dark: darkColor }, 'text');
 
   // Handle single item selection
@@ -78,12 +83,16 @@ const ThemedDropdownPicker: React.FC<ThemedDropdownPickerProps> = ({
         { backgroundColor, borderColor: color },
         dropDownContainerStyle,
       ]}
-      ArrowUpIconComponent={({ style }) => <ArrowUpIcon color={color} size={iconSize} />}
-      ArrowDownIconComponent={({ style }) => <ArrowDownIcon color={color} size={iconSize} />}
-      TickIconComponent={({ style }) => <TickIcon color={color} size={iconSize} />}
+      ArrowUpIconComponent={({ style }) => (
+        <ArrowUpIcon color={color} size={iconSize} />
+      )}
+      ArrowDownIconComponent={({ style }) => (
+        <ArrowDownIcon color={color} size={iconSize} />
+      )}
+      TickIconComponent={({ style }) => (
+        <TickIcon color={color} size={iconSize} />
+      )}
       {...props}
     />
   );
 };
-
-export default ThemedDropdownPicker;

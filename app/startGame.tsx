@@ -1,5 +1,11 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { TextInput as RTextInput, StyleSheet, Alert, TouchableOpacity, Modal } from 'react-native';
+import {
+  TextInput as RTextInput,
+  StyleSheet,
+  Alert,
+  TouchableOpacity,
+  Modal,
+} from 'react-native';
 import { ThemedTextInput } from '@/components/ThemedTextInput';
 import { ThemedPressable } from '@/components/ThemedPressable';
 import { ThemedText } from '@/components/ThemedText';
@@ -22,10 +28,11 @@ export default function StartGame() {
   const { deckName, category, duration } = useLocalSearchParams<{
     deckName: string;
     category: string;
-    duration: string
+    duration: string;
   }>();
 
-  const [timeLeft, setTimeLeft] = useState(parseInt(duration));
+  //  const [timeLeft, setTimeLeft] = useState(parseInt(duration));
+  const [timeLeft, setTimeLeft] = useState(parseInt('15'));
   const [isPaused, setIsPaused] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [userResponse, setUserResponse] = useState('');
@@ -242,66 +249,107 @@ export default function StartGame() {
           deckName,
           category,
           duration,
-          turns: JSON.stringify(turns)
-        }});
+          turnsStr: JSON.stringify(turns),
+        },
+      });
     }, 2000); // 2 seconds delay
   };
 
   const formatTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
-    return `${minutes < 10 ? '0' : ''}${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+    return `${minutes < 10 ? '0' : ''}${minutes}:${
+      remainingSeconds < 10 ? '0' : ''
+    }${remainingSeconds}`;
   };
 
   return (
-    <ThemedScreen title='Start Game'>
+    <ThemedScreen title="Start Game">
       {showGameOver && (
-        <ThemedView style={[styles.overlay, { backgroundColor: inputBackgroundColor }]}>
-          <ThemedText style={[styles.gameOverText , { backgroundColor: inputBackgroundColor }]}>Game Over</ThemedText>
+        <ThemedView
+          style={[styles.overlay, { backgroundColor: inputBackgroundColor }]}
+        >
+          <ThemedText
+            style={[
+              styles.gameOverText,
+              { backgroundColor: inputBackgroundColor },
+            ]}
+          >
+            Game Over
+          </ThemedText>
         </ThemedView>
       )}
       <ThemedView style={styles.header}>
-        <ThemedPressable title="Exit Game" fontSize={20} onPress={handleBackPress} />
+        <ThemedPressable
+          title="Exit Game"
+          fontSize={20}
+          onPress={handleBackPress}
+        />
         <ThemedView style={styles.iconContainer}>
           {resultIcon && (
-            <Ionicons size={24} name={resultIcon.name} style={[ styles.resultIcon, {color: resultIcon.color}]} />
+            <Ionicons
+              size={24}
+              name={resultIcon.name}
+              style={[styles.resultIcon, { color: resultIcon.color }]}
+            />
           )}
         </ThemedView>
-        <ThemedText style={styles.stats}>{`${numberCorrect} / ${totalShown}`}</ThemedText>
+        <ThemedText
+          style={styles.stats}
+        >{`${numberCorrect} / ${totalShown}`}</ThemedText>
       </ThemedView>
       <ThemedView style={styles.container}>
-      <ThemedText style={styles.timer}>{formatTime(timeLeft)}</ThemedText>
-      <ThemedText style={styles.itemText}>{randomizedTexts[currentIndex]}</ThemedText>
-      <ThemedText style={styles.categoryText}>{currentCategory}</ThemedText>
-      <ThemedTextInput
-        ref={textInputRef}
-        style={styles.input}
-        value={userResponse}
-        onChangeText={setUserResponse}
-        autoCorrect={false}
-        autoCapitalize="none"
-        autoComplete="off" // Disable autofill
-        editable={true} // Keep the input editable
-        selectTextOnFocus={false} // Disable text selection on focus
-        contextMenuHidden={true}
-        autoFocus={true}
-        placeholder={`Enter ${currentCategory}...`}
-        onSubmitEditing={handleSubmitPress}
-      />
-      <ThemedView style={styles.buttonContainer}>
-        <ThemedPressable title="Skip" fontSize={20} onPress={handleSkipPress} />
-        <ThemedPressable
-          title="Submit"
-          fontSize={20}
-          onPress={handleSubmitPress}
-          disabled={!userResponse}
+        <ThemedText style={styles.timer}>{formatTime(timeLeft)}</ThemedText>
+        <ThemedText style={styles.itemText}>
+          {randomizedTexts[currentIndex]}
+        </ThemedText>
+        <ThemedText style={styles.categoryText}>{currentCategory}</ThemedText>
+        <ThemedTextInput
+          ref={textInputRef}
+          style={styles.input}
+          value={userResponse}
+          onChangeText={setUserResponse}
+          autoCorrect={false}
+          autoCapitalize="none"
+          autoComplete="off" // Disable autofill
+          editable={true} // Keep the input editable
+          selectTextOnFocus={false} // Disable text selection on focus
+          contextMenuHidden={true}
+          autoFocus={true}
+          placeholder={`Enter ${currentCategory}...`}
+          onSubmitEditing={handleSubmitPress}
         />
-        <ThemedPressable title="Pause" fontSize={20} onPress={handlePausePress} />
-      </ThemedView>
+        <ThemedView style={styles.buttonContainer}>
+          <ThemedPressable
+            title="Skip"
+            fontSize={20}
+            onPress={handleSkipPress}
+          />
+          <ThemedPressable
+            title="Submit"
+            fontSize={20}
+            onPress={handleSubmitPress}
+            disabled={!userResponse}
+          />
+          <ThemedPressable
+            title="Pause"
+            fontSize={20}
+            onPress={handlePausePress}
+          />
+        </ThemedView>
       </ThemedView>
       <Modal visible={isPaused} transparent={true}>
-        <ThemedView style={[styles.modal, { backgroundColor: inputBackgroundColor }]}>
-          <ThemedText style={[styles.pauseText, {backgroundColor: inputBackgroundColor}]}>Game paused. Tap to continue.</ThemedText>
+        <ThemedView
+          style={[styles.modal, { backgroundColor: inputBackgroundColor }]}
+        >
+          <ThemedText
+            style={[
+              styles.pauseText,
+              { backgroundColor: inputBackgroundColor },
+            ]}
+          >
+            Game paused. Tap to continue.
+          </ThemedText>
           <TouchableOpacity
             onPress={handleResumePress}
             style={styles.modalOverlay}
@@ -310,7 +358,7 @@ export default function StartGame() {
       </Modal>
     </ThemedScreen>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {

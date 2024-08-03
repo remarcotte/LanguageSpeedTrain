@@ -50,7 +50,7 @@ export default function GameSummary() {
   }, [percentCorrect]);
 
   return (
-    <ThemedScreen title='Game Summary' style={styles.container}>
+    <ThemedScreen title="Game Summary" style={styles.container}>
       <ThemedView style={styles.header}>
         <ThemedPressable
           title="New Game"
@@ -61,9 +61,10 @@ export default function GameSummary() {
           title="Replay Game"
           fontSize={20}
           onPress={() =>
-            router.replace(
-              { pathname: '/startGame',
-                params: { deckName, category, duration } } )
+            router.replace({
+              pathname: '/startGame',
+              params: { deckName, category, duration },
+            })
           }
         />
       </ThemedView>
@@ -71,51 +72,68 @@ export default function GameSummary() {
         <ThemedText style={styles.sectionLabel}>Game Options</ThemedText>
         <ThemedText style={styles.optionText}>Deck: {deckName}</ThemedText>
         <ThemedText style={styles.optionText}>Category: {category}</ThemedText>
-        <ThemedText style={styles.optionText}>Time: {duration} seconds</ThemedText>
+        <ThemedText style={styles.optionText}>
+          Time: {duration} seconds
+        </ThemedText>
         <ThemedView style={styles.ratingContainer}>
-          {[...Array(4)].map((_, i) => (
-            (i < gameRating) ?
-            <Ionicons
-              size={30}
-              name={'star-outline'}
-              style={ {color: 'lightgray'} } />
-            :
-            <Ionicons
-              size={30}
-              name={'star'}
-              style={ {color: 'gold'} } />
-          ))}
+          {[...Array(4)].map((_, i) =>
+            i < gameRating ? (
+              <Ionicons
+                key={i}
+                size={30}
+                name={'star'}
+                style={{ color: 'gold' }}
+              />
+            ) : (
+              <Ionicons
+                key={i}
+                size={30}
+                name={'star-outline'}
+                style={{ color: 'gray' }}
+              />
+            )
+          )}
         </ThemedView>
       </ThemedView>
       <ThemedView style={styles.section}>
         <ThemedText style={styles.sectionLabel}>Statistics</ThemedText>
         <ThemedView style={styles.row}>
           <ThemedText style={styles.statText}>Correct: {correct}</ThemedText>
-          <ThemedText style={styles.statText}>Incorrect: {incorrect}</ThemedText>
+          <ThemedText style={styles.statText}>
+            Incorrect: {incorrect}
+          </ThemedText>
           <ThemedText style={styles.statText}>Skipped: {skipped}</ThemedText>
         </ThemedView>
       </ThemedView>
       <ThemedView style={styles.section}>
         <ThemedText style={styles.sectionLabel}>Metrics</ThemedText>
         <ThemedView style={styles.row}>
-          <ThemedText style={styles.metricText}>Correct: {percentCorrect}%</ThemedText>
-          <ThemedText style={styles.metricText}>Skipped: {percentSkipped}%</ThemedText>
+          <ThemedText style={styles.statText}>
+            Correct: {percentCorrect}%
+          </ThemedText>
+          <ThemedText style={styles.statText}>
+            Skipped: {percentSkipped}%
+          </ThemedText>
         </ThemedView>
-        <ThemedText style={styles.metricText}>
+        <ThemedText style={styles.statText}>
           Correct/Minute: {correctPerMinute}
         </ThemedText>
       </ThemedView>
       <ThemedView style={styles.section}>
-        {(total) ?
+        {total ? (
           <ThemedPressable
             title="Game History"
             fontSize={20}
-            onPress={() => router.navigate(
-              { pathname: '/gameHistory',
-                params: { turnsStr: JSON.stringify(turns) } } ) }
+            onPress={() =>
+              router.navigate({
+                pathname: '/gameHistory',
+                params: { turnsStr: JSON.stringify(turns) },
+              })
+            }
           />
-        : ''
-        }
+        ) : (
+          ''
+        )}
         <ThemedPressable
           title="View Statistics"
           fontSize={20}
@@ -129,7 +147,7 @@ export default function GameSummary() {
       </ThemedView>
     </ThemedScreen>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -146,7 +164,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   sectionLabel: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 8,
   },
@@ -157,11 +175,6 @@ const styles = StyleSheet.create({
   },
   statText: {
     fontSize: 16,
-    marginBottom: 4,
-    fontWeight: 'bold',
-  },
-  metricText: {
-    fontSize: 20, // Increased font size
     marginBottom: 4,
     fontWeight: 'bold',
   },

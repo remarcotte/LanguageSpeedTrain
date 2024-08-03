@@ -21,24 +21,26 @@ export function GameHistory() {
   const turns: TurnAnswer[] = JSON.parse(turnsStr);
 
   return (
-    <ThemedScreen title='Game History'>
+    <ThemedScreen title="Game History">
       <ThemedText style={styles.title}>Game History</ThemedText>
       <ScrollView style={styles.scrollContainer}>
         {turns.map((turn: TurnAnswer, index: number) => (
           <ThemedView key={index} style={styles.turnContainer}>
             <ThemedView style={styles.turnHeader}>
-              {turn.isCorrect &&
+              {turn.isCorrect && (
                 <Ionicons
-              size={20}
-              name={'close-outline'}
-              style={ {color: 'red'} } />
-              }
+                  size={20}
+                  name={'close-outline'}
+                  style={{ color: 'red' }}
+                />
+              )}
               {!turn.isCorrect && turn.type !== 'skip' && (
                 <Ionicons
-              size={20}
-              name={'checkmark-outline'}
-              style={ {color: 'green'} } />
-              ) }
+                  size={20}
+                  name={'checkmark-outline'}
+                  style={{ color: 'green' }}
+                />
+              )}
               <ThemedText style={styles.turnText}>
                 {turn.text} ({turn.category})
               </ThemedText>
@@ -56,7 +58,7 @@ export function GameHistory() {
       </ScrollView>
     </ThemedScreen>
   );
-};
+}
 
 const styles = StyleSheet.create({
   title: {

@@ -5,7 +5,7 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedPressable } from '@/components/ThemedPressable';
 import { ThemedScreen } from '@/components/ThemedScreen';
-import Toast from 'react-native-toast-message';
+import { showToast } from '@/components/ThemedToast';
 
 const About = () => {
   const deckManager = DeckManager.getInstance();
@@ -13,15 +13,9 @@ const About = () => {
   const resetAllData = async () => {
     try {
       await deckManager.resetDecks();
-      Toast.show({
-        type: 'success',
-        text1: 'App data has been reset.',
-      });
+      showToast('success', 'App data has been reset.');
     } catch (error) {
-      Toast.show({
-        type: 'error',
-        text1: 'Failed to reset app data.',
-      });
+      showToast('warning', 'Failed to reset app data.');
     }
   };
 
