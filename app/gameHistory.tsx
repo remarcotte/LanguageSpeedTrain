@@ -5,12 +5,12 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedScreen } from '@/components/ThemedScreen';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { Stack, useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import { useThemeColor } from '@/hooks/useThemeColor';
 
 type IoniconName = keyof typeof Ionicons.glyphMap;
 
-export function GameHistory() {
+export default function GameHistory() {
   const backgroundColor = useThemeColor({}, 'background');
   const textColor = useThemeColor({}, 'text');
 
@@ -22,23 +22,22 @@ export function GameHistory() {
 
   return (
     <ThemedScreen title="Game History">
-      <ThemedText style={styles.title}>Game History</ThemedText>
       <ScrollView style={styles.scrollContainer}>
         {turns.map((turn: TurnAnswer, index: number) => (
           <ThemedView key={index} style={styles.turnContainer}>
             <ThemedView style={styles.turnHeader}>
               {turn.isCorrect && (
                 <Ionicons
-                  size={20}
-                  name={'close-outline'}
-                  style={{ color: 'red' }}
+                  size={22}
+                  name={'checkmark-circle'}
+                  style={{ color: 'green', fontWeight: '900' }}
                 />
               )}
               {!turn.isCorrect && turn.type !== 'skip' && (
                 <Ionicons
-                  size={20}
-                  name={'checkmark-outline'}
-                  style={{ color: 'green' }}
+                  size={22}
+                  name={'close-circle'}
+                  style={{ color: 'red', fontWeight: '900' }}
                 />
               )}
               <ThemedText style={styles.turnText}>
@@ -61,12 +60,6 @@ export function GameHistory() {
 }
 
 const styles = StyleSheet.create({
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 16,
-  },
   scrollContainer: {
     flexGrow: 1,
   },

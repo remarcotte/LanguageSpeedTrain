@@ -1,6 +1,7 @@
-import DeckService from './DeckService';
-import DBService from './DBService';
+import DeckService from "./DeckService";
+import DBService from "./DBService";
 
+import LoggingService from "./LoggingService";
 class InitAll {
   dbService = DBService.getInstance();
   deckService = DeckService.getInstance();

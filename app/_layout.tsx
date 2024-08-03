@@ -1,6 +1,6 @@
-import { Stack } from 'expo-router';
-import { ThemedPressable } from '../components/ThemedPressable';
-import { ThemedToast } from '@/components/ThemedToast';
+import { Stack } from "expo-router";
+import { ThemedPressable } from "../components/ThemedPressable";
+import { ThemedToast } from "@/components/ThemedToast";
 
 export default function Layout() {
   return (
@@ -8,7 +8,7 @@ export default function Layout() {
       <Stack
         initialRouteName="/home"
         screenOptions={({ navigation }) => ({
-          headerTitleAlign: 'center',
+          headerTitleAlign: "center",
           headerLeft: ({ canGoBack }) =>
             canGoBack && (
               <ThemedPressable

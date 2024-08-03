@@ -67,10 +67,6 @@ const About = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
   innerContainer: {
     marginBottom: 16,
   },

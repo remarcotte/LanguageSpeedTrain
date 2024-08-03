@@ -37,25 +37,29 @@ export default function NewGameScreen() {
 
   useEffect(() => {
     const fetchDecks = async () => {
-      const loadedDecks = await deckService.getDecksSummary();
-      setDecks(
-        loadedDecks.sort((a, b) =>
-          a.deckName.toLowerCase().localeCompare(b.deckName.toLowerCase())
-        )
-      );
+      try {
+        const loadedDecks = await deckService.getDecksSummary();
+        setDecks(
+          loadedDecks.sort((a, b) =>
+            a.deckName.toLowerCase().localeCompare(b.deckName.toLowerCase())
+          )
+        );
 
-      const storedDeck = await AsyncStorage.getItem('selectedDeck');
-      const defaultDeck = storedDeck || loadedDecks[0]?.deckName || '';
-      setSelectedDeck(defaultDeck || null);
+        const storedDeck = await AsyncStorage.getItem('selectedDeck');
+        const defaultDeck = storedDeck || loadedDecks[0]?.deckName || '';
+        setSelectedDeck(defaultDeck || null);
 
-      const storedCategory = await AsyncStorage.getItem('selectedCategory');
-      if (storedCategory) {
-        setSelectedCategory(storedCategory);
-      }
+        const storedCategory = await AsyncStorage.getItem('selectedCategory');
+        if (storedCategory) {
+          setSelectedCategory(storedCategory);
+        }
 
-      const storedDuration = await AsyncStorage.getItem('selectedDuration');
-      if (storedDuration) {
-        setSelectedDuration(storedDuration);
+        const storedDuration = await AsyncStorage.getItem('selectedDuration');
+        if (storedDuration) {
+          setSelectedDuration(storedDuration);
+        }
+      } catch (error) {
+        showToast('warning', 'Unable to load decks and settings.');
       }
     };
 
@@ -219,10 +223,6 @@ export default function NewGameScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    justifyContent: 'space-between',
-    padding: 16,
-  },
   innerContainer: {
     marginBottom: 16,
   },

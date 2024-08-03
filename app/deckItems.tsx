@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback } from "react";
 import {
   Pressable,
   View,
@@ -6,18 +6,18 @@ import {
   Alert,
   StyleSheet,
   TouchableOpacity,
-} from 'react-native';
-import { ThemedView } from '@/components/ThemedView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedScreen } from '@/components/ThemedScreen';
-import { ThemedPressable } from '@/components/ThemedPressable';
-import { router } from 'expo-router';
-import { useThemeColor } from '@/hooks/useThemeColor';
-import { useFocusEffect } from '@react-navigation/native';
-import DeckService from '../services/DeckService';
-import { SwipeListView } from 'react-native-swipe-list-view';
-import { useLocalSearchParams } from 'expo-router';
-import { showToast } from '@/components/ThemedToast';
+} from "react-native";
+import { ThemedView } from "@/components/ThemedView";
+import { ThemedText } from "@/components/ThemedText";
+import { ThemedScreen } from "@/components/ThemedScreen";
+import { ThemedPressable } from "@/components/ThemedPressable";
+import { router } from "expo-router";
+import { useThemeColor } from "@/hooks/useThemeColor";
+import { useFocusEffect } from "@react-navigation/native";
+import DeckService from "../services/DeckService";
+import { SwipeListView } from "react-native-swipe-list-view";
+import { useLocalSearchParams } from "expo-router";
+import { showToast } from "@/components/ThemedToast";
 
 interface DeckItem {
   text: string;
@@ -31,7 +31,7 @@ export default function DeckItems() {
   }>();
 
   const deckService = DeckService.getInstance();
-  const listButtonBackgroundColor = useThemeColor({}, 'listButtonBackground');
+  const listButtonBackgroundColor = useThemeColor({}, "listButtonBackground");
 
   const [items, setItems] = useState<DeckItem[]>([]);
 
@@ -39,7 +39,7 @@ export default function DeckItems() {
     try {
       const deck = await deckService.getDeck(deckName);
       if (!deck) {
-        showToast('warning', 'Failed to load deck');
+        showToast("warning", "Failed to load deck");
         return;
       }
 
@@ -50,32 +50,32 @@ export default function DeckItems() {
 
       setItems(deckItems);
     } catch (error) {
-      showToast('warning', 'Failed to load items');
+      showToast("warning", "Failed to load items");
     }
   };
 
   useFocusEffect(
     useCallback(() => {
       loadItems();
-    }, [])
+    }, []),
   );
 
   const deleteItem = async (text: string) => {
     if (items.length === 1) {
       Alert.alert(
-        'Error',
-        'A deck must have at least one item. Cannot delete last item.'
+        "Error",
+        "A deck must have at least one item. Cannot delete last item.",
       );
     } else {
       try {
         await deckService.deleteDeckItem(deckName, text);
         await loadItems();
         Alert.alert(
-          'Information',
-          'Deleted deck items may appear in statistics. If this is undesirable, you may clear deck statistics on the Statistics screen.'
+          "Information",
+          "Deleted deck items may appear in statistics. If this is undesirable, you may clear deck statistics on the Statistics screen.",
         );
       } catch (error) {
-        showToast('warning', 'Failed to delete item');
+        showToast("warning", "Failed to delete item");
       }
     }
   };
@@ -83,22 +83,22 @@ export default function DeckItems() {
   const confirmDelete = (text: string) => {
     if (items.length === 1) {
       Alert.alert(
-        'Error',
-        'A deck must have at least one item. Cannot delete last item.'
+        "Error",
+        "A deck must have at least one item. Cannot delete last item.",
       );
     } else {
       Alert.alert(
-        'Delete Item?',
+        "Delete Item?",
         `Are you sure you want to delete the item "${text}"?`,
         [
-          { text: 'Cancel', style: 'cancel' },
+          { text: "Cancel", style: "cancel" },
           {
-            text: 'Delete',
+            text: "Delete",
             onPress: () => deleteItem(text),
-            style: 'destructive',
+            style: "destructive",
           },
         ],
-        { cancelable: false }
+        { cancelable: false },
       );
     }
   };
@@ -121,7 +121,7 @@ export default function DeckItems() {
     <TouchableOpacity
       onPress={() =>
         router.navigate({
-          pathname: './editDeckItem',
+          pathname: "./editDeckItem",
           params: {
             deckName,
             categoriesStr: categories,
@@ -160,7 +160,7 @@ export default function DeckItems() {
         style={[styles.backRightBtn, styles.backRightBtnLeft]}
         onPress={() =>
           router.navigate({
-            pathname: './editDeckItem',
+            pathname: "./editDeckItem",
             params: {
               deckName,
               categoriesStr: categories,
@@ -190,7 +190,7 @@ export default function DeckItems() {
           isTransparent={true}
           onPress={() =>
             router.navigate({
-              pathname: './editDeckItem',
+              pathname: "./editDeckItem",
               params: {
                 deckName,
                 categoriesStr: categories,
@@ -220,54 +220,54 @@ const styles = StyleSheet.create({
   item: {
     padding: 12,
     borderRadius: 8,
-    justifyContent: 'center',
+    justifyContent: "center",
   },
   text: {
     fontSize: 18,
-    fontWeight: 'bold',
-    textAlign: 'left',
+    fontWeight: "bold",
+    textAlign: "left",
   },
   category: {
     fontSize: 14,
     marginTop: 4,
-    textAlign: 'left',
+    textAlign: "left",
   },
   rowFront: {
-    alignItems: 'flex-start',
-    justifyContent: 'center',
+    alignItems: "flex-start",
+    justifyContent: "center",
     marginBottom: 10,
     borderRadius: 8,
-    overflow: 'hidden',
+    overflow: "hidden",
     paddingHorizontal: 16,
   },
   rowBack: {
-    alignItems: 'center',
+    alignItems: "center",
     flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     paddingLeft: 15,
     marginBottom: 10,
     borderRadius: 8,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   backRightBtn: {
-    alignItems: 'center',
+    alignItems: "center",
     bottom: 0,
     borderRadius: 8,
-    justifyContent: 'center',
-    position: 'absolute',
+    justifyContent: "center",
+    position: "absolute",
     top: 0,
     width: 75,
   },
   backRightBtnLeft: {
-    backgroundColor: 'blue',
+    backgroundColor: "blue",
     right: 78,
   },
   backRightBtnRight: {
-    backgroundColor: 'red',
+    backgroundColor: "red",
     right: 0,
   },
   backTextWhite: {
-    color: '#FFF',
+    color: "#FFF",
   },
 });

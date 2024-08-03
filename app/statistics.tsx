@@ -29,34 +29,51 @@ export default function Statistics() {
   const [items, setItems] = useState<DropDownItem[]>([]);
 
   useEffect(() => {
-    // Fetch the list of deck summaries from DeckService
-    const fetchDeckSummaries = async () => {
-      const loadedDecks = await deckService.getDecksSummary();
-      const decks = loadedDecks
-        .map((deck) => deck.deckName)
-        .sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
+    // Fetch the list of deck summaries from DeckService and set the default deck
+    const initializeDecks = async () => {
+      try {
+        const loadedDecks = await deckService.getDecksSummary();
+        const decks = loadedDecks
+          .map((deck) => deck.deckName)
+          .sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
 
-      const storedDeck = await AsyncStorage.getItem('selectedDeck');
-      const defaultDeck = storedDeck || decks[0] || '';
-      setSelectedDeck(defaultDeck || null);
-      setItems(decks.map((deck) => ({ label: deck, value: deck })));
+        setItems(decks.map((deck) => ({ label: deck, value: deck })));
+
+        const storedDeck = await AsyncStorage.getItem('selectedDeck');
+        const defaultDeck = storedDeck || decks[0] || '';
+        setSelectedDeck(defaultDeck || null);
+
+        if (defaultDeck) {
+          fetchDeckData(defaultDeck);
+        }
+      } catch (error) {
+        showToast('warning', 'Unable to load decks and settings.');
+      }
     };
 
-    fetchDeckSummaries();
+    initializeDecks();
   }, []);
+
+  const fetchDeckData = async (deckName: string) => {
+    try {
+      const result = await loggingService.getDeckSummary(deckName);
+      if (result) {
+        setLogDeckSummary(result.summary);
+        setDeckDetail(result.details);
+        setGames(result.games);
+      } else {
+        setLogDeckSummary(null);
+        setDeckDetail(null);
+        setGames(null);
+      }
+    } catch (error) {
+      showToast('warning', 'Unable to fetch deck data');
+    }
+  };
 
   const handleDeckChange = async (deckName: string) => {
     setSelectedDeck(deckName);
-    const result = await loggingService.getDeckSummary(deckName);
-    if (result) {
-      setLogDeckSummary(result.summary);
-      setDeckDetail(result.details);
-      setGames(result.games);
-    } else {
-      setLogDeckSummary(null);
-      setDeckDetail(null);
-      setGames(null);
-    }
+    fetchDeckData(deckName);
   };
 
   const clearStatistics = async (deckOnly: boolean) => {
@@ -249,9 +266,6 @@ export default function Statistics() {
 }
 
 const styles = StyleSheet.create({
-  button: {
-    marginBottom: 6,
-  },
   dropdown: {
     marginBottom: 16,
     borderWidth: 1,

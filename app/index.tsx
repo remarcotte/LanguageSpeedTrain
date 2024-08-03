@@ -1,10 +1,8 @@
-import React, { useEffect } from 'react';
-// import Toast from 'react-native-toast-message';
-import { router, Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-// import { RootSiblingParent } from 'react-native-root-siblings';
+import React, { useEffect } from "react";
+import { router, Stack } from "expo-router";
+import * as SplashScreen from "expo-splash-screen";
 
-import InitAll from '../services/InitAll';
+import InitAll from "../services/InitAll";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -14,7 +12,7 @@ export default function App() {
       const initAll = new InitAll();
       await initAll.initialize();
       await SplashScreen.hideAsync();
-      router.replace('/home'); // Navigate to the home screen
+      router.replace("/home"); // Navigate to the home screen
     };
     prepare();
   }, []);

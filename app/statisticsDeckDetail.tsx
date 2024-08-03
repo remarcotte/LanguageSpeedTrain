@@ -21,10 +21,16 @@ export default function StatisticsDeckDetail() {
         {details.map((detail: DeckDetail, index: number) => (
           <ThemedView key={index} style={styles.detailContainer}>
             <ThemedView style={styles.detailHeader}>
-              <ThemedText style={styles.detailTextLeft}>{detail.text}</ThemedText>
+              <ThemedText style={styles.detailTextLeft}>
+                {detail.text}
+              </ThemedText>
               {detail && detail.numberAttempts > 0 && (
                 <ThemedText style={styles.detailTextRight}>
-                  {(100 * detail.numberCorrect / detail.numberAttempts).toFixed(2).replace(/\.00$/, '').replace(/(\.\d)0$/, '$1')}%
+                  {((100 * detail.numberCorrect) / detail.numberAttempts)
+                    .toFixed(2)
+                    .replace(/\.00$/, '')
+                    .replace(/(\.\d)0$/, '$1')}
+                  %
                 </ThemedText>
               )}
             </ThemedView>
@@ -36,7 +42,7 @@ export default function StatisticsDeckDetail() {
       </ScrollView>
     </ThemedScreen>
   );
-};
+}
 
 const styles = StyleSheet.create({
   title: {
@@ -44,9 +50,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: 16,
-  },
-  centerText: {
-    textAlign: 'center',
   },
   scrollContainer: {
     flexGrow: 1,

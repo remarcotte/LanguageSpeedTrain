@@ -1,11 +1,11 @@
-import * as SQLite from 'expo-sqlite';
+import * as SQLite from "expo-sqlite";
 
 class DBService {
   private static instance: DBService;
   private db: SQLite.SQLiteDatabase;
 
   private constructor() {
-    this.db = SQLite.openDatabaseSync('logging.db');
+    this.db = SQLite.openDatabaseSync("logging.db");
   }
 
   public static getInstance(): DBService {
@@ -20,7 +20,7 @@ class DBService {
     try {
       return this.db.runAsync(query, params);
     } catch (error) {
-      console.error('SQL runAsync error', error);
+      console.error("SQL runAsync error", error);
     }
   }
 
@@ -31,7 +31,7 @@ class DBService {
         this.db.runAsync(query, params);
       });
     } catch (error) {
-      console.error('SQL runAsync error', error);
+      console.error("SQL runAsync error", error);
     }
   }
 
@@ -40,7 +40,7 @@ class DBService {
     try {
       return await this.db.execAsync(query);
     } catch (error) {
-      console.error('SQL runAsync error', error);
+      console.error("SQL runAsync error", error);
     }
   }
 
@@ -49,7 +49,7 @@ class DBService {
     try {
       return await this.db.getFirstAsync(query, params);
     } catch (error) {
-      console.error('SQL getFirstAsync error', error);
+      console.error("SQL getFirstAsync error", error);
     }
   }
 
@@ -58,7 +58,7 @@ class DBService {
     try {
       return await this.db.getAllAsync(query, params);
     } catch (error) {
-      console.error('SQL getAllAsync error', error);
+      console.error("SQL getAllAsync error", error);
     }
   }
 
@@ -137,11 +137,10 @@ class DBService {
       await this.execAsync(createTableDeckDetail);
 
       const c = (await this.getFirstAsync(
-        'SELECT count(*) cnt from deck',
+        "SELECT count(*) cnt from deck",
       )) as any;
-
     } catch (error) {
-      console.error('Failed to initialize database tables', error);
+      console.error("Failed to initialize database tables", error);
     }
   }
 }

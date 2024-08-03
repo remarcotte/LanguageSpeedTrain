@@ -1,9 +1,9 @@
-import hiriganaDeck from '../assets/decks/hirigana.json';
-import katakanaDeck from '../assets/decks/katakana.json';
-import nlpt5Deck from '../assets/decks/nlpt5.json';
-import nlpt5KanjiDeck from '../assets/decks/nlpt5-kanji.json';
-import { Deck, DeckSummary, DeckDb } from '../types/DeckTypes';
-import DBService from './DBService';
+import hiriganaDeck from "../assets/decks/hirigana.json";
+import katakanaDeck from "../assets/decks/katakana.json";
+import nlpt5Deck from "../assets/decks/nlpt5.json";
+import nlpt5KanjiDeck from "../assets/decks/nlpt5-kanji.json";
+import { Deck, DeckSummary, DeckDb } from "../types/DeckTypes";
+import DBService from "./DBService";
 
 type Cntr = {
   cnt: number;
@@ -27,7 +27,7 @@ class DeckService {
         await this.initializeDefaultDecks();
       }
     } catch (error) {
-      console.error('Error initializing decks: ', error);
+      console.error("Error initializing decks: ", error);
     }
   }
 
@@ -36,13 +36,13 @@ class DeckService {
 
     try {
       const item = (await this.dbService.getFirstAsync(
-        'SELECT count(*) cnt from deck',
+        "SELECT count(*) cnt from deck",
       )) as Cntr;
       if (item) {
         count = item.cnt;
       }
     } catch (error) {
-      console.error('Error getting decks count: ', error);
+      console.error("Error getting decks count: ", error);
     }
     return count;
   }
@@ -52,14 +52,14 @@ class DeckService {
 
     try {
       const item = (await this.dbService.getFirstAsync(
-        'SELECT count(*) cnt from deck where deckName = ?',
+        "SELECT count(*) cnt from deck where deckName = ?",
         [deckName],
       )) as Cntr;
       if (item) {
         count = item.cnt;
       }
     } catch (error) {
-      console.error('Error getting decks count: ', error);
+      console.error("Error getting decks count: ", error);
     }
     return count;
   }
@@ -75,12 +75,12 @@ class DeckService {
       for (const deck of defaultDecks) {
         await this.addDeck(
           deck.name,
-          deck.categories.join('|'),
+          deck.categories.join("|"),
           JSON.stringify(deck.items),
         );
       }
     } catch (error) {
-      console.error('Error initializing default decks: ', error);
+      console.error("Error initializing default decks: ", error);
     }
   }
 
@@ -89,16 +89,16 @@ class DeckService {
 
     try {
       const item = (await this.dbService.getFirstAsync(
-        'SELECT * from deck where deckName = ?',
+        "SELECT * from deck where deckName = ?",
         [deckName],
       )) as DeckDb;
       if (!item) {
-        console.error('Failed to get deck - not found');
+        console.error("Failed to get deck - not found");
         return null;
       }
       deck = {
         name: item.deckName,
-        categories: item.categories.split('|'),
+        categories: item.categories.split("|"),
         items: JSON.parse(item.items),
       };
     } catch (error) {
@@ -111,15 +111,15 @@ class DeckService {
     const summaries: DeckSummary[] = [];
     try {
       const items = (await this.dbService.getAllAsync(
-        'SELECT * from deck order by deckName',
+        "SELECT * from deck order by deckName",
       )) as DeckDb[];
       if (!items) {
-        console.error('Failed to get decks - not found');
+        console.error("Failed to get decks - not found");
         return summaries;
       }
 
       for (const item of items) {
-        const categories = item.categories.split('|');
+        const categories = item.categories.split("|");
         const count = JSON.parse(item.items).length;
         summaries.push({
           deckName: item.deckName,
@@ -139,9 +139,9 @@ class DeckService {
     items: string[][],
   ): Promise<void> {
     try {
-      await this.addDeck(deckName, categories.join('|'), JSON.stringify(items));
+      await this.addDeck(deckName, categories.join("|"), JSON.stringify(items));
     } catch (error) {
-      console.error('Error creating new deck: ', error);
+      console.error("Error creating new deck: ", error);
     }
   }
 
@@ -152,7 +152,7 @@ class DeckService {
   ): Promise<void> {
     try {
       await this.dbService.runAsync(
-        'INSERT INTO deck (deckName, categories, items) VALUES (?, ?, ?);',
+        "INSERT INTO deck (deckName, categories, items) VALUES (?, ?, ?);",
         [deckName, categories, items],
       );
     } catch (error) {
@@ -167,7 +167,7 @@ class DeckService {
   ): Promise<void> {
     try {
       await this.dbService.runAsync(
-        'UPDATE deck SET categories = ?, items = ? where deckName = ?;',
+        "UPDATE deck SET categories = ?, items = ? where deckName = ?;",
         [categories, items, deckName],
       );
     } catch (error) {
@@ -203,7 +203,7 @@ class DeckService {
 
   private sortItems(items: string[][]): string[][] {
     return items.sort((a, b) =>
-      a[0].localeCompare(b[0], undefined, { sensitivity: 'base' }),
+      a[0].localeCompare(b[0], undefined, { sensitivity: "base" }),
     );
   }
 
@@ -214,12 +214,12 @@ class DeckService {
         const items = this.sortItems([...deck.items, item]);
         await this.updateDeck(
           deckName,
-          deck.categories.join('|'),
+          deck.categories.join("|"),
           JSON.stringify(items),
         );
       }
     } catch (error) {
-      console.error('Error adding deck item: ', error);
+      console.error("Error adding deck item: ", error);
     }
   }
 
@@ -230,12 +230,12 @@ class DeckService {
         const items = deck.items.filter((item) => item[0] !== text);
         await this.updateDeck(
           deckName,
-          deck.categories.join('|'),
+          deck.categories.join("|"),
           JSON.stringify(items),
         );
       }
     } catch (error) {
-      console.error('Error deleting deck item: ', error);
+      console.error("Error deleting deck item: ", error);
     }
   }
 
@@ -250,12 +250,12 @@ class DeckService {
         const items = deck.items.map((i) => (i[0] === text ? item : i));
         await this.updateDeck(
           deckName,
-          deck.categories.join('|'),
+          deck.categories.join("|"),
           JSON.stringify(this.sortItems(items)),
         );
       }
     } catch (error) {
-      console.error('Error updating deck item: ', error);
+      console.error("Error updating deck item: ", error);
     }
   }
 
@@ -300,7 +300,7 @@ class DeckService {
           UPDATE game_detail set category = ? where category_name = ?
             and gameId in (select id from game_summary where deckName = ?);`;
         await this.dbService.runAsyncTx(updateStatements, [
-          categories.join('|'),
+          categories.join("|"),
           deckName,
           newCategoryName,
           deckName,
@@ -311,29 +311,29 @@ class DeckService {
         ]);
       }
     } catch (error) {
-      console.error('Error changing category name: ', error);
+      console.error("Error changing category name: ", error);
     }
   }
 
   async createDeck(deckName: string, csvData: string) {
     try {
       if (!deckName.trim()) {
-        console.error('Deck name cannot be empty');
+        console.error("Deck name cannot be empty");
         return;
       }
 
       const lines = csvData
         .trim()
-        .split('\n')
-        .filter((line) => line.trim() !== '');
+        .split("\n")
+        .filter((line) => line.trim() !== "");
       if (lines.length < 2) {
         // Need at least one row of categories and one row of data
-        console.error('CSV data is incomplete');
+        console.error("CSV data is incomplete");
         return;
       }
 
-      const headers = lines[0].split(',').map((header) => header.trim());
-      if (headers[0] !== 'text') {
+      const headers = lines[0].split(",").map((header) => header.trim());
+      if (headers[0] !== "text") {
         console.error('The first column must be "text"');
         return;
       }
@@ -343,9 +343,9 @@ class DeckService {
       const items = lines
         .slice(1)
         .map((line) => {
-          const values = line.split(',').map((value) => value.trim());
+          const values = line.split(",").map((value) => value.trim());
           if (values.length !== headers.length) {
-            console.error('Mismatch in the number of categories');
+            console.error("Mismatch in the number of categories");
             return null;
           }
           return values;
@@ -353,13 +353,13 @@ class DeckService {
         .filter((item) => item !== null) as string[][];
 
       if (items.length === 0) {
-        console.error('Deck must have at least one item');
+        console.error("Deck must have at least one item");
         return;
       }
 
       await this.newDeck(deckName, categories, items);
     } catch (error) {
-      console.error('Failed to create deck', error);
+      console.error("Failed to create deck", error);
     }
   }
 }

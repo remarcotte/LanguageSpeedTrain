@@ -1,16 +1,16 @@
-import React from 'react';
+import React from "react";
 import Toast, {
   BaseToast,
   ToastConfig,
   ToastProps,
-} from 'react-native-toast-message';
-import { useColorScheme } from 'react-native';
-import { Colors } from '../constants/Colors'; // Adjust the import path as needed
+} from "react-native-toast-message";
+import { useColorScheme } from "react-native";
+import { Colors } from "../constants/Colors"; // Adjust the import path as needed
 
 // Define custom toast styles using your color themes
 const toastConfig: ToastConfig = {
   success: (props: ToastProps) => {
-    const theme = useColorScheme() || 'light';
+    const theme = useColorScheme() || "light";
     return (
       <BaseToast
         {...props}
@@ -25,7 +25,7 @@ const toastConfig: ToastConfig = {
     );
   },
   danger: (props: ToastProps) => {
-    const theme = useColorScheme() || 'light';
+    const theme = useColorScheme() || "light";
     return (
       <BaseToast
         {...props}
@@ -40,7 +40,7 @@ const toastConfig: ToastConfig = {
     );
   },
   warning: (props: ToastProps) => {
-    const theme = useColorScheme() || 'light';
+    const theme = useColorScheme() || "light";
     return (
       <BaseToast
         {...props}
@@ -55,7 +55,7 @@ const toastConfig: ToastConfig = {
     );
   },
   normal: (props: ToastProps) => {
-    const theme = useColorScheme() || 'light';
+    const theme = useColorScheme() || "light";
     return (
       <BaseToast
         {...props}
@@ -76,13 +76,13 @@ export function ThemedToast() {
 }
 
 export const showToast = (
-  type: 'success' | 'danger' | 'warning' | 'normal',
-  text1: string
+  type: "success" | "danger" | "warning" | "normal",
+  text1: string,
 ) => {
   Toast.show({
     type: type,
     text1: text1,
-    position: 'top',
+    position: "top",
     visibilityTime: 1500,
     autoHide: true,
     topOffset: 50,

@@ -4,7 +4,6 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedScreen } from '@/components/ThemedScreen';
 import LoggingService from '../services/LoggingService';
 
-
 export default function Debug() {
   const loggingService = LoggingService.getInstance();
 
@@ -35,7 +34,7 @@ export default function Debug() {
   }, []);
 
   return (
-    <ThemedScreen title='Debug'>
+    <ThemedScreen title="Debug">
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <ThemedText style={styles.title}>Logging getDeckSummary</ThemedText>
         <ThemedText style={styles.label}>Summary</ThemedText>
@@ -62,9 +61,6 @@ export default function Debug() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
   title: {
     fontSize: 24,
     textAlign: 'center',

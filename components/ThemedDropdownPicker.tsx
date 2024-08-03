@@ -1,10 +1,10 @@
-import React, { useEffect } from 'react';
+import React, { useEffect } from "react";
 import DropDownPicker, {
   DropDownPickerProps,
-} from 'react-native-dropdown-picker';
-import { Ionicons } from '@expo/vector-icons';
-import { useThemeColor } from '@/hooks/useThemeColor';
-import { ThemedText } from '@/components/ThemedText';
+} from "react-native-dropdown-picker";
+import { Ionicons } from "@expo/vector-icons";
+import { useThemeColor } from "@/hooks/useThemeColor";
+import { ThemedText } from "@/components/ThemedText";
 
 type ThemedDropdownPickerProps = DropDownPickerProps<any> & {
   lightColor?: string;
@@ -33,7 +33,7 @@ export const ThemedDropdownPicker: React.FC<ThemedDropdownPickerProps> = ({
   lightColor,
   darkColor,
   iconSize = 18, // Default size for icons
-  emptyListText = 'No items available',
+  emptyListText = "No items available",
   items,
   setValue,
   value,
@@ -42,9 +42,9 @@ export const ThemedDropdownPicker: React.FC<ThemedDropdownPickerProps> = ({
   // Use the provided colors if available, otherwise fallback to theme colors
   const backgroundColor = useThemeColor(
     { light: lightColor, dark: darkColor },
-    'inputBackground'
+    "inputBackground",
   );
-  const color = useThemeColor({ light: lightColor, dark: darkColor }, 'text');
+  const color = useThemeColor({ light: lightColor, dark: darkColor }, "text");
 
   // Handle single item selection
   useEffect(() => {
@@ -56,7 +56,7 @@ export const ThemedDropdownPicker: React.FC<ThemedDropdownPickerProps> = ({
   if (items.length === 0) {
     // Display empty list text
     return (
-      <ThemedText style={[{ textAlign: 'center', fontSize: 16 }, textStyle]}>
+      <ThemedText style={[{ textAlign: "center", fontSize: 16 }, textStyle]}>
         {emptyListText}
       </ThemedText>
     );
@@ -65,7 +65,7 @@ export const ThemedDropdownPicker: React.FC<ThemedDropdownPickerProps> = ({
   if (items.length === 1) {
     // Display single item text
     return (
-      <ThemedText style={[{ textAlign: 'center', fontSize: 16 }, textStyle]}>
+      <ThemedText style={[{ textAlign: "center", fontSize: 16 }, textStyle]}>
         {items[0].label}
       </ThemedText>
     );

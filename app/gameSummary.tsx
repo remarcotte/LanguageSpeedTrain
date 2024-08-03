@@ -1,19 +1,19 @@
-import React, { useEffect, useState } from 'react';
-import { TextInput as RTextInput, StyleSheet } from 'react-native';
-import { ThemedPressable } from '@/components/ThemedPressable';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
-import { ThemedScreen } from '@/components/ThemedScreen';
-import { router } from 'expo-router';
-import { TurnAnswer } from '../types/LoggingTypes';
-import Ionicons from '@expo/vector-icons/Ionicons';
-import { useLocalSearchParams } from 'expo-router';
-import { useThemeColor } from '@/hooks/useThemeColor';
+import React, { useEffect, useState } from "react";
+import { StyleSheet } from "react-native";
+import { ThemedPressable } from "@/components/ThemedPressable";
+import { ThemedText } from "@/components/ThemedText";
+import { ThemedView } from "@/components/ThemedView";
+import { ThemedScreen } from "@/components/ThemedScreen";
+import { router } from "expo-router";
+import { TurnAnswer } from "../types/LoggingTypes";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import { useLocalSearchParams } from "expo-router";
+import { useThemeColor } from "@/hooks/useThemeColor";
 
 type IoniconName = keyof typeof Ionicons.glyphMap;
 
 export default function GameSummary() {
-  const inputBackgroundColor = useThemeColor({}, 'inputBackground');
+  const inputBackgroundColor = useThemeColor({}, "inputBackground");
 
   const { deckName, category, duration, turnsStr } = useLocalSearchParams<{
     deckName: string;
@@ -28,7 +28,7 @@ export default function GameSummary() {
 
   const total = turns.length;
   const correct = turns.filter((turn) => turn.isCorrect).length;
-  const skipped = turns.filter((turn) => turn.type === 'skip').length;
+  const skipped = turns.filter((turn) => turn.type === "skip").length;
   const incorrect = total - correct - skipped;
 
   const percentCorrect = (total ? (correct / total) * 100 : 0).toFixed(2);
@@ -55,14 +55,14 @@ export default function GameSummary() {
         <ThemedPressable
           title="New Game"
           fontSize={20}
-          onPress={() => router.navigate('/newGame')}
+          onPress={() => router.navigate("/newGame")}
         />
         <ThemedPressable
           title="Replay Game"
           fontSize={20}
           onPress={() =>
             router.replace({
-              pathname: '/startGame',
+              pathname: "/startGame",
               params: { deckName, category, duration },
             })
           }
@@ -81,17 +81,17 @@ export default function GameSummary() {
               <Ionicons
                 key={i}
                 size={30}
-                name={'star'}
-                style={{ color: 'gold' }}
+                name={"star"}
+                style={{ color: "gold" }}
               />
             ) : (
               <Ionicons
                 key={i}
                 size={30}
-                name={'star-outline'}
-                style={{ color: 'gray' }}
+                name={"star-outline"}
+                style={{ color: "gray" }}
               />
-            )
+            ),
           )}
         </ThemedView>
       </ThemedView>
@@ -126,23 +126,23 @@ export default function GameSummary() {
             fontSize={20}
             onPress={() =>
               router.navigate({
-                pathname: '/gameHistory',
+                pathname: "/gameHistory",
                 params: { turnsStr: JSON.stringify(turns) },
               })
             }
           />
         ) : (
-          ''
+          ""
         )}
         <ThemedPressable
           title="View Statistics"
           fontSize={20}
-          onPress={() => router.navigate('/statistics')}
+          onPress={() => router.navigate("/statistics")}
         />
         <ThemedPressable
           title="Home"
           fontSize={20}
-          onPress={() => router.navigate('/home')}
+          onPress={() => router.navigate("/home")}
         />
       </ThemedView>
     </ThemedScreen>
@@ -155,39 +155,39 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginBottom: 16,
   },
   section: {
     marginBottom: 16,
-    alignItems: 'center',
+    alignItems: "center",
   },
   sectionLabel: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 8,
   },
   optionText: {
     fontSize: 16,
     marginBottom: 4,
-    textAlign: 'center',
+    textAlign: "center",
   },
   statText: {
     fontSize: 16,
     marginBottom: 4,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   ratingContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
+    flexDirection: "row",
+    justifyContent: "center",
     marginBottom: 8,
     marginTop: 16,
   },
   row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
     paddingHorizontal: 16,
   },
 });

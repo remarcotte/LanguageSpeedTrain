@@ -1,16 +1,15 @@
-import React from 'react';
-import { StyleSheet } from 'react-native';
-import { ThemedView } from '@/components/ThemedView';
-import { BarChart } from 'react-native-chart-kit';
-import { Dimensions } from 'react-native';
-import { useThemeColor } from '@/hooks/useThemeColor';
+import React from "react";
+import { StyleSheet } from "react-native";
+import { ThemedView } from "@/components/ThemedView";
+import { BarChart } from "react-native-chart-kit";
+import { Dimensions } from "react-native";
+import { useThemeColor } from "@/hooks/useThemeColor";
 
-const screenWidth = Dimensions.get('window').width;
+const screenWidth = Dimensions.get("window").width;
 
-export function SimpleHistogram(
-  { data }: { data: number[] }) {
-  const chartBackgroundColor = useThemeColor({}, 'chartBackground');
-  const chartTextColor = useThemeColor({}, 'chartText');
+export function SimpleHistogram({ data }: { data: number[] }) {
+  const chartBackgroundColor = useThemeColor({}, "chartBackground");
+  const chartTextColor = useThemeColor({}, "chartText");
 
   const maxDataValue = Math.max(...data);
   const minDataValue = Math.min(...data);
@@ -24,7 +23,7 @@ export function SimpleHistogram(
     ],
   };
 
-const chartConfig = {
+  const chartConfig = {
     backgroundColor: chartBackgroundColor,
     backgroundGradientFrom: chartBackgroundColor,
     backgroundGradientTo: chartBackgroundColor,
@@ -35,19 +34,19 @@ const chartConfig = {
       borderRadius: 16,
     },
     propsForDots: {
-      r: '6',
-      strokeWidth: '2',
+      r: "6",
+      strokeWidth: "2",
       stroke: chartTextColor,
-  },
+    },
     formatYLabel: (label: string | number) => {
       const numericLabel = Number(label);
       if (numericLabel === 0) {
-        return ''; // Remove the "0" label
+        return ""; // Remove the "0" label
       }
-      return '';
+      return "";
     },
     propsForBackgroundLines: {
-      stroke: 'transparent', // Make the guideline transparent
+      stroke: "transparent", // Make the guideline transparent
     },
     propsForHorizontalLabels: {
       stroke: chartTextColor, // Solid line for horizontal axis
@@ -56,36 +55,36 @@ const chartConfig = {
 
   return (
     <ThemedView style={styles.container}>
-    <ThemedView style={styles.container2}>
-      <BarChart
-        data={dataSet}
-        width={screenWidth + 40}
-        height={210}
-        chartConfig={chartConfig}
-        yAxisLabel=""
-        yAxisSuffix=""
-        withInnerLines={false} // Remove horizontal guidelines
-        withVerticalLabels={false} // Remove vertical labels if needed
-        fromZero
-        showBarTops
-        showValuesOnTopOfBars
-        style={styles.chart}
-      />
-    </ThemedView>
+      <ThemedView style={styles.container2}>
+        <BarChart
+          data={dataSet}
+          width={screenWidth + 40}
+          height={210}
+          chartConfig={chartConfig}
+          yAxisLabel=""
+          yAxisSuffix=""
+          withInnerLines={false} // Remove horizontal guidelines
+          withVerticalLabels={false} // Remove vertical labels if needed
+          fromZero
+          showBarTops
+          showValuesOnTopOfBars
+          style={styles.chart}
+        />
+      </ThemedView>
     </ThemedView>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   container2: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     marginLeft: -80,
   },
   chart: {
