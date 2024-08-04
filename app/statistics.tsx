@@ -7,17 +7,19 @@ import { ThemedPressable } from '@/components/ThemedPressable';
 import { ThemedDropdownPicker } from '@/components/ThemedDropdownPicker';
 import { ThemedScreen } from '@/components/ThemedScreen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import LoggingService from '@/services/LoggingService'; // Adjust the import based on your project structure
-import DeckService from '@/services/DeckService'; // Adjust the import based on your project structure
+import { LoggingService } from '@/services/LoggingService'; // Adjust the import based on your project structure
+import { DeckService } from '@/services/DeckService'; // Adjust the import based on your project structure
 import { SimpleHistogram } from '@/components/ThemedHistogram'; // Import your histogram component
 import { LogDeckSummary, GameSummary, DeckDetail } from '../types/LoggingTypes'; // Adjust the import based on your project structure
-import { showToast } from '@/components/ThemedToast';
+import { ErrorService } from '../services/ErrorService';
+import { ErrorActionType } from '../types/ErrorTypes';
 
 type DropDownItem = { label: string; value: string };
 
 export default function Statistics() {
   const loggingService = LoggingService.getInstance();
   const deckService = DeckService.getInstance();
+  const errorService = ErrorService.getInstance();
 
   const [open, setOpen] = useState(false);
   const [selectedDeck, setSelectedDeck] = useState<string | null>(null);
@@ -47,7 +49,12 @@ export default function Statistics() {
           fetchDeckData(defaultDeck);
         }
       } catch (error) {
-        showToast('warning', 'Unable to load decks and settings.');
+        await errorService.logError(
+          ErrorActionType.TOAST,
+          27,
+          'Unable to load decks and settings.',
+          error
+        );
       }
     };
 
@@ -67,7 +74,12 @@ export default function Statistics() {
         setGames(null);
       }
     } catch (error) {
-      showToast('warning', 'Unable to fetch deck data');
+      await errorService.logError(
+        ErrorActionType.TOAST,
+        28,
+        'Unable to fetch deck data.',
+        error
+      );
     }
   };
 
@@ -81,16 +93,29 @@ export default function Statistics() {
       if (deckOnly) {
         if (!selectedDeck) return;
         await loggingService.clearDeck(selectedDeck);
-        showToast('success', 'Statistics cleared for deck: ' + selectedDeck);
+        await errorService.logError(
+          ErrorActionType.TOAST,
+          29,
+          `Statistics cleared: ${selectedDeck}`
+        );
       } else {
         await loggingService.clearAll();
-        showToast('success', 'All statistics cleared');
+        await errorService.logError(
+          ErrorActionType.TOAST,
+          30,
+          'All statistics cleared.'
+        );
         setSelectedDeck(null);
       }
       setLogDeckSummary(null);
       setDeckDetail(null);
     } catch (error) {
-      showToast('warning', 'Error deleting statistics.');
+      await errorService.logError(
+        ErrorActionType.TOAST,
+        31,
+        'Error clearing statistics.',
+        error
+      );
     }
   };
 

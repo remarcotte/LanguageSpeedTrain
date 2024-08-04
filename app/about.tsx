@@ -1,21 +1,30 @@
 import React from 'react';
 import { Alert, StyleSheet } from 'react-native';
-import DeckManager from '../services/DeckService';
+import { DeckService } from '../services/DeckService';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedPressable } from '@/components/ThemedPressable';
 import { ThemedScreen } from '@/components/ThemedScreen';
 import { showToast } from '@/components/ThemedToast';
+import { router } from 'expo-router';
+import { ErrorService } from '../services/ErrorService';
+import { ErrorActionType } from '../types/ErrorTypes';
 
 const About = () => {
-  const deckManager = DeckManager.getInstance();
+  const deckService = DeckService.getInstance();
+  const errorService = ErrorService.getInstance();
 
   const resetAllData = async () => {
     try {
-      await deckManager.resetDecks();
+      await deckService.resetDecks();
       showToast('success', 'App data has been reset.');
     } catch (error) {
-      showToast('warning', 'Failed to reset app data.');
+      await errorService.logError(
+        ErrorActionType.TOAST,
+        1,
+        'Failed to reset app data.',
+        error
+      );
     }
   };
 
@@ -28,11 +37,7 @@ const About = () => {
         {
           text: 'Continue',
           onPress: async () => {
-            try {
-              await resetAllData();
-            } catch (error) {
-              console.error('Error in resetAllData:', error);
-            }
+            await resetAllData();
           },
           style: 'destructive',
         },
@@ -40,6 +45,14 @@ const About = () => {
       { cancelable: false }
     );
   };
+
+  // const createError = async () => {
+  // await errorService.logError(ErrorActionType.TOAST,
+  //   1,
+  //   'Test Error',
+  //   'Error solely for purpose of testing error logging and displaying'
+  // );
+  // };
 
   return (
     <ThemedScreen title="About">
@@ -54,6 +67,18 @@ const About = () => {
         <ThemedText style={styles.copyright}>
           © 2024, Elasting. All rights reserved.
         </ThemedText>
+        <ThemedPressable
+          title="View Errors"
+          onPress={() => router.navigate('/errors')}
+          fontSize={20}
+          style={styles.errorButton}
+        />
+        {/* <ThemedPressable
+          title="Create Error"
+          onPress={createError}
+          fontSize={20}
+          style={styles.errorButton}
+        /> */}
       </ThemedView>
       <ThemedView style={styles.footer}>
         <ThemedPressable
@@ -83,6 +108,10 @@ const styles = StyleSheet.create({
   copyright: {
     marginTop: 50,
     textAlign: 'center',
+  },
+  errorButton: {
+    marginHorizontal: 80,
+    marginTop: 100,
   },
   footer: {
     padding: 16,

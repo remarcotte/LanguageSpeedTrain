@@ -1,30 +1,33 @@
-import React, { useState } from "react";
-import { KeyboardAvoidingView, Platform, StyleSheet } from "react-native";
-import { router } from "expo-router";
-import DeckService from "../services/DeckService";
-import { ThemedText } from "@/components/ThemedText";
-import { ThemedTextInput } from "@/components/ThemedTextInput";
-import { ThemedPressable } from "@/components/ThemedPressable";
-import { ThemedScreen } from "@/components/ThemedScreen";
-import { showToast } from "@/components/ThemedToast";
-import { ThemedScrollView } from "@/components/ThemedScrollView";
+import React, { useState } from 'react';
+import { KeyboardAvoidingView, Platform, StyleSheet } from 'react-native';
+import { router } from 'expo-router';
+import { DeckService } from '../services/DeckService';
+import { ThemedText } from '@/components/ThemedText';
+import { ThemedTextInput } from '@/components/ThemedTextInput';
+import { ThemedPressable } from '@/components/ThemedPressable';
+import { ThemedScreen } from '@/components/ThemedScreen';
+import { ThemedScrollView } from '@/components/ThemedScrollView';
+import { ErrorService } from '../services/ErrorService';
+import { ErrorActionType } from '../types/ErrorTypes';
 
 export default function AddNewDeck() {
   const deckService = DeckService.getInstance();
+  const errorService = ErrorService.getInstance();
 
-  const [name, deckName] = useState("");
-  const [data, deckData] = useState("");
+  const [name, deckName] = useState('');
+  const [data, deckData] = useState('');
 
   const addNewDeck = async () => {
     try {
       await deckService.createDeck(name, data);
-      router.navigate("/manageDecks");
+      router.navigate('/manageDecks');
     } catch (error) {
-      if (error instanceof Error) {
-        showToast("warning", error.message);
-      } else {
-        showToast("warning", "An unexpected error occurred");
-      }
+      await errorService.logError(
+        ErrorActionType.TOAST,
+        2,
+        'Error adding new deck.',
+        error
+      );
     }
   };
 
@@ -32,7 +35,7 @@ export default function AddNewDeck() {
     <ThemedScreen title="Add New Deck">
       <KeyboardAvoidingView
         style={styles.container}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         keyboardVerticalOffset={100} // Adjust this value according to your header height
       >
         <ThemedScrollView>
@@ -92,7 +95,7 @@ const styles = StyleSheet.create({
   },
   input: {
     height: 40,
-    borderColor: "gray",
+    borderColor: 'gray',
     borderWidth: 1,
     marginLeft: 12,
     marginBottom: 16,
@@ -115,6 +118,6 @@ const styles = StyleSheet.create({
   multilineInput: {
     height: 120,
     marginLeft: 12,
-    textAlignVertical: "top",
+    textAlignVertical: 'top',
   },
 });

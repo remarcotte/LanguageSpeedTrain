@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback } from 'react';
 import {
   Button,
   Pressable,
@@ -7,22 +7,26 @@ import {
   Alert,
   StyleSheet,
   TouchableOpacity,
-} from "react-native";
-import { ThemedPressable } from "@/components/ThemedPressable";
-import { ThemedView } from "@/components/ThemedView";
-import { ThemedText } from "@/components/ThemedText";
-import { ThemedScreen } from "@/components/ThemedScreen";
-import { router } from "expo-router";
-import { useThemeColor } from "@/hooks/useThemeColor";
-import { useFocusEffect } from "@react-navigation/native";
-import DeckService from "../services/DeckService";
-import { DeckSummary } from "../types/DeckTypes";
-import { SwipeListView } from "react-native-swipe-list-view";
-import { showToast } from "@/components/ThemedToast";
+} from 'react-native';
+import { ThemedPressable } from '@/components/ThemedPressable';
+import { ThemedView } from '@/components/ThemedView';
+import { ThemedText } from '@/components/ThemedText';
+import { ThemedScreen } from '@/components/ThemedScreen';
+import { router } from 'expo-router';
+import { useThemeColor } from '@/hooks/useThemeColor';
+import { useFocusEffect } from '@react-navigation/native';
+import { DeckService } from '../services/DeckService';
+import { DeckSummary } from '../types/DeckTypes';
+import { SwipeListView } from 'react-native-swipe-list-view';
+import { showToast } from '@/components/ThemedToast';
+import { ErrorService } from '../services/ErrorService';
+import { ErrorActionType } from '../types/ErrorTypes';
 
 export default function ManageDecksScreen() {
   const deckService = DeckService.getInstance();
-  const listButtonBackgroundColor = useThemeColor({}, "listButtonBackground");
+  const errorService = ErrorService.getInstance();
+
+  const listButtonBackgroundColor = useThemeColor({}, 'listButtonBackground');
 
   const [decks, setDecks] = useState<DeckSummary[]>([]);
 
@@ -31,14 +35,19 @@ export default function ManageDecksScreen() {
       const loadedDecks = await deckService.getDecksSummary();
       setDecks(loadedDecks);
     } catch (error) {
-      showToast("warning", "Unable to retrieve list of decks.");
+      await errorService.logError(
+        ErrorActionType.TOAST,
+        9,
+        'Unable to retrieve list of decks.',
+        error
+      );
     }
   };
 
   useFocusEffect(
     useCallback(() => {
       loadDecks();
-    }, []),
+    }, [])
   );
 
   const deleteDeck = async (deckName: string) => {
@@ -46,28 +55,38 @@ export default function ManageDecksScreen() {
       await deckService.deleteDeck(deckName);
       try {
         await loadDecks();
-        showToast("success", "Deck deleted.");
+        showToast('success', 'Deck deleted.');
       } catch (error) {
-        showToast("warning", "Unable to load decks.");
+        await errorService.logError(
+          ErrorActionType.TOAST,
+          10,
+          'Unable to load decks.',
+          error
+        );
       }
     } catch (error) {
-      showToast("warning", "Unable to delete deck.");
+      await errorService.logError(
+        ErrorActionType.TOAST,
+        11,
+        'Unable to delete decks.',
+        error
+      );
     }
   };
 
   const confirmDelete = (deckName: string) => {
     Alert.alert(
-      "Delete Deck",
+      'Delete Deck',
       `Are you sure you want to delete the deck "${deckName}"?`,
       [
-        { text: "Cancel", style: "cancel" },
+        { text: 'Cancel', style: 'cancel' },
         {
-          text: "Delete",
+          text: 'Delete',
           onPress: () => deleteDeck(deckName),
-          style: "destructive",
+          style: 'destructive',
         },
       ],
-      { cancelable: false },
+      { cancelable: false }
     );
   };
 
@@ -76,24 +95,34 @@ export default function ManageDecksScreen() {
       await deckService.resetDecks();
       try {
         await loadDecks();
-        showToast("success", "Reset complete.");
+        showToast('success', 'Reset complete.');
       } catch (error) {
-        showToast("warning", "Unable to load decks.");
+        await errorService.logError(
+          ErrorActionType.TOAST,
+          13,
+          'Unable to load decks.',
+          error
+        );
       }
     } catch (error) {
-      showToast("warning", "Unable to reset decks.");
+      await errorService.logError(
+        ErrorActionType.TOAST,
+        14,
+        'Unable to reset decks.',
+        error
+      );
     }
   };
 
   const resetDecks = () => {
     Alert.alert(
-      "Reset Decks?",
+      'Reset Decks?',
       `Are you sure you reset to the default decks? This will delete all decks and statistics.`,
       [
-        { text: "Cancel", style: "cancel" },
-        { text: "Reset", onPress: () => doResetDecks(), style: "destructive" },
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Reset', onPress: () => doResetDecks(), style: 'destructive' },
       ],
-      { cancelable: false },
+      { cancelable: false }
     );
   };
 
@@ -101,7 +130,7 @@ export default function ManageDecksScreen() {
     <TouchableOpacity
       onPress={() =>
         router.navigate({
-          pathname: "./deckItems",
+          pathname: './deckItems',
           params: {
             deckName: item.deckName,
             categories: item.categories, // still string, never parsed
@@ -125,7 +154,7 @@ export default function ManageDecksScreen() {
             { backgroundColor: listButtonBackgroundColor },
           ]}
         >
-          {item.itemCount} items, Categories: {item.categories.join(", ")}
+          {item.itemCount} items, Categories: {item.categories.join(', ')}
         </ThemedText>
       </View>
     </TouchableOpacity>
@@ -137,7 +166,7 @@ export default function ManageDecksScreen() {
         style={[styles.backRightBtn, styles.backRightBtnLeft]}
         onPress={() =>
           router.navigate({
-            pathname: "./deckItems",
+            pathname: './deckItems',
             params: {
               deckName: item.deckName,
               categories: item.categories,
@@ -164,7 +193,7 @@ export default function ManageDecksScreen() {
           title="New Deck"
           fontSize={16}
           isTransparent={true}
-          onPress={() => router.navigate("./addNewDeck")}
+          onPress={() => router.navigate('./addNewDeck')}
         />
       }
     >
@@ -193,66 +222,66 @@ const styles = StyleSheet.create({
   deckItem: {
     padding: 12,
     borderRadius: 8,
-    justifyContent: "center",
+    justifyContent: 'center',
   },
   deckName: {
     fontSize: 18,
-    fontWeight: "bold",
-    textAlign: "left",
+    fontWeight: 'bold',
+    textAlign: 'left',
   },
   deckInfo: {
     fontSize: 14,
     marginTop: 4,
-    textAlign: "left",
+    textAlign: 'left',
   },
   rowFront: {
-    alignItems: "flex-start",
-    justifyContent: "center",
+    alignItems: 'flex-start',
+    justifyContent: 'center',
     height: 80,
     marginBottom: 10,
     borderRadius: 8,
-    overflow: "hidden",
+    overflow: 'hidden',
     paddingHorizontal: 16,
   },
   rowBack: {
-    alignItems: "center",
+    alignItems: 'center',
     flex: 1,
-    flexDirection: "row",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     paddingLeft: 15,
     marginBottom: 10,
     borderRadius: 8,
-    overflow: "hidden",
+    overflow: 'hidden',
   },
   backRightBtn: {
-    alignItems: "center",
+    alignItems: 'center',
     borderRadius: 8,
     bottom: 0,
-    justifyContent: "center",
-    position: "absolute",
+    justifyContent: 'center',
+    position: 'absolute',
     top: 0,
     width: 75,
   },
   backRightBtnLeft: {
-    backgroundColor: "blue",
+    backgroundColor: 'blue',
     right: 78,
   },
   backRightBtnRight: {
-    backgroundColor: "red",
+    backgroundColor: 'red',
     right: 0,
   },
   backTextWhite: {
-    color: "#FFF",
+    color: '#FFF',
   },
   listContent: {
     flexGrow: 1,
     paddingBottom: 20,
   },
   footer: {
-    alignSelf: "stretch",
+    alignSelf: 'stretch',
     padding: 16,
     borderTopWidth: 1,
-    position: "absolute",
+    position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,

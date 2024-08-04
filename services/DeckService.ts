@@ -3,15 +3,18 @@ import katakanaDeck from "../assets/decks/katakana.json";
 import nlpt5Deck from "../assets/decks/nlpt5.json";
 import nlpt5KanjiDeck from "../assets/decks/nlpt5-kanji.json";
 import { Deck, DeckSummary, DeckDb } from "../types/DeckTypes";
-import DBService from "./DBService";
+import { DBService } from "./DBService";
+import { ErrorService } from '../services/ErrorService';
+import { ErrorActionType } from '../types/ErrorTypes';
 
 type Cntr = {
   cnt: number;
 };
 
-class DeckService {
+export class DeckService {
   private static instance: DeckService;
   dbService = DBService.getInstance();
+  errorService = ErrorService.getInstance();
 
   public static getInstance(): DeckService {
     if (!DeckService.instance) {
@@ -27,7 +30,7 @@ class DeckService {
         await this.initializeDefaultDecks();
       }
     } catch (error) {
-      console.error("Error initializing decks: ", error);
+      await this.errorService.logError(ErrorActionType.CONSOLE, 32, 'Error initializing decks.', error);
     }
   }
 
@@ -42,7 +45,7 @@ class DeckService {
         count = item.cnt;
       }
     } catch (error) {
-      console.error("Error getting decks count: ", error);
+      await this.errorService.logError(ErrorActionType.CONSOLE, 32, 'Error getting decks count.', error);
     }
     return count;
   }
@@ -59,7 +62,7 @@ class DeckService {
         count = item.cnt;
       }
     } catch (error) {
-      console.error("Error getting decks count: ", error);
+      await this.errorService.logError(ErrorActionType.CONSOLE, 33, `Error getting deck ${deckName} count: `, error);
     }
     return count;
   }
@@ -80,7 +83,7 @@ class DeckService {
         );
       }
     } catch (error) {
-      console.error("Error initializing default decks: ", error);
+      await this.errorService.logError(ErrorActionType.CONSOLE, 34, 'Error initializing default decks', error);
     }
   }
 
@@ -93,7 +96,7 @@ class DeckService {
         [deckName],
       )) as DeckDb;
       if (!item) {
-        console.error("Failed to get deck - not found");
+        await this.errorService.logError(ErrorActionType.CONSOLE, 35, `Deck ${deckName} not found.`);
         return null;
       }
       deck = {
@@ -102,7 +105,7 @@ class DeckService {
         items: JSON.parse(item.items),
       };
     } catch (error) {
-      console.error(`Error getting deck: ${deckName}`, error);
+      await this.errorService.logError(ErrorActionType.CONSOLE, 36, `Error getting deck: ${deckName}.`, error);
     }
     return deck;
   }
@@ -114,7 +117,7 @@ class DeckService {
         "SELECT * from deck order by deckName",
       )) as DeckDb[];
       if (!items) {
-        console.error("Failed to get decks - not found");
+        await this.errorService.logError(ErrorActionType.CONSOLE, 37, "Failed to get decks - not found.");
         return summaries;
       }
 
@@ -128,7 +131,7 @@ class DeckService {
         });
       }
     } catch (error) {
-      console.error(`Error getting deck summaries`, error);
+      await this.errorService.logError(ErrorActionType.CONSOLE, 38, "Error getting deck summaries.");
     }
     return summaries;
   }
@@ -141,7 +144,7 @@ class DeckService {
     try {
       await this.addDeck(deckName, categories.join("|"), JSON.stringify(items));
     } catch (error) {
-      console.error("Error creating new deck: ", error);
+      await this.errorService.logError(ErrorActionType.CONSOLE, 39, "Error creating new deck.");
     }
   }
 
@@ -156,7 +159,7 @@ class DeckService {
         [deckName, categories, items],
       );
     } catch (error) {
-      console.error(`Failed to add deck ${deckName}`, error);
+      await this.errorService.logError(ErrorActionType.CONSOLE, 40, `Failed to add deck ${deckName}.`, error);
     }
   }
 
@@ -171,7 +174,7 @@ class DeckService {
         [categories, items, deckName],
       );
     } catch (error) {
-      console.error(`Failed to update deck ${deckName}`, error);
+      await this.errorService.logError(ErrorActionType.CONSOLE, 41, `Failed to update deck ${deckName}.`, error);
     }
   }
 
@@ -188,7 +191,7 @@ class DeckService {
         [deckName, deckName, deckName, deckName, deckName],
       );
     } catch (error) {
-      console.error(`Failed to delete deck ${deckName}`, error);
+      await this.errorService.logError(ErrorActionType.CONSOLE, 42, `Failed to delete deck ${deckName}.`, error);
     }
   }
 
@@ -197,7 +200,7 @@ class DeckService {
       await this.dbService.resetAll();
       await this.initDecks();
     } catch (error) {
-      console.error(`Failed to delete decks`, error);
+      await this.errorService.logError(ErrorActionType.CONSOLE, 43, 'Failed to reset decks.', error);
     }
   }
 
@@ -219,7 +222,7 @@ class DeckService {
         );
       }
     } catch (error) {
-      console.error("Error adding deck item: ", error);
+      await this.errorService.logError(ErrorActionType.CONSOLE, 44, 'Error adding deck item.', error);
     }
   }
 
@@ -235,7 +238,7 @@ class DeckService {
         );
       }
     } catch (error) {
-      console.error("Error deleting deck item: ", error);
+      await this.errorService.logError(ErrorActionType.CONSOLE, 45, 'Error deleting deck item.', error);
     }
   }
 
@@ -255,7 +258,7 @@ class DeckService {
         );
       }
     } catch (error) {
-      console.error("Error updating deck item: ", error);
+      await this.errorService.logError(ErrorActionType.CONSOLE, 46, 'Error updating deck item.', error);
     }
   }
 
@@ -278,7 +281,7 @@ class DeckService {
         ],
       );
     } catch (error) {
-      console.error(`Failed to change deck name ${oldName}/${newName}`, error);
+      await this.errorService.logError(ErrorActionType.CONSOLE, 47, 'Error to change deck name.', error);
     }
   }
 
@@ -311,14 +314,15 @@ class DeckService {
         ]);
       }
     } catch (error) {
-      console.error("Error changing category name: ", error);
+      await this.errorService.logError(ErrorActionType.CONSOLE, 48, 'Error changing category name.', error);
     }
   }
 
   async createDeck(deckName: string, csvData: string) {
     try {
+      // Validate the deck name
       if (!deckName.trim()) {
-        console.error("Deck name cannot be empty");
+        await this.errorService.logError(ErrorActionType.CONSOLE, 49, 'Deck name cannot be empty.');
         return;
       }
 
@@ -326,42 +330,47 @@ class DeckService {
         .trim()
         .split("\n")
         .filter((line) => line.trim() !== "");
+
+      // Validate CSV data has at least two lines
       if (lines.length < 2) {
-        // Need at least one row of categories and one row of data
-        console.error("CSV data is incomplete");
+        await this.errorService.logError(ErrorActionType.CONSOLE, 50, 'CSV data is incomplete.');
         return;
       }
 
+      // Process headers
       const headers = lines[0].split(",").map((header) => header.trim());
+
+      // Validate the first column
       if (headers[0] !== "text") {
-        console.error('The first column must be "text"');
+        await this.errorService.logError(ErrorActionType.CONSOLE, 51, 'The first column must be text.');
         return;
       }
 
       const categories = headers.slice(1);
 
-      const items = lines
-        .slice(1)
-        .map((line) => {
-          const values = line.split(",").map((value) => value.trim());
-          if (values.length !== headers.length) {
-            console.error("Mismatch in the number of categories");
-            return null;
-          }
-          return values;
-        })
-        .filter((item) => item !== null) as string[][];
+      // Process items with early exit on error
+      const items: string[][] = [];
+      for (let i = 1; i < lines.length; i++) {
+        const values = lines[i].split(",").map((value) => value.trim());
 
+        // Validate the number of values matches the number of headers
+        if (values.length !== headers.length) {
+          await this.errorService.logError(ErrorActionType.CONSOLE, 52, 'Mismatch in the number of categories');
+          return; // Exit early if mismatch is found
+        }
+        items.push(values);
+      }
+
+      // Validate there are items to process
       if (items.length === 0) {
-        console.error("Deck must have at least one item");
+        await this.errorService.logError(ErrorActionType.CONSOLE, 53, 'Deck must have at least one item');
         return;
       }
 
+      // Proceed with creating the new deck
       await this.newDeck(deckName, categories, items);
     } catch (error) {
-      console.error("Failed to create deck", error);
+      await this.errorService.logError(ErrorActionType.CONSOLE, 54, 'Failed to create deck.', error);
     }
   }
 }
-
-export default DeckService;

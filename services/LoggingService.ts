@@ -6,12 +6,15 @@ import {
   LogDeckSummary,
   DeckDetail,
 } from "../types/LoggingTypes";
-import DBService from "./DBService";
+import { DBService } from "./DBService";
+import { ErrorService } from '../services/ErrorService';
+import { ErrorActionType } from '../types/ErrorTypes';
 
-class LoggingService {
+export class LoggingService {
   private static instance: LoggingService;
 
   dbService = DBService.getInstance();
+  errorService = ErrorService.getInstance();
 
   public static getInstance(): LoggingService {
     if (!LoggingService.instance) {
@@ -22,6 +25,7 @@ class LoggingService {
 
   async clearAll() {
     try {
+
       await this.dbService.execAsync(`
         DELETE FROM game_detail;
         DELETE FROM game_summary;
@@ -30,8 +34,9 @@ class LoggingService {
       await AsyncStorage.removeItem("selectedDeck");
       await AsyncStorage.removeItem("selectedCategory");
       await AsyncStorage.removeItem("selectedDuration");
+      await this.errorService.logError(ErrorActionType.LOG, 15, 'Decks and storage reset.');
     } catch (error) {
-      console.error("Failed to clear all logs and storage", error);
+      await this.errorService.logError(ErrorActionType.CONSOLE, 16, 'Failed to clear all decks and storage.', error);
     }
   }
 
@@ -54,7 +59,7 @@ class LoggingService {
         [deckName],
       );
     } catch (error) {
-      console.error(`Failed to clear logs for deck ${deckName}`, error);
+      await this.errorService.logError(ErrorActionType.CONSOLE, 17, `Failed to clear logs and deck ${deckName}.`, error);
     }
   }
 
@@ -89,7 +94,7 @@ class LoggingService {
 
       return summary ? { summary, details } : null;
     } catch (error) {
-      console.error(`Failed to retrieve game log for gameId ${gameId}`, error);
+      await this.errorService.logError(ErrorActionType.CONSOLE, 18, `Failed to retrieve gameLog for gameId ${gameId}.`, error);
       return null;
     }
   }
@@ -111,7 +116,7 @@ class LoggingService {
 
       return summaries;
     } catch (error) {
-      console.error("Failed to retrieve game logs", error);
+      await this.errorService.logError(ErrorActionType.CONSOLE, 19, 'Failed to retrieve game logs.', error);
       return summaries;
     }
   }
@@ -140,11 +145,11 @@ class LoggingService {
       )) as GameSummary[];
       games = gameSummaries
         ? gameSummaries.map((item: any) => ({
-            ...item,
-            datetime: new Date(item.datetimeEnded * 1000)
-              .toLocaleString()
-              .replace(",", ""),
-          }))
+          ...item,
+          datetime: new Date(item.datetimeEnded * 1000)
+            .toLocaleString()
+            .replace(",", ""),
+        }))
         : [];
 
       const detailsResult = (await this.dbService.getAllAsync(
@@ -157,10 +162,7 @@ class LoggingService {
 
       return summary ? { summary, games, details } : null;
     } catch (error) {
-      console.error(
-        `Failed to retrieve deck summary for deck ${deckName}`,
-        error,
-      );
+      await this.errorService.logError(ErrorActionType.CONSOLE, 20, `Failed to retrieve deck summary for ${deckName}.`, error);
       return null;
     }
   }
@@ -265,7 +267,7 @@ class LoggingService {
         `DELETE FROM game_detail WHERE gameId NOT IN (SELECT id FROM game_summary ORDER BY id DESC LIMIT 200);`,
       );
     } catch (error) {
-      console.error("Failed to log game", error);
+      await this.errorService.logError(ErrorActionType.CONSOLE, 21, 'Failed to log game.', error);
     }
   }
 
@@ -288,9 +290,7 @@ class LoggingService {
       );
       return { deck, game_summary, game_detail, deck_summary, deck_detail };
     } catch (error) {
-      console.error("Failed to get debug data", error);
+      await this.errorService.logError(ErrorActionType.CONSOLE, 22, 'Failed toget debug data.', error);
     }
   }
 }
-
-export default LoggingService;

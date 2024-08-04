@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ScrollView, StyleSheet } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedScreen } from '@/components/ThemedScreen';
-import LoggingService from '../services/LoggingService';
+import { LoggingService } from '../services/LoggingService';
 
 export default function Debug() {
   const loggingService = LoggingService.getInstance();

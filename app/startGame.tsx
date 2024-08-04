@@ -1,30 +1,32 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef } from 'react';
 import {
   TextInput as RTextInput,
   StyleSheet,
   Alert,
   TouchableOpacity,
   Modal,
-} from "react-native";
-import { ThemedTextInput } from "@/components/ThemedTextInput";
-import { ThemedPressable } from "@/components/ThemedPressable";
-import { ThemedText } from "@/components/ThemedText";
-import { ThemedView } from "@/components/ThemedView";
-import { ThemedScreen } from "@/components/ThemedScreen";
-import { router } from "expo-router";
-import LoggingService from "../services/LoggingService";
-import DeckService from "../services/DeckService";
-import { Deck } from "../types/DeckTypes";
-import { TurnAnswer } from "../types/LoggingTypes";
-import Ionicons from "@expo/vector-icons/Ionicons";
-import { useLocalSearchParams } from "expo-router";
-import { useThemeColor } from "@/hooks/useThemeColor";
-import { showToast } from "@/components/ThemedToast";
+} from 'react-native';
+import { ThemedTextInput } from '@/components/ThemedTextInput';
+import { ThemedPressable } from '@/components/ThemedPressable';
+import { ThemedText } from '@/components/ThemedText';
+import { ThemedView } from '@/components/ThemedView';
+import { ThemedScreen } from '@/components/ThemedScreen';
+import { router } from 'expo-router';
+import { LoggingService } from '../services/LoggingService';
+import { DeckService } from '../services/DeckService';
+import { Deck } from '../types/DeckTypes';
+import { TurnAnswer } from '../types/LoggingTypes';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { useLocalSearchParams } from 'expo-router';
+import { useThemeColor } from '@/hooks/useThemeColor';
+import { ErrorService } from '../services/ErrorService';
+import { ErrorActionType } from '../types/ErrorTypes';
 
 type IoniconName = keyof typeof Ionicons.glyphMap;
 
 export default function StartGame() {
-  const inputBackgroundColor = useThemeColor({}, "inputBackground");
+  const errorService = ErrorService.getInstance();
+  const inputBackgroundColor = useThemeColor({}, 'inputBackground');
 
   const { deckName, category, duration } = useLocalSearchParams<{
     deckName: string;
@@ -35,7 +37,7 @@ export default function StartGame() {
   const [timeLeft, setTimeLeft] = useState(parseInt(duration));
   const [isPaused, setIsPaused] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [userResponse, setUserResponse] = useState("");
+  const [userResponse, setUserResponse] = useState('');
   const [totalShown, setTotalShown] = useState(0);
   const [numberCorrect, setNumberCorrect] = useState(0);
   const [turns, setTurns] = useState<TurnAnswer[]>([]);
@@ -62,20 +64,25 @@ export default function StartGame() {
         if (fetchedDeck) {
           setDeck(fetchedDeck);
           const randomizedNames = randomizeNames(
-            fetchedDeck.items.map((item) => item[0]),
+            fetchedDeck.items.map((item) => item[0])
           );
           setRandomizedTexts(randomizedNames);
           // Set the initial category based on the first randomized text
-          if (category === "Random") {
+          if (category === 'Random') {
             setCurrentCategory(
-              fetchedDeck.categories[randomizeCategoryIndex(fetchedDeck)],
+              fetchedDeck.categories[randomizeCategoryIndex(fetchedDeck)]
             );
           } else {
             setCurrentCategory(category);
           }
         }
       } catch (error) {
-        showToast("warning", "Unable to get the deck.");
+        await errorService.logError(
+          ErrorActionType.TOAST,
+          25,
+          'Unable to get deck.',
+          error
+        );
       }
     };
 
@@ -137,12 +144,12 @@ export default function StartGame() {
 
   const handleBackPress = () => {
     setIsPaused(true);
-    Alert.alert("Exit Game", "Going back will cancel this game. Exit game?", [
-      { text: "Cancel", onPress: () => setIsPaused(false) },
+    Alert.alert('Exit Game', 'Going back will cancel this game. Exit game?', [
+      { text: 'Cancel', onPress: () => setIsPaused(false) },
       {
-        text: "Exit",
-        onPress: () => router.navigate("/newGame"),
-        style: "destructive",
+        text: 'Exit',
+        onPress: () => router.navigate('/newGame'),
+        style: 'destructive',
       },
     ]);
   };
@@ -162,7 +169,7 @@ export default function StartGame() {
     const deckItem = deck.items.find((item) => item[0] === currentText);
     const answer = deckItem
       ? deckItem[deck.categories.indexOf(currentCategory) + 1]
-      : "";
+      : '';
 
     setTotalShown(totalShown + 1);
     setTurns([
@@ -170,9 +177,9 @@ export default function StartGame() {
       {
         text: currentText,
         category: currentCategory,
-        response: "",
+        response: '',
         isCorrect: false,
-        type: "skip",
+        type: 'skip',
         answer: answer,
       },
     ]);
@@ -201,14 +208,14 @@ export default function StartGame() {
         category: currentCategory,
         response: userResponse,
         isCorrect: isCorrect,
-        type: "save",
+        type: 'save',
         answer: answer,
       },
     ]);
-    setUserResponse("");
+    setUserResponse('');
     setResultIcon({
-      name: isCorrect ? "checkmark-outline" : "close-outline",
-      color: isCorrect ? "green" : "red",
+      name: isCorrect ? 'checkmark-outline' : 'close-outline',
+      color: isCorrect ? 'green' : 'red',
     });
     setTimeout(() => setResultIcon(null), 500);
     advanceToNextTurn();
@@ -227,7 +234,7 @@ export default function StartGame() {
       }
       return nextIndex;
     });
-    if (category === "Random")
+    if (category === 'Random')
       setCurrentCategory(deck.categories[randomizeCategoryIndex(deck)]);
     setTimeout(() => {
       textInputRef.current?.focus();
@@ -248,11 +255,16 @@ export default function StartGame() {
           turns: turnsForLogging,
         });
       } catch (error) {
-        showToast("warning", "Error logging game.");
+        await errorService.logError(
+          ErrorActionType.TOAST,
+          26,
+          'Error logging the game.',
+          error
+        );
       }
 
       router.navigate({
-        pathname: "./gameSummary",
+        pathname: './gameSummary',
         params: {
           deckName,
           category,
@@ -266,8 +278,8 @@ export default function StartGame() {
   const formatTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
-    return `${minutes < 10 ? "0" : ""}${minutes}:${
-      remainingSeconds < 10 ? "0" : ""
+    return `${minutes < 10 ? '0' : ''}${minutes}:${
+      remainingSeconds < 10 ? '0' : ''
     }${remainingSeconds}`;
   };
 
@@ -374,34 +386,34 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between", // Align children within header
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between', // Align children within header
   },
   iconContainer: {
-    position: "relative", // Use relative positioning within header
+    position: 'relative', // Use relative positioning within header
     marginHorizontal: 10, // Adjust positioning
   },
   stats: {
     fontSize: 18,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
   resultIcon: {
     marginLeft: 10,
   },
   timer: {
     fontSize: 48,
-    textAlign: "center",
+    textAlign: 'center',
     marginVertical: 10, // Ensure sufficient space around timer
   },
   itemText: {
     fontSize: 24,
-    textAlign: "center",
+    textAlign: 'center',
     marginVertical: 10,
   },
   categoryText: {
     fontSize: 18,
-    textAlign: "center",
+    textAlign: 'center',
     marginVertical: 10,
   },
   input: {
@@ -411,16 +423,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
   },
   buttonContainer: {
-    flexDirection: "row",
-    justifyContent: "space-around",
+    flexDirection: 'row',
+    justifyContent: 'space-around',
     marginVertical: 10,
   },
   modal: {
     flex: 1,
-    alignItems: "center",
+    alignItems: 'center',
   },
   modalOverlay: {
-    position: "absolute",
+    position: 'absolute',
     top: 0,
     bottom: 0,
     left: 0,
@@ -430,17 +442,17 @@ const styles = StyleSheet.create({
     fontSize: 20,
   },
   overlay: {
-    position: "absolute",
+    position: 'absolute',
     top: 0,
     left: 0,
     right: 0,
     bottom: 0,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     zIndex: 1000,
   },
   gameOverText: {
     fontSize: 48,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
 });

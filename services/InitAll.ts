@@ -1,8 +1,8 @@
-import DeckService from "./DeckService";
-import DBService from "./DBService";
+import { DeckService } from "./DeckService";
+import { DBService } from "./DBService";
+import { LoggingService } from "./LoggingService";
 
-import LoggingService from "./LoggingService";
-class InitAll {
+export class InitAll {
   dbService = DBService.getInstance();
   deckService = DeckService.getInstance();
 
@@ -11,5 +11,3 @@ class InitAll {
     await this.deckService.initDecks();
   }
 }
-
-export default InitAll;

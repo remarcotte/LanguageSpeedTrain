@@ -1,18 +1,21 @@
-import React, { useState } from "react";
-import { ThemedTextInput } from "@/components/ThemedTextInput";
-import { ThemedText } from "@/components/ThemedText";
-import { ThemedView } from "@/components/ThemedView";
-import { ThemedScrollView } from "@/components/ThemedScrollView";
-import { ThemedScreen } from "@/components/ThemedScreen";
-import { StyleSheet } from "react-native";
-import { ThemedPressable } from "@/components/ThemedPressable";
-import { router } from "expo-router";
-import DeckService from "../services/DeckService";
-import { useLocalSearchParams } from "expo-router";
-import { showToast } from "@/components/ThemedToast";
+import React, { useState } from 'react';
+import { ThemedTextInput } from '@/components/ThemedTextInput';
+import { ThemedText } from '@/components/ThemedText';
+import { ThemedView } from '@/components/ThemedView';
+import { ThemedScrollView } from '@/components/ThemedScrollView';
+import { ThemedScreen } from '@/components/ThemedScreen';
+import { StyleSheet } from 'react-native';
+import { ThemedPressable } from '@/components/ThemedPressable';
+import { router } from 'expo-router';
+import { DeckService } from '../services/DeckService';
+import { useLocalSearchParams } from 'expo-router';
+import { showToast } from '@/components/ThemedToast';
+import { ErrorService } from '../services/ErrorService';
+import { ErrorActionType } from '../types/ErrorTypes';
 
 export default function EditDeckItem() {
   const deckService = DeckService.getInstance();
+  const errorService = ErrorService.getInstance();
 
   const { deckName, categoriesStr, itemStr } = useLocalSearchParams<{
     deckName: string;
@@ -20,22 +23,22 @@ export default function EditDeckItem() {
     itemStr: string;
   }>();
 
-  const categories = categoriesStr.split(",");
+  const categories = categoriesStr.split(',');
   const item = itemStr ? JSON.parse(itemStr) : undefined;
 
-  const [text, setText] = useState(item?.text || "");
+  const [text, setText] = useState(item?.text || '');
   const [categoryValues, setCategoryValues] = useState<string[]>(
-    item ? item.categories : categories.map(() => ""),
+    item ? item.categories : categories.map(() => '')
   );
 
   const handleSave = async () => {
     try {
       if (!text) {
-        showToast("danger", "Text is required.");
+        showToast('danger', 'Text is required.');
         return;
       }
-      if (categoryValues.includes("")) {
-        showToast("danger", "All category fields are required.");
+      if (categoryValues.includes('')) {
+        showToast('danger', 'All category fields are required.');
         return;
       }
 
@@ -43,15 +46,17 @@ export default function EditDeckItem() {
 
       if (item) {
         await deckService.updateDeckItem(deckName, item.text, newItem);
-        showToast("success", "Item updated.");
+        showToast('success', 'Item updated.');
       } else {
         await deckService.addDeckItem(deckName, newItem);
       }
       router.back();
     } catch (error) {
-      showToast(
-        "warning",
-        error instanceof Error ? error.message : "An unexpected error occurred",
+      await errorService.logError(
+        ErrorActionType.TOAST,
+        7,
+        'Error saving deck item.',
+        error
       );
     }
   };
@@ -93,12 +98,12 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 20,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     marginBottom: 8,
   },
   input: {
     height: 40,
-    borderColor: "gray",
+    borderColor: 'gray',
     borderWidth: 1,
     marginBottom: 16,
     paddingLeft: 8,
