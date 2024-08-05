@@ -1,5 +1,7 @@
-import React from 'react';
-import { Pressable, Text, StyleSheet } from 'react-native';
+// ThemedSwipeActionButton.tsx
+
+import React from "react";
+import { Pressable, Text, StyleSheet } from "react-native";
 
 type ThemedSwipeActionButtonProps = {
   title: string;
@@ -21,15 +23,15 @@ export const ThemedSwipeActionButton: React.FC<
 
 const styles = StyleSheet.create({
   button: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: 8,
-    justifyContent: 'center',
-    position: 'absolute',
+    justifyContent: "center",
+    position: "absolute",
     bottom: 0,
     top: 0,
     width: 75,
   },
   text: {
-    color: '#FFF',
+    color: "#FFF",
   },
 });

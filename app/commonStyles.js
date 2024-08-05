@@ -1,8 +1,8 @@
 // commonStyles.js
-import { StyleSheet } from 'react-native';
+import { StyleSheet } from "react-native";
 
 export const commonStyles = StyleSheet.create({
-    misc: {
-        padding: 16,
-    },
+  misc: {
+    padding: 16,
+  },
 });

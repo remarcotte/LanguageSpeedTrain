@@ -1,6 +1,9 @@
-import { ErrorLog, ErrorActionType } from '../types/ErrorTypes'; // Import error-related types
+// ErrorService.ts
+
+import { showToast } from "@/components/ThemedToast"; // Import custom toast component
+
 import { DBService } from "./DBService"; // Import database service
-import { showToast } from '@/components/ThemedToast'; // Import custom toast component
+import { ErrorLog, ErrorActionType } from "@/types/ErrorTypes"; // Import error-related types
 
 // Singleton class for managing error logging and actions
 export class ErrorService {
@@ -26,10 +29,10 @@ export class ErrorService {
   private processError(error: unknown): string {
     if (error instanceof Error) {
       return error.message.slice(0, 400); // Limit to 400 characters
-    } else if (typeof error === 'string') {
+    } else if (typeof error === "string") {
       return error.slice(0, 400); // Limit to 400 characters
     }
-    return ''; // Return empty string for other types
+    return ""; // Return empty string for other types
   }
 
   // Handle different error action types
@@ -37,7 +40,7 @@ export class ErrorService {
     actionType: ErrorActionType,
     errorId: number,
     message: string,
-    processedError: string
+    processedError: string,
   ) {
     switch (actionType) {
       case ErrorActionType.CONSOLE:
@@ -47,12 +50,12 @@ export class ErrorService {
       case ErrorActionType.TOAST:
       case ErrorActionType.TOASTONLY:
         // Show a toast notification
-        showToast('warning', message);
+        showToast("warning", message);
         break;
       case ErrorActionType.BOTH:
         // Log error to the console and show a toast notification
         console.error(`Error ${errorId}: ${message} - ${processedError}`);
-        showToast('warning', message);
+        showToast("warning", message);
         break;
       // LOG action does not require additional handling
     }
@@ -63,7 +66,7 @@ export class ErrorService {
     actionType: ErrorActionType,
     errorId: number,
     message: string,
-    error: any = ''
+    error: any = "",
   ) {
     try {
       const processedError = this.processError(error);
@@ -73,7 +76,7 @@ export class ErrorService {
         await this.dbService.runAsync(
           `INSERT INTO errors (errorId, error, message)
           VALUES (?, ?, ?);`,
-          [errorId, message, processedError]
+          [errorId, message, processedError],
         );
       }
 
@@ -92,7 +95,7 @@ export class ErrorService {
   private async pruneErrorLogs() {
     try {
       await this.dbService.execAsync(
-        `DELETE FROM errors WHERE id NOT IN (SELECT id FROM errors ORDER BY id DESC LIMIT 200);`
+        `DELETE FROM errors WHERE id NOT IN (SELECT id FROM errors ORDER BY id DESC LIMIT 200);`,
       );
     } catch (error) {
       console.error("Failed to prune error logs", error);
@@ -104,7 +107,7 @@ export class ErrorService {
     let logs: ErrorLog[] = [];
 
     const errors = await this.dbService.getAllAsync<ErrorLog>(
-      `select * from errors order by id desc;`
+      `select * from errors order by id desc;`,
     );
 
     if (errors && errors.length > 0) {

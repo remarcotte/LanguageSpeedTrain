@@ -1,8 +1,10 @@
+// LoggingTypes.ts
+
 // Summary of a completed game: the options and basic statistics
 export type GameSummary = {
   id: number;
   datetimeEnded: number;
-  datetime?: string;  // for display. not persisted. populated after fetch from database
+  datetime?: string; // for display. not persisted. populated after fetch from database
   deck: string;
   category: string;
   duration: number;

@@ -1,10 +1,12 @@
+// deckItems.tsx
+
 import React, { useState, useCallback } from 'react';
 import { Alert, StyleSheet } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native';
 
 import { useThemeColor } from '@/hooks/useThemeColor';
-import { showToast } from '@/components/ThemedToast';
+
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedScreen } from '@/components/ThemedScreen';
@@ -13,9 +15,9 @@ import { ThemedSwipeableList } from '@/components/ThemedSwipeableList';
 import { ThemedSwipeableListItem } from '@/components/ThemedSwipeableListItem';
 import { ThemedSwipeActionButton } from '@/components/ThemedSwipeActionButton';
 
-import { DeckService } from '../services/DeckService';
-import { ErrorService } from '../services/ErrorService';
-import { ErrorActionType } from '../types/ErrorTypes';
+import { DeckService } from '@/services/DeckService';
+import { ErrorService } from '@/services/ErrorService';
+import { ErrorActionType } from '@/types/ErrorTypes';
 
 // Interface for deck items
 interface DeckItem {
@@ -250,15 +252,6 @@ export default function DeckItems() {
 }
 
 const styles = StyleSheet.create({
-  listContent: {
-    flexGrow: 1,
-    paddingBottom: 20,
-  },
-  item: {
-    padding: 12,
-    borderRadius: 8,
-    justifyContent: 'center',
-  },
   text: {
     fontSize: 18,
     fontWeight: 'bold',
@@ -284,8 +277,5 @@ const styles = StyleSheet.create({
   },
   backRightBtnRight: {
     right: 0,
-  },
-  backTextWhite: {
-    color: '#FFF',
   },
 });

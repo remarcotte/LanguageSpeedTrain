@@ -1,16 +1,18 @@
-import React, { useState } from 'react';
-import { Alert, StyleSheet, ActivityIndicator } from 'react-native'; // Importing necessary components and modules
-import { router } from 'expo-router';
-import { showToast } from '@/components/ThemedToast'; // Custom toast component
+// about.tsx
 
-import { ThemedText } from '@/components/ThemedText'; // Themed text component for consistent styling
-import { ThemedView } from '@/components/ThemedView'; // Themed view component for layout
-import { ThemedPressable } from '@/components/ThemedPressable'; // Themed pressable component for buttons
-import { ThemedScreen } from '@/components/ThemedScreen'; // Themed screen component
+import React, { useState } from "react";
+import { Alert, StyleSheet, ActivityIndicator } from "react-native"; // Importing necessary components and modules
+import { router } from "expo-router";
 
-import { DeckService } from '../services/DeckService'; // Service for managing decks
-import { ErrorService } from '../services/ErrorService'; // Service for logging errors
-import { ErrorActionType } from '../types/ErrorTypes'; // Enum for error action types
+import { showToast } from "@/components/ThemedToast"; // Custom toast component
+import { ThemedText } from "@/components/ThemedText"; // Themed text component for consistent styling
+import { ThemedView } from "@/components/ThemedView"; // Themed view component for layout
+import { ThemedPressable } from "@/components/ThemedPressable"; // Themed pressable component for buttons
+import { ThemedScreen } from "@/components/ThemedScreen"; // Themed screen component
+
+import { DeckService } from "@/services/DeckService"; // Service for managing decks
+import { ErrorService } from "@/services/ErrorService"; // Service for logging errors
+import { ErrorActionType } from "@/types/ErrorTypes"; // Enum for error action types
 
 const About = () => {
   const deckService = DeckService.getInstance(); // Singleton instance of DeckService
@@ -24,14 +26,14 @@ const About = () => {
     setLoading(true); // Start loading
     try {
       await deckService.resetDecks(); // Reset decks and data
-      showToast('success', 'App data has been reset.'); // Show success toast
+      showToast("success", "App data has been reset."); // Show success toast
     } catch (error) {
       // Log the error and show a toast notification
       await errorService.logError(
         ErrorActionType.TOAST,
         1,
-        'Failed to reset app data.',
-        error
+        "Failed to reset app data.",
+        error,
       );
     } finally {
       setLoading(false); // Stop loading
@@ -41,19 +43,19 @@ const About = () => {
   // Function to confirm the reset action
   const verifyReset = () => {
     Alert.alert(
-      'Reset All Data?', // Title
-      'Resetting all data deletes decks and statistics. Default decks will be loaded. Continue?', // Message
+      "Reset All Data?", // Title
+      "Resetting all data deletes decks and statistics. Default decks will be loaded. Continue?", // Message
       [
-        { text: 'Cancel', style: 'cancel' }, // Cancel button
+        { text: "Cancel", style: "cancel" }, // Cancel button
         {
-          text: 'Continue',
+          text: "Continue",
           onPress: () => {
             resetAllData(); // Call resetAllData if the user confirms
           },
-          style: 'destructive', // Destructive style indicates the action is irreversible
+          style: "destructive", // Destructive style indicates the action is irreversible
         },
       ],
-      { cancelable: false } // Prevent dismissing the alert by tapping outside
+      { cancelable: false }, // Prevent dismissing the alert by tapping outside
     );
   };
 
@@ -78,7 +80,7 @@ const About = () => {
         </ThemedText>
         <ThemedPressable
           title="View Errors"
-          onPress={() => router.navigate('/errors')} // Navigate to errors screen
+          onPress={() => router.navigate("/errors")} // Navigate to errors screen
           fontSize={20}
           style={styles.errorButton}
         />
@@ -115,7 +117,7 @@ const styles = StyleSheet.create({
   },
   copyright: {
     marginTop: 50,
-    textAlign: 'center',
+    textAlign: "center",
   },
   errorButton: {
     marginHorizontal: 80,
@@ -124,16 +126,16 @@ const styles = StyleSheet.create({
   footer: {
     padding: 16,
     borderTopWidth: 1,
-    borderTopColor: '#ddd',
-    position: 'absolute',
+    borderTopColor: "#ddd",
+    position: "absolute",
     bottom: 0,
     left: 0,
     right: 0,
   },
   loader: {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
+    position: "absolute",
+    top: "50%",
+    left: "50%",
     marginTop: -20,
     marginLeft: -20,
   },

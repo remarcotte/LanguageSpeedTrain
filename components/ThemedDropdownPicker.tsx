@@ -1,10 +1,13 @@
-import React, { useEffect, useMemo } from 'react';
+// ThemedDropdownPicker.tsx
+
+import React, { useEffect, useCallback } from "react";
 import DropDownPicker, {
   DropDownPickerProps,
-} from 'react-native-dropdown-picker';
-import { Ionicons } from '@expo/vector-icons';
-import { useThemeColor } from '@/hooks/useThemeColor';
-import { ThemedText } from '@/components/ThemedText';
+} from "react-native-dropdown-picker";
+import { Ionicons } from "@expo/vector-icons";
+
+import { useThemeColor } from "@/hooks/useThemeColor";
+import { ThemedText } from "@/components/ThemedText";
 
 // Define props for ThemedDropdownPicker, extending DropDownPickerProps
 type ThemedDropdownPickerProps = DropDownPickerProps<any> & {
@@ -34,40 +37,36 @@ export const ThemedDropdownPicker: React.FC<ThemedDropdownPickerProps> = ({
   lightColor,
   darkColor,
   iconSize = 18, // Default size for icons
-  emptyListText = 'No items available', // Default text for empty list
-  items,
+  emptyListText = "No items available", // Default text for empty list
+  items = [], // Ensure items defaults to an empty array
   setValue,
   value,
   ...props
 }) => {
   // Use the provided colors if available, otherwise fallback to theme colors
-  const backgroundColor = useMemo(
-    () =>
-      useThemeColor({ light: lightColor, dark: darkColor }, 'inputBackground'),
-    [lightColor, darkColor]
+  const backgroundColor = useThemeColor(
+    { light: lightColor, dark: darkColor },
+    "inputBackground",
   );
 
-  const color = useMemo(
-    () => useThemeColor({ light: lightColor, dark: darkColor }, 'text'),
-    [lightColor, darkColor]
-  );
+  const color = useThemeColor({ light: lightColor, dark: darkColor }, "text");
 
   // Handle single item selection automatically if only one item is available
-  const handleSingleItemSelection = () => {
+  const handleSingleItemSelection = useCallback(() => {
     if (items.length === 1 && setValue) {
       setValue(() => items[0].value);
     }
-  };
+  }, [items, setValue]);
 
   // Use effect to handle single item selection
   useEffect(() => {
     handleSingleItemSelection();
-  }, [items, setValue]);
+  }, [handleSingleItemSelection]);
 
   // Display empty list text if no items are available
   if (items.length === 0) {
     return (
-      <ThemedText style={[{ textAlign: 'center', fontSize: 16 }, textStyle]}>
+      <ThemedText style={[{ textAlign: "center", fontSize: 16 }, textStyle]}>
         {emptyListText}
       </ThemedText>
     );
@@ -76,7 +75,7 @@ export const ThemedDropdownPicker: React.FC<ThemedDropdownPickerProps> = ({
   // Display single item text if only one item is available
   if (items.length === 1) {
     return (
-      <ThemedText style={[{ textAlign: 'center', fontSize: 16 }, textStyle]}>
+      <ThemedText style={[{ textAlign: "center", fontSize: 16 }, textStyle]}>
         {items[0].label}
       </ThemedText>
     );

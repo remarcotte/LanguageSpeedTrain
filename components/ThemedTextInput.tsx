@@ -1,11 +1,13 @@
-import React, { forwardRef } from 'react';
+// ThemedTextInput.tsx
+
+import React, { forwardRef } from "react";
 import {
   TextInput as RNTextInput,
   TextInputProps,
   StyleSheet,
-} from 'react-native';
+} from "react-native";
 
-import { useThemeColor } from '@/hooks/useThemeColor';
+import { useThemeColor } from "@/hooks/useThemeColor";
 
 // Define props for ThemedTextInput, extending TextInputProps and adding optional theme colors
 export type ThemedTextInputProps = TextInputProps & {
@@ -17,15 +19,15 @@ export type ThemedTextInputProps = TextInputProps & {
 export const ThemedTextInput = forwardRef<RNTextInput, ThemedTextInputProps>(
   (
     { style = {}, lightColor, darkColor, ...props }, // Default style to an empty object
-    ref // Typed ref for RNTextInput
+    ref, // Typed ref for RNTextInput
   ) => {
     // Get text color based on theme
-    const color = useThemeColor({ light: lightColor, dark: darkColor }, 'text');
+    const color = useThemeColor({ light: lightColor, dark: darkColor }, "text");
 
     // Get background color based on theme
     const background = useThemeColor(
       { light: lightColor, dark: darkColor },
-      'inputBackground'
+      "inputBackground",
     );
 
     return (
@@ -40,7 +42,7 @@ export const ThemedTextInput = forwardRef<RNTextInput, ThemedTextInputProps>(
         {...props} // Spread additional props to TextInput
       />
     );
-  }
+  },
 );
 
 const styles = StyleSheet.create({

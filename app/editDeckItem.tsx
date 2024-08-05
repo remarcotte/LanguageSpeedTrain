@@ -1,18 +1,20 @@
-import React, { useState, useCallback } from 'react';
-import { StyleSheet } from 'react-native';
-import { router, useLocalSearchParams } from 'expo-router'; // Combined imports for better readability
-import { showToast } from '@/components/ThemedToast';
+// editDeckItem.tsx
 
-import { ThemedTextInput } from '@/components/ThemedTextInput';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
-import { ThemedScrollView } from '@/components/ThemedScrollView';
-import { ThemedScreen } from '@/components/ThemedScreen';
-import { ThemedPressable } from '@/components/ThemedPressable';
+import React, { useState, useCallback } from "react";
+import { StyleSheet } from "react-native";
+import { router, useLocalSearchParams } from "expo-router"; // Combined imports for better readability
 
-import { DeckService } from '../services/DeckService';
-import { ErrorService } from '../services/ErrorService';
-import { ErrorActionType } from '../types/ErrorTypes';
+import { showToast } from "@/components/ThemedToast";
+import { ThemedTextInput } from "@/components/ThemedTextInput";
+import { ThemedText } from "@/components/ThemedText";
+import { ThemedView } from "@/components/ThemedView";
+import { ThemedScrollView } from "@/components/ThemedScrollView";
+import { ThemedScreen } from "@/components/ThemedScreen";
+import { ThemedPressable } from "@/components/ThemedPressable";
+
+import { DeckService } from "@/services/DeckService";
+import { ErrorService } from "@/services/ErrorService";
+import { ErrorActionType } from "@/types/ErrorTypes";
 
 export default function EditDeckItem() {
   // Get singleton instances of services
@@ -27,17 +29,17 @@ export default function EditDeckItem() {
   }>();
 
   // Split categories string into an array
-  const categories = categoriesStr.split(',');
+  const categories = categoriesStr.split(",");
 
   // Parse item string into an object if available
   const item = itemStr ? JSON.parse(itemStr) : undefined;
 
   // State for the main text field
-  const [text, setText] = useState(item?.text || '');
+  const [text, setText] = useState(item?.text || "");
 
   // State for category values
   const [categoryValues, setCategoryValues] = useState<string[]>(
-    item ? item.categories : categories.map(() => '')
+    item ? item.categories : categories.map(() => ""),
   );
 
   // Handle saving the item
@@ -45,13 +47,13 @@ export default function EditDeckItem() {
     try {
       // Validate that the text field is not empty
       if (!text) {
-        showToast('danger', 'Text is required.');
+        showToast("danger", "Text is required.");
         return;
       }
 
       // Validate that no category fields are empty
-      if (categoryValues.includes('')) {
-        showToast('danger', 'All category fields are required.');
+      if (categoryValues.includes("")) {
+        showToast("danger", "All category fields are required.");
         return;
       }
 
@@ -61,10 +63,10 @@ export default function EditDeckItem() {
       // Update or add item based on the presence of an existing item
       if (item) {
         await deckService.updateDeckItem(deckName, item.text, newItem);
-        showToast('success', 'Item updated.');
+        showToast("success", "Item updated.");
       } else {
         await deckService.addDeckItem(deckName, newItem);
-        showToast('success', 'Item added.'); // Show toast for item addition
+        showToast("success", "Item added."); // Show toast for item addition
       }
 
       // Navigate back after saving
@@ -74,8 +76,8 @@ export default function EditDeckItem() {
       await errorService.logError(
         ErrorActionType.TOAST,
         7,
-        'Error saving deck item.',
-        error
+        "Error saving deck item.",
+        error,
       );
     }
   }, [text, categoryValues, deckName, item, deckService, errorService]);
@@ -87,7 +89,7 @@ export default function EditDeckItem() {
       newCategoryValues[index] = value;
       setCategoryValues(newCategoryValues);
     },
-    [categoryValues]
+    [categoryValues],
   );
 
   return (
@@ -126,12 +128,12 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 8,
   },
   input: {
     height: 40,
-    borderColor: 'gray',
+    borderColor: "gray",
     borderWidth: 1,
     marginBottom: 16,
     paddingLeft: 8,

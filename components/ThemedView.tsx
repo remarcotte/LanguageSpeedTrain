@@ -1,6 +1,8 @@
-import { View, type ViewProps } from 'react-native';
+// ThemedView.tsx
 
-import { useThemeColor } from '@/hooks/useThemeColor';
+import { View, type ViewProps } from "react-native";
+
+import { useThemeColor } from "@/hooks/useThemeColor";
 
 // Define the props for ThemedView, extending ViewProps to include optional theme colors
 export type ThemedViewProps = ViewProps & {
@@ -18,7 +20,7 @@ export function ThemedView({
   // Determine the background color using the theme colors provided
   const backgroundColor = useThemeColor(
     { light: lightColor, dark: darkColor }, // Theme colors for light and dark modes
-    'background' // Default theme key
+    "background", // Default theme key
   );
 
   // Render a View component with the calculated background color and additional styles/props

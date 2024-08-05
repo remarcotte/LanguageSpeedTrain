@@ -1,18 +1,22 @@
-import React from 'react';
-import { StyleSheet } from 'react-native';
-import { ThemedView } from '@/components/ThemedView';
-import { BarChart } from 'react-native-chart-kit';
-import { Dimensions } from 'react-native';
-import { useThemeColor } from '@/hooks/useThemeColor';
+// ThemedHistogram.tsx
+
+import React from "react";
+import { StyleSheet } from "react-native";
+import { BarChart } from "react-native-chart-kit";
+import { Dimensions } from "react-native";
+
+import { useThemeColor } from "@/hooks/useThemeColor";
+
+import { ThemedView } from "@/components/ThemedView";
 
 // Get the width of the device screen
-const screenWidth = Dimensions.get('window').width;
+const screenWidth = Dimensions.get("window").width;
 
 // SimpleHistogram component to render a themed bar chart
 export function SimpleHistogram({ data }: { data: number[] }) {
   // Fetch theme colors for chart styling
-  const chartBackgroundColor = useThemeColor({}, 'chartBackground');
-  const chartTextColor = useThemeColor({}, 'chartText');
+  const chartBackgroundColor = useThemeColor({}, "chartBackground");
+  const chartTextColor = useThemeColor({}, "chartText");
 
   // Calculate maximum and minimum values from data
   const maxDataValue = Math.max(...data);
@@ -40,19 +44,19 @@ export function SimpleHistogram({ data }: { data: number[] }) {
       borderRadius: 16, // Rounded corners for the chart
     },
     propsForDots: {
-      r: '6', // Radius for data point dots
-      strokeWidth: '2', // Width of the stroke around dots
+      r: "6", // Radius for data point dots
+      strokeWidth: "2", // Width of the stroke around dots
       stroke: chartTextColor, // Stroke color for dots
     },
     formatYLabel: (label: string | number) => {
       const numericLabel = Number(label);
       if (numericLabel === 0) {
-        return ''; // Remove the "0" label
+        return ""; // Remove the "0" label
       }
-      return '';
+      return "";
     },
     propsForBackgroundLines: {
-      stroke: 'transparent', // Make the guideline transparent
+      stroke: "transparent", // Make the guideline transparent
     },
     propsForHorizontalLabels: {
       stroke: chartTextColor, // Solid line for horizontal axis
@@ -84,13 +88,13 @@ export function SimpleHistogram({ data }: { data: number[] }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   container2: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     marginLeft: -80, // Adjust the left margin
   },
   chart: {

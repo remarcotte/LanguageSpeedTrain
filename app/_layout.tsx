@@ -1,5 +1,8 @@
+// _layout.tsx
+
 import { Stack } from "expo-router";
-import { ThemedPressable } from "../components/ThemedPressable";
+
+import { ThemedPressable } from "@/components/ThemedPressable";
 import { ThemedToast } from "@/components/ThemedToast";
 
 export default function Layout() {

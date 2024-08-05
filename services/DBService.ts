@@ -1,5 +1,8 @@
+// DBService.ts
+
 import * as SQLite from "expo-sqlite"; // Importing SQLite for database operations
-import * as Schema from '../constants/Schema.js'; // Importing database schema constants
+
+import * as Schema from "@/constants/Schema.js"; // Importing database schema constants
 
 // Singleton class for managing database operations
 export class DBService {
@@ -80,8 +83,6 @@ export class DBService {
 
   // Convert a Unix timestamp to a readable string format
   dbDateToString(dateStr: number): string {
-    return new Date(dateStr * 1000)
-      .toLocaleString()
-      .replace(",", "");
+    return new Date(dateStr * 1000).toLocaleString().replace(",", "");
   }
 }

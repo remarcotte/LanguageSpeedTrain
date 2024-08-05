@@ -1,11 +1,13 @@
+// manageDecks.tsx
+
 import React, { useState, useCallback } from 'react';
 import { Alert, StyleSheet } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { router } from 'expo-router';
 
-import { showToast } from '@/components/ThemedToast';
 import { useThemeColor } from '@/hooks/useThemeColor';
 
+import { showToast } from '@/components/ThemedToast';
 import { ThemedPressable } from '@/components/ThemedPressable';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
@@ -14,10 +16,10 @@ import { ThemedSwipeableList } from '@/components/ThemedSwipeableList';
 import { ThemedSwipeActionButton } from '@/components/ThemedSwipeActionButton';
 import { ThemedSwipeableListItem } from '@/components/ThemedSwipeableListItem';
 
-import { DeckService } from '../services/DeckService';
-import { DeckSummary } from '../types/DeckTypes';
-import { ErrorService } from '../services/ErrorService';
-import { ErrorActionType } from '../types/ErrorTypes';
+import { DeckService } from '@/services/DeckService';
+import { DeckSummary } from '@/types/DeckTypes';
+import { ErrorService } from '@/services/ErrorService';
+import { ErrorActionType } from '@/types/ErrorTypes';
 
 export default function ManageDecks() {
   // Create instances of deck and error services
@@ -219,11 +221,6 @@ export default function ManageDecks() {
 }
 
 const styles = StyleSheet.create({
-  deckItem: {
-    padding: 12,
-    borderRadius: 8,
-    justifyContent: 'center',
-  },
   deckName: {
     fontSize: 18,
     fontWeight: 'bold',
@@ -233,15 +230,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginTop: 4,
     textAlign: 'left',
-  },
-  rowFront: {
-    alignItems: 'flex-start',
-    justifyContent: 'center',
-    height: 80,
-    marginBottom: 10,
-    borderRadius: 8,
-    overflow: 'hidden',
-    paddingHorizontal: 16,
   },
   rowBack: {
     alignItems: 'center',
@@ -253,27 +241,11 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     overflow: 'hidden',
   },
-  backRightBtn: {
-    alignItems: 'center',
-    borderRadius: 8,
-    bottom: 0,
-    justifyContent: 'center',
-    position: 'absolute',
-    top: 0,
-    width: 75,
-  },
   backRightBtnLeft: {
     right: 78,
   },
   backRightBtnRight: {
     right: 0,
-  },
-  backTextWhite: {
-    color: '#FFF',
-  },
-  listContent: {
-    flexGrow: 1,
-    paddingBottom: 20,
   },
   footer: {
     alignSelf: 'stretch',

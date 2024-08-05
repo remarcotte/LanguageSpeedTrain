@@ -1,3 +1,5 @@
+// Schema.js
+
 // errors or extremely significan events are logged to errors.
 // This table should be small. It will remain small as errors are
 // pruned to keep only the last N (initially 200) when new errors

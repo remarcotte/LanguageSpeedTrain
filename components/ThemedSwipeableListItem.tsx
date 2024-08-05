@@ -1,13 +1,13 @@
 // ThemedSwipeableListItem.tsx
 
-import React from 'react';
+import React from "react";
 import {
   TouchableOpacity,
   View,
   StyleSheet,
   StyleProp,
   ViewStyle,
-} from 'react-native';
+} from "react-native";
 
 export interface ThemedSwipeableListItemProps {
   children: React.ReactNode;
@@ -36,11 +36,11 @@ const styles = StyleSheet.create({
   item: {
     padding: 12,
     borderRadius: 8,
-    justifyContent: 'center',
+    justifyContent: "center",
     marginBottom: 10,
   },
   content: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: "center",
   },
 });

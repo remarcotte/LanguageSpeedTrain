@@ -1,3 +1,5 @@
+// DeckTypes.ts
+
 // A deck consists of a name, a number of categories and an array of items
 // consisting of values for the text (items[0][]) and the categories (everything
 // else in items).
@@ -21,4 +23,3 @@ export type DeckSummary = {
   categories: string[];
   itemCount: number;
 };
-

@@ -1,13 +1,10 @@
+// startGame.tsx
+
 import React, { useRef, useCallback } from 'react';
-import {
-  TextInput as RTextInput,
-  StyleSheet,
-  TouchableOpacity,
-  Modal,
-} from 'react-native';
+import { TextInput as RTextInput, StyleSheet } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
-import { useGameLogic } from '../hooks/useGameLogic'; // Import the custom hook
+import { useGameLogic } from '@/hooks/useGameLogic'; // Import the custom hook
 import { useThemeColor } from '@/hooks/useThemeColor';
 
 import { ThemedTextInput } from '@/components/ThemedTextInput';
@@ -61,6 +58,17 @@ export default function StartGame() {
           >
             Game Over
           </ThemedText>
+        </ThemedView>
+      )}
+      {isPaused && (
+        <ThemedView
+          style={[styles.overlay, { backgroundColor: inputBackgroundColor }]}
+        >
+          <ThemedPressable
+            title="Game paused. Tap to continue."
+            fontSize={20}
+            onPress={handleResumePress}
+          />
         </ThemedView>
       )}
       <ThemedView style={styles.header}>
@@ -120,24 +128,6 @@ export default function StartGame() {
           />
         </ThemedView>
       </ThemedView>
-      <Modal visible={isPaused} transparent={true}>
-        <ThemedView
-          style={[styles.modal, { backgroundColor: inputBackgroundColor }]}
-        >
-          <ThemedText
-            style={[
-              styles.pauseText,
-              { backgroundColor: inputBackgroundColor },
-            ]}
-          >
-            Game paused. Tap to continue.
-          </ThemedText>
-          <TouchableOpacity
-            onPress={handleResumePress}
-            style={styles.modalOverlay}
-          />
-        </ThemedView>
-      </Modal>
     </ThemedScreen>
   );
 }
@@ -188,20 +178,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     marginVertical: 10,
-  },
-  modal: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  modalOverlay: {
-    position: 'absolute',
-    top: 0,
-    bottom: 0,
-    left: 0,
-    right: 0,
-  },
-  pauseText: {
-    fontSize: 20,
   },
   overlay: {
     position: 'absolute',

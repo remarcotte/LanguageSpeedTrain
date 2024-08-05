@@ -1,12 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { ScrollView, StyleSheet, ActivityIndicator } from 'react-native';
+// errors.tsx
 
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
-import { ThemedScreen } from '@/components/ThemedScreen';
+import React, { useState, useEffect } from "react";
+import { ScrollView, StyleSheet, ActivityIndicator } from "react-native";
 
-import { ErrorService } from '../services/ErrorService';
-import { type ErrorLog, ErrorActionType } from '../types/ErrorTypes';
+import { ThemedText } from "@/components/ThemedText";
+import { ThemedView } from "@/components/ThemedView";
+import { ThemedScreen } from "@/components/ThemedScreen";
+
+import { ErrorService } from "@/services/ErrorService";
+import { type ErrorLog, ErrorActionType } from "@/types/ErrorTypes";
 
 export default function Errors() {
   // Get a singleton instance of the ErrorService
@@ -28,8 +30,8 @@ export default function Errors() {
         await errorService.logError(
           ErrorActionType.TOAST,
           55,
-          'Failed to fetch errors.',
-          error
+          "Failed to fetch errors.",
+          error,
         );
       } finally {
         setLoading(false); // Set loading to false regardless of success or failure
@@ -83,17 +85,17 @@ const styles = StyleSheet.create({
   errorContainer: {
     marginBottom: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
+    borderBottomColor: "#ccc",
     paddingBottom: 8,
   },
   errorHeader: {
-    flexDirection: 'column',
+    flexDirection: "column",
   },
   errorNote: {
     fontSize: 14,
     marginLeft: 8,
     marginBottom: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   errorText: {
     fontSize: 14,

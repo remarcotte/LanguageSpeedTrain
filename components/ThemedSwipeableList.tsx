@@ -1,6 +1,8 @@
-import React from 'react';
-import { StyleSheet } from 'react-native';
-import { SwipeListView } from 'react-native-swipe-list-view';
+// ThemedSwipeableList.tsx
+
+import React from "react";
+import { StyleSheet } from "react-native";
+import { SwipeListView } from "react-native-swipe-list-view";
 
 type ThemedSwipeableList<T> = {
   data: T[];
