@@ -1,21 +1,23 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import AsyncStorage from "@react-native-async-storage/async-storage"; // Import AsyncStorage for persisting key-value pairs
 import {
   GameRecord,
   GameSummary,
   GameDetail,
   LogDeckSummary,
   DeckDetail,
-} from "../types/LoggingTypes";
-import { DBService } from "./DBService";
-import { ErrorService } from '../services/ErrorService';
-import { ErrorActionType } from '../types/ErrorTypes';
+} from "../types/LoggingTypes"; // Import necessary types
+import { DeckDb, DeckSummary } from "../types/DeckTypes"; // Import deck-related types
+import { DBService } from "./DBService"; // Import database service
+import { ErrorService } from '../services/ErrorService'; // Import error service
+import { ErrorActionType } from '../types/ErrorTypes'; // Import error action types
 
 export class LoggingService {
-  private static instance: LoggingService;
+  private static instance: LoggingService; // Singleton instance of LoggingService
 
-  dbService = DBService.getInstance();
-  errorService = ErrorService.getInstance();
+  dbService = DBService.getInstance(); // Instance of DBService for database operations
+  errorService = ErrorService.getInstance(); // Instance of ErrorService for error handling
 
+  // Singleton pattern implementation for LoggingService
   public static getInstance(): LoggingService {
     if (!LoggingService.instance) {
       LoggingService.instance = new LoggingService();
@@ -23,23 +25,28 @@ export class LoggingService {
     return LoggingService.instance;
   }
 
+  // Clear all logs and reset AsyncStorage keys
   async clearAll() {
     try {
-
       await this.dbService.execAsync(`
         DELETE FROM game_detail;
         DELETE FROM game_summary;
         DELETE FROM deck_summary;
         DELETE FROM deck_detail;`);
-      await AsyncStorage.removeItem("selectedDeck");
-      await AsyncStorage.removeItem("selectedCategory");
-      await AsyncStorage.removeItem("selectedDuration");
+
+      // List of keys to be removed
+      const keys = ['selectedDeck', 'selectedCategory', 'selectedDuration'];
+
+      // Use multiRemove to delete all specified keys
+      await AsyncStorage.multiRemove(keys);
+
       await this.errorService.logError(ErrorActionType.LOG, 15, 'Decks and storage reset.');
     } catch (error) {
       await this.errorService.logError(ErrorActionType.CONSOLE, 16, 'Failed to clear all decks and storage.', error);
     }
   }
 
+  // Clear logs for a specific deck
   async clearDeck(deckName: string) {
     try {
       await this.dbService.runAsync(
@@ -63,6 +70,7 @@ export class LoggingService {
     }
   }
 
+  // Retrieve game log details and summary by gameId
   async showGameLog(
     gameId: number,
   ): Promise<{ summary: GameSummary; details: GameDetail[] } | null> {
@@ -70,28 +78,27 @@ export class LoggingService {
     const details: GameDetail[] = [];
 
     try {
-      const summaryResult = (await this.dbService.getAllAsync(
+      const summaryResult = await this.dbService.getAllAsync<GameSummary>(
         "SELECT * FROM game_summary WHERE id = ?;",
         [gameId],
-      )) as GameSummary[];
-      if (summaryResult.length > 0) {
-        const item = summaryResult[0] as GameSummary; // Explicit type assertion
+      );
+      if (summaryResult && summaryResult.length > 0) {
+        const item = summaryResult[0];
         summary = {
           ...item,
-          datetime: new Date(item.datetimeEnded * 1000)
-            .toLocaleString()
-            .replace(",", ""),
+          datetime: this.dbService.dbDateToString(item.datetimeEnded)
         };
       }
 
-      const detailsResult = (await this.dbService.getAllAsync(
+      const detailsResult = await this.dbService.getAllAsync<GameDetail>(
         "SELECT * FROM game_detail WHERE gameId = ? ORDER BY id;",
         [gameId],
-      )) as GameDetail[];
-      detailsResult.forEach((detail) => {
-        details.push(detail as GameDetail); // Explicit type assertion
-      });
-
+      );
+      if (detailsResult) {
+        detailsResult.forEach((detail) => {
+          details.push(detail)
+        });
+      }
       return summary ? { summary, details } : null;
     } catch (error) {
       await this.errorService.logError(ErrorActionType.CONSOLE, 18, `Failed to retrieve gameLog for gameId ${gameId}.`, error);
@@ -99,66 +106,66 @@ export class LoggingService {
     }
   }
 
+  // Retrieve all game summaries
   async showGamesLog(): Promise<GameSummary[]> {
     let summaries: GameSummary[] = [];
 
     try {
-      const result = (await this.dbService.getAllAsync(
+      const result = await this.dbService.getAllAsync<GameSummary>(
         "SELECT * FROM game_summary ORDER BY id DESC LIMIT 200;",
         [],
-      )) as GameSummary[];
-      summaries = result.map((item: any) => ({
-        ...item,
-        datetime: new Date(item.datetimeEnded * 1000)
-          .toLocaleString()
-          .replace(",", ""),
-      }));
-
-      return summaries;
+      );
+      if (result) {
+        summaries = result.map((item: any) => ({
+          ...item,
+          datetime: this.dbService.dbDateToString(item.datetimeEnded)
+        }));
+      }
     } catch (error) {
       await this.errorService.logError(ErrorActionType.CONSOLE, 19, 'Failed to retrieve game logs.', error);
-      return summaries;
     }
+    return summaries;
   }
 
+  // Retrieve a summary, games, and details for a specific deck
   async getDeckSummary(deckName: string): Promise<{
     summary: LogDeckSummary;
     games: GameSummary[];
     details: DeckDetail[];
   } | null> {
     let summary: LogDeckSummary | null = null;
-    let games: GameSummary[] | null = null;
+    let games: GameSummary[] = [];
     let details: DeckDetail[] = [];
 
     try {
-      const summaryResult = (await this.dbService.getAllAsync(
+      const summaryResult = await this.dbService.getAllAsync<LogDeckSummary>(
         "SELECT * FROM deck_summary WHERE deckName = ?;",
         [deckName],
-      )) as LogDeckSummary[];
-      if (summaryResult.length > 0) {
-        summary = summaryResult[0] as LogDeckSummary; // Explicit type assertion
+      );
+      if (summaryResult && summaryResult.length > 0) {
+        summary = summaryResult[0];
       }
 
-      const gameSummaries = (await this.dbService.getAllAsync(
+      const gameSummaries = await this.dbService.getAllAsync<GameSummary>(
         "SELECT * FROM game_summary where deckName = ? ORDER BY id DESC LIMIT 200;",
         [deckName],
-      )) as GameSummary[];
-      games = gameSummaries
-        ? gameSummaries.map((item: any) => ({
+      );
+      if (gameSummaries) {
+        games = gameSummaries.map((item: any) => ({
           ...item,
-          datetime: new Date(item.datetimeEnded * 1000)
-            .toLocaleString()
-            .replace(",", ""),
+          datetime: this.dbService.dbDateToString(item.datetimeEnded)
         }))
-        : [];
+      }
 
-      const detailsResult = (await this.dbService.getAllAsync(
+      const detailsResult = await this.dbService.getAllAsync<DeckDetail>(
         "SELECT * FROM deck_detail WHERE deckName = ? order by numberAttempts desc, numberCorrect desc;",
         [deckName],
-      )) as DeckDetail[];
-      detailsResult.forEach((detail) => {
-        details.push(detail as DeckDetail); // Explicit type assertion
-      });
+      );
+      if (detailsResult) {
+        detailsResult.forEach((detail) => {
+          details.push(detail);
+        });
+      }
 
       return summary ? { summary, games, details } : null;
     } catch (error) {
@@ -167,6 +174,7 @@ export class LoggingService {
     }
   }
 
+  // Log a game record
   async logGame(gameRecord: GameRecord) {
     const correct = gameRecord.turns.filter((turn) => turn.isCorrect).length;
     const attempted = gameRecord.turns.length;
@@ -205,7 +213,7 @@ export class LoggingService {
         );
       }
 
-      // Update deck summary
+      // Insert new row into deck_summary if doesn't exist
       await this.dbService.runAsync(
         `INSERT OR IGNORE INTO deck_summary (deckName, timesPlayed, minCorrect, maxCorrect, minCorrectPerAttempt, maxCorrectPerAttempt, minCorrectPerMinute, maxCorrectPerMinute)
          VALUES (?, 0, ?, ?, ?, ?, ?, ?);`,
@@ -220,6 +228,7 @@ export class LoggingService {
         ],
       );
 
+      // Update deck summary setting min/max vaues if conditions are met
       await this.dbService.runAsync(
         `UPDATE deck_summary SET
          timesPlayed = timesPlayed + 1,
@@ -247,6 +256,7 @@ export class LoggingService {
         ],
       );
 
+      // Insert new row into deck_detail if doesn't exist
       await this.dbService.runAsync(
         `INSERT OR IGNORE INTO deck_detail (deckName, text, numberAttempts, numberCorrect)
          SELECT ?, text, 0, 0 FROM game_detail WHERE gameId IN (SELECT id FROM game_summary WHERE deckName = ?) GROUP BY text;`,
@@ -271,26 +281,27 @@ export class LoggingService {
     }
   }
 
+  // Retrieve debugging information from various tables
   async getDebug() {
     try {
-      const deck = await this.dbService.getFirstAsync(
+      const deck = await this.dbService.getFirstAsync<DeckDb>(
         `select * from deck limit 1;`,
       );
-      const game_summary = await this.dbService.getFirstAsync(
+      const game_summary = await this.dbService.getFirstAsync<GameSummary>(
         `select * from game_summary order by id desc limit 1;`,
       );
-      const game_detail = await this.dbService.getFirstAsync(
+      const game_detail = await this.dbService.getFirstAsync<GameDetail>(
         `select * from game_detail order by id desc limit 1;`,
       );
-      const deck_summary = await this.dbService.getFirstAsync(
+      const deck_summary = await this.dbService.getFirstAsync<DeckSummary>(
         `select * from deck_summary limit 1;`,
       );
-      const deck_detail = await this.dbService.getFirstAsync(
+      const deck_detail = await this.dbService.getFirstAsync<DeckDetail>(
         `select * from deck_detail order by id desc limit 1;`,
       );
       return { deck, game_summary, game_detail, deck_summary, deck_detail };
     } catch (error) {
-      await this.errorService.logError(ErrorActionType.CONSOLE, 22, 'Failed toget debug data.', error);
+      await this.errorService.logError(ErrorActionType.CONSOLE, 22, 'Failed to get debug data.', error);
     }
   }
 }

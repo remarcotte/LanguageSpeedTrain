@@ -8,16 +8,18 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { useLocalSearchParams } from 'expo-router';
 import { useThemeColor } from '@/hooks/useThemeColor';
 
-type IoniconName = keyof typeof Ionicons.glyphMap;
+type IoniconName = keyof typeof Ionicons.glyphMap; // Type for Ionicon names
 
 export default function GameHistory() {
-  const backgroundColor = useThemeColor({}, 'background');
-  const textColor = useThemeColor({}, 'text');
+  const backgroundColor = useThemeColor({}, 'background'); // Get background color from theme
+  const textColor = useThemeColor({}, 'text'); // Get text color from theme
 
+  // Retrieve the serialized turns string from URL parameters
   const { turnsStr } = useLocalSearchParams<{
     turnsStr: string;
   }>();
 
+  // Parse the serialized turns string into an array of TurnAnswer objects
   const turns: TurnAnswer[] = JSON.parse(turnsStr);
 
   return (
@@ -26,19 +28,21 @@ export default function GameHistory() {
         {turns.map((turn: TurnAnswer, index: number) => (
           <ThemedView key={index} style={styles.turnContainer}>
             <ThemedView style={styles.turnHeader}>
-              {turn.isCorrect && (
+              {/* Display a checkmark if the answer is correct, otherwise display a cross */}
+              {turn.isCorrect ? (
                 <Ionicons
                   size={22}
-                  name={'checkmark-circle'}
-                  style={{ color: 'green', fontWeight: '900' }}
+                  name="checkmark-circle"
+                  style={styles.correctIcon}
                 />
-              )}
-              {!turn.isCorrect && turn.type !== 'skip' && (
-                <Ionicons
-                  size={22}
-                  name={'close-circle'}
-                  style={{ color: 'red', fontWeight: '900' }}
-                />
+              ) : (
+                turn.type !== 'skip' && (
+                  <Ionicons
+                    size={22}
+                    name="close-circle"
+                    style={styles.incorrectIcon}
+                  />
+                )
               )}
               <ThemedText style={styles.turnText}>
                 {turn.text} ({turn.category})
@@ -48,7 +52,7 @@ export default function GameHistory() {
               Your response: {turn.response || 'Skipped'}
             </ThemedText>
             {(!turn.isCorrect || turn.type === 'skip') && (
-              <ThemedText style={[styles.correctResponseText]}>
+              <ThemedText style={styles.correctResponseText}>
                 Correct response: {turn.answer}
               </ThemedText>
             )}
@@ -83,5 +87,13 @@ const styles = StyleSheet.create({
   correctResponseText: {
     fontSize: 18,
     color: 'green',
+  },
+  correctIcon: {
+    color: 'green',
+    fontWeight: '900',
+  },
+  incorrectIcon: {
+    color: 'red',
+    fontWeight: '900',
   },
 });

@@ -1,45 +1,53 @@
-import React from 'react';
-import { StyleSheet, ScrollView } from 'react-native';
-import { DeckDetail } from '../types/LoggingTypes';
+import React, { useMemo } from 'react';
+import { StyleSheet, FlatList } from 'react-native';
+import { useLocalSearchParams } from 'expo-router';
+
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedScreen } from '@/components/ThemedScreen';
-import { useLocalSearchParams } from 'expo-router';
+
+import { DeckDetail } from '../types/LoggingTypes';
 
 export default function StatisticsDeckDetail() {
+  // Extract deckName and detailsStr from route parameters
   const { deckName, detailsStr } = useLocalSearchParams<{
     deckName: string;
     detailsStr: string;
   }>();
 
-  const details = JSON.parse(detailsStr);
+  // Parse the JSON string to get the deck details
+  const details: DeckDetail[] = useMemo(
+    () => JSON.parse(detailsStr),
+    [detailsStr]
+  );
 
   return (
     <ThemedScreen title="Deck Detail Statistics">
       <ThemedText style={styles.title}>{deckName} History</ThemedText>
-      <ScrollView style={styles.scrollContainer}>
-        {details.map((detail: DeckDetail, index: number) => (
-          <ThemedView key={index} style={styles.detailContainer}>
+      <FlatList
+        data={details}
+        keyExtractor={(item, index) => index.toString()} // Ensure unique keys for each item
+        renderItem={({ item }) => (
+          <ThemedView style={styles.detailContainer}>
             <ThemedView style={styles.detailHeader}>
-              <ThemedText style={styles.detailTextLeft}>
-                {detail.text}
-              </ThemedText>
-              {detail && detail.numberAttempts > 0 && (
+              <ThemedText style={styles.detailTextLeft}>{item.text}</ThemedText>
+              {item.numberAttempts > 0 && (
                 <ThemedText style={styles.detailTextRight}>
-                  {((100 * detail.numberCorrect) / detail.numberAttempts)
-                    .toFixed(2)
-                    .replace(/\.00$/, '')
+                  {((100 * item.numberCorrect) / item.numberAttempts)
+                    .toFixed(2) // Round to two decimal places
+                    .replace(/\.00$/, '') // Remove trailing .00
                     .replace(/(\.\d)0$/, '$1')}
                   %
                 </ThemedText>
               )}
             </ThemedView>
             <ThemedText style={styles.metricText}>
-              Attempts: {detail.numberAttempts}, Correct: {detail.numberCorrect}
+              Attempts: {item.numberAttempts}, Correct: {item.numberCorrect}
             </ThemedText>
           </ThemedView>
-        ))}
-      </ScrollView>
+        )}
+        contentContainerStyle={styles.contentContainer} // Adjust contentContainerStyle for FlatList
+      />
     </ThemedScreen>
   );
 }
@@ -51,9 +59,10 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 16,
   },
-  scrollContainer: {
+  contentContainer: {
     flexGrow: 1,
     marginTop: 8,
+    paddingBottom: 20, // Add padding to ensure last item is visible
   },
   detailContainer: {
     marginBottom: 12,

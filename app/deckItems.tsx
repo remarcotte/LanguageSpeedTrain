@@ -1,45 +1,49 @@
 import React, { useState, useCallback } from 'react';
-import {
-  Pressable,
-  View,
-  Text,
-  Alert,
-  StyleSheet,
-  TouchableOpacity,
-} from 'react-native';
+import { Alert, StyleSheet } from 'react-native';
+import { useLocalSearchParams, router } from 'expo-router';
+import { useFocusEffect } from '@react-navigation/native';
+
+import { useThemeColor } from '@/hooks/useThemeColor';
+import { showToast } from '@/components/ThemedToast';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedScreen } from '@/components/ThemedScreen';
 import { ThemedPressable } from '@/components/ThemedPressable';
-import { router } from 'expo-router';
-import { useThemeColor } from '@/hooks/useThemeColor';
-import { useFocusEffect } from '@react-navigation/native';
+import { ThemedSwipeableList } from '@/components/ThemedSwipeableList';
+import { ThemedSwipeableListItem } from '@/components/ThemedSwipeableListItem';
+import { ThemedSwipeActionButton } from '@/components/ThemedSwipeActionButton';
+
 import { DeckService } from '../services/DeckService';
-import { SwipeListView } from 'react-native-swipe-list-view';
-import { useLocalSearchParams } from 'expo-router';
 import { ErrorService } from '../services/ErrorService';
 import { ErrorActionType } from '../types/ErrorTypes';
 
+// Interface for deck items
 interface DeckItem {
   text: string;
   categories: string[];
 }
 
 export default function DeckItems() {
-  const { deckName, categories } = useLocalSearchParams<{
+  // Extract parameters from the navigation route with default values
+  const { deckName = '', categories = '' } = useLocalSearchParams<{
     deckName: string;
     categories: string;
   }>();
 
+  // Singleton instances of services
   const deckService = DeckService.getInstance();
   const errorService = ErrorService.getInstance();
 
+  // Retrieve the theme color for the list button background
   const listButtonBackgroundColor = useThemeColor({}, 'listButtonBackground');
 
+  // State for storing deck items
   const [items, setItems] = useState<DeckItem[]>([]);
 
-  const loadItems = async () => {
+  // Function to load items from the specified deck
+  const loadItems = useCallback(async () => {
     try {
+      // Retrieve the deck by name
       const deck = await deckService.getDeck(deckName);
       if (!deck) {
         await errorService.logError(
@@ -50,12 +54,13 @@ export default function DeckItems() {
         return;
       }
 
+      // Map the deck items to the required format
       const deckItems = deck.items.map((item: string[]) => ({
-        text: item[0],
-        categories: item.slice(1),
+        text: item[0], // Item text
+        categories: item.slice(1), // Categories associated with the item
       }));
 
-      setItems(deckItems);
+      setItems(deckItems); // Set the items state
     } catch (error) {
       await errorService.logError(
         ErrorActionType.TOAST,
@@ -63,63 +68,73 @@ export default function DeckItems() {
         'Failed to load items.'
       );
     }
-  };
+  }, [deckName, deckService, errorService]);
 
+  // Load items when the screen is focused
   useFocusEffect(
     useCallback(() => {
       loadItems();
-    }, [])
+    }, [loadItems])
   );
 
-  const deleteItem = async (text: string) => {
-    if (items.length === 1) {
-      Alert.alert(
-        'Error',
-        'A deck must have at least one item. Cannot delete last item.'
-      );
-    } else {
-      try {
-        await deckService.deleteDeckItem(deckName, text);
-        await loadItems();
+  // Function to delete an item from the deck
+  const deleteItem = useCallback(
+    async (text: string) => {
+      if (items.length === 1) {
         Alert.alert(
-          'Information',
-          'Deleted deck items may appear in statistics. If this is undesirable, you may clear deck statistics on the Statistics screen.'
+          'Error',
+          'A deck must have at least one item. Cannot delete last item.'
         );
-      } catch (error) {
-        await errorService.logError(
-          ErrorActionType.TOAST,
-          6,
-          'Failed to delete deck item.',
-          error
+      } else {
+        try {
+          await deckService.deleteDeckItem(deckName, text);
+          await loadItems(); // Refresh the item list
+          Alert.alert(
+            'Information',
+            'Deleted deck items may appear in statistics. If this is undesirable, you may clear deck statistics on the Statistics screen.'
+          );
+        } catch (error) {
+          await errorService.logError(
+            ErrorActionType.TOAST,
+            6,
+            'Failed to delete deck item.',
+            error
+          );
+        }
+      }
+    },
+    [deckName, items.length, deckService, errorService, loadItems]
+  );
+
+  // Function to confirm deletion of an item
+  const confirmDelete = useCallback(
+    (text: string) => {
+      if (items.length === 1) {
+        Alert.alert(
+          'Error',
+          'A deck must have at least one item. Cannot delete last item.'
+        );
+      } else {
+        Alert.alert(
+          'Delete Item?',
+          `Are you sure you want to delete the item "${text}"?`,
+          [
+            { text: 'Cancel', style: 'cancel' },
+            {
+              text: 'Delete',
+              onPress: () => deleteItem(text),
+              style: 'destructive',
+            },
+          ],
+          { cancelable: false }
         );
       }
-    }
-  };
+    },
+    [deleteItem, items.length]
+  );
 
-  const confirmDelete = (text: string) => {
-    if (items.length === 1) {
-      Alert.alert(
-        'Error',
-        'A deck must have at least one item. Cannot delete last item.'
-      );
-    } else {
-      Alert.alert(
-        'Delete Item?',
-        `Are you sure you want to delete the item "${text}"?`,
-        [
-          { text: 'Cancel', style: 'cancel' },
-          {
-            text: 'Delete',
-            onPress: () => deleteItem(text),
-            style: 'destructive',
-          },
-        ],
-        { cancelable: false }
-      );
-    }
-  };
-
-  const getItemHeight = (categories: string[]): number => {
+  // Determine the height of an item based on the number of categories
+  const getItemHeight = useCallback((categories: string[]): number => {
     switch (categories.length) {
       case 1:
         return 70;
@@ -131,29 +146,31 @@ export default function DeckItems() {
       default:
         return 130;
     }
-  };
+  }, []);
 
-  const renderItem = ({ item }: { item: DeckItem }) => (
-    <TouchableOpacity
-      onPress={() =>
-        router.navigate({
-          pathname: './editDeckItem',
-          params: {
-            deckName,
-            categoriesStr: categories,
-            itemStr: JSON.stringify(item),
-          },
-        })
-      }
-      style={[styles.rowFront, { backgroundColor: listButtonBackgroundColor }]}
-    >
-      <View style={[styles.item, { height: getItemHeight(item.categories) }]}>
+  // Render a single item in the list
+  const renderItem = useCallback(
+    ({ item: { text, categories } }: { item: DeckItem }) => (
+      <ThemedSwipeableListItem
+        onPress={() =>
+          router.navigate({
+            pathname: './editDeckItem',
+            params: {
+              deckName,
+              categoriesStr: categories,
+              itemStr: JSON.stringify({ text, categories }),
+            },
+          })
+        }
+        height={getItemHeight(categories)}
+        listButtonBackgroundColor={listButtonBackgroundColor}
+      >
         <ThemedText
           style={[styles.text, { backgroundColor: listButtonBackgroundColor }]}
         >
-          {item.text}
+          {text}
         </ThemedText>
-        {item.categories.map((value, index) => (
+        {categories.map((value, index) => (
           <ThemedText
             key={index}
             style={[
@@ -164,36 +181,41 @@ export default function DeckItems() {
             {value}
           </ThemedText>
         ))}
-      </View>
-    </TouchableOpacity>
+      </ThemedSwipeableListItem>
+    ),
+    [deckName, getItemHeight, listButtonBackgroundColor]
   );
 
-  const renderHiddenItem = ({ item }: { item: DeckItem }) => (
-    <ThemedView
-      style={[styles.rowBack, { height: getItemHeight(item.categories) }]}
-    >
-      <Pressable
-        style={[styles.backRightBtn, styles.backRightBtnLeft]}
-        onPress={() =>
-          router.navigate({
-            pathname: './editDeckItem',
-            params: {
-              deckName,
-              categoriesStr: categories,
-              itemStr: JSON.stringify(item),
-            },
-          })
-        }
+  // Render hidden item actions for swiping
+  const renderHiddenItem = useCallback(
+    ({ item: { text, categories } }: { item: DeckItem }) => (
+      <ThemedView
+        style={[styles.rowBack, { height: getItemHeight(categories) }]}
       >
-        <Text style={styles.backTextWhite}>Edit</Text>
-      </Pressable>
-      <Pressable
-        style={[styles.backRightBtn, styles.backRightBtnRight]}
-        onPress={() => confirmDelete(item.text)}
-      >
-        <Text style={styles.backTextWhite}>Delete</Text>
-      </Pressable>
-    </ThemedView>
+        <ThemedSwipeActionButton
+          title="Edit"
+          color="blue"
+          onPress={() =>
+            router.navigate({
+              pathname: './editDeckItem',
+              params: {
+                deckName,
+                categoriesStr: categories,
+                itemStr: JSON.stringify({ text, categories }),
+              },
+            })
+          }
+          style={styles.backRightBtnLeft}
+        />
+        <ThemedSwipeActionButton
+          title="Delete"
+          color="red"
+          onPress={() => confirmDelete(text)}
+          style={styles.backRightBtnRight}
+        />
+      </ThemedView>
+    ),
+    [deckName, getItemHeight, confirmDelete]
   );
 
   return (
@@ -216,13 +238,12 @@ export default function DeckItems() {
         />
       }
     >
-      <SwipeListView
+      <ThemedSwipeableList
         data={items}
         keyExtractor={(item) => item.text}
         renderItem={renderItem}
         renderHiddenItem={renderHiddenItem}
         rightOpenValue={-155}
-        contentContainerStyle={styles.listContent}
       />
     </ThemedScreen>
   );
@@ -248,14 +269,6 @@ const styles = StyleSheet.create({
     marginTop: 4,
     textAlign: 'left',
   },
-  rowFront: {
-    alignItems: 'flex-start',
-    justifyContent: 'center',
-    marginBottom: 10,
-    borderRadius: 8,
-    overflow: 'hidden',
-    paddingHorizontal: 16,
-  },
   rowBack: {
     alignItems: 'center',
     flex: 1,
@@ -266,21 +279,10 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     overflow: 'hidden',
   },
-  backRightBtn: {
-    alignItems: 'center',
-    bottom: 0,
-    borderRadius: 8,
-    justifyContent: 'center',
-    position: 'absolute',
-    top: 0,
-    width: 75,
-  },
   backRightBtnLeft: {
-    backgroundColor: 'blue',
     right: 78,
   },
   backRightBtnRight: {
-    backgroundColor: 'red',
     right: 0,
   },
   backTextWhite: {

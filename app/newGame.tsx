@@ -1,38 +1,41 @@
-import React, { useState, useEffect } from 'react'; // Import React hooks
+import React, { useState, useEffect, useCallback } from 'react'; // Import React hooks
 import { StyleSheet } from 'react-native'; // Import StyleSheet from React Native
+import { router } from 'expo-router'; // Router for navigation
+import AsyncStorage from '@react-native-async-storage/async-storage'; // AsyncStorage for persistent storage
+
+import { useThemeColor } from '@/hooks/useThemeColor'; // Hook for theme color
+
+import { showToast } from '@/components/ThemedToast'; // Custom themed toast for notifications
 import { ThemedText } from '../components/ThemedText'; // Custom themed text component
 import { ThemedView } from '../components/ThemedView'; // Custom themed view component
 import { ThemedPressable } from '../components/ThemedPressable'; // Custom themed pressable component
 import { ThemedScreen } from '@/components/ThemedScreen'; // Custom themed screen component
-import { router } from 'expo-router'; // Router for navigation
 import { ThemedDropdownPicker } from '../components/ThemedDropdownPicker'; // Custom themed dropdown picker
-import AsyncStorage from '@react-native-async-storage/async-storage'; // AsyncStorage for persistent storage
-import { useThemeColor } from '@/hooks/useThemeColor'; // Hook for theme color
+
 import { DeckService } from '../services/DeckService'; // Service for deck operations
 import { DeckSummary } from '../types/DeckTypes'; // Type definition for deck summary
-import { showToast } from '@/components/ThemedToast'; // Custom themed toast for notifications
-import { ErrorService } from '../services/ErrorService';
-import { ErrorActionType } from '../types/ErrorTypes';
+import { ErrorService } from '../services/ErrorService'; // Service for error logging
+import { ErrorActionType } from '../types/ErrorTypes'; // Error action types
 
-type Deck = { name: string; categories: string[] }; // Type definition for deck
+type Deck = { name: string; categories: string[] }; // Type definition for a deck
 
-export default function NewGameScreen() {
+export default function NewGame() {
   // Hook to get theme color for list button background
   const listButtonBackgroundColor = useThemeColor({}, 'listButtonBackground');
   const deckService = DeckService.getInstance(); // Get instance of deck service
-  const errorService = ErrorService.getInstance();
+  const errorService = ErrorService.getInstance(); // Get instance of error service
 
   // State hooks for managing various UI states
-  const [decks, setDecks] = useState<DeckSummary[]>([]);
-  const [selectedDeck, setSelectedDeck] = useState<string | null>(null);
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [selectedDuration, setSelectedDuration] = useState<string | null>(null);
+  const [decks, setDecks] = useState<DeckSummary[]>([]); // List of decks
+  const [selectedDeck, setSelectedDeck] = useState<string | null>(null); // Selected deck
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null); // Selected category
+  const [selectedDuration, setSelectedDuration] = useState<string | null>(null); // Selected duration
   const [openDecks, setOpenDecks] = useState(false); // Dropdown state for decks
   const [openCategories, setOpenCategories] = useState(false); // Dropdown state for categories
   const [openDurations, setOpenDurations] = useState(false); // Dropdown state for durations
   const [categoryItems, setCategoryItems] = useState<
     { label: string; value: string }[]
-  >([]);
+  >([]); // Category items for dropdown
 
   // Array of available durations for the game
   const durations = [
@@ -41,48 +44,48 @@ export default function NewGameScreen() {
     'Marathon (6 minutes)',
   ];
 
-  // useEffect to fetch decks and saved selections from AsyncStorage on component mount
-  useEffect(() => {
-    const fetchDecks = async () => {
-      try {
-        const loadedDecks = await deckService.getDecksSummary(); // Fetch deck summaries
-        // Sort decks alphabetically by name
-        setDecks(
-          loadedDecks.sort((a, b) =>
-            a.deckName.toLowerCase().localeCompare(b.deckName.toLowerCase())
-          )
-        );
+  // Fetch decks and saved selections from AsyncStorage
+  const fetchDecks = useCallback(async () => {
+    try {
+      const loadedDecks = await deckService.getDecksSummary(); // Fetch deck summaries
+      // Sort decks alphabetically by name
+      setDecks(
+        loadedDecks.sort((a, b) =>
+          a.deckName.toLowerCase().localeCompare(b.deckName.toLowerCase())
+        )
+      );
 
-        // Retrieve stored deck from AsyncStorage, if any
-        const storedDeck = await AsyncStorage.getItem('selectedDeck');
-        const defaultDeck = storedDeck || loadedDecks[0]?.deckName || '';
-        setSelectedDeck(defaultDeck || null); // Set default deck selection
+      // Retrieve stored deck from AsyncStorage, if any
+      const storedDeck = await AsyncStorage.getItem('selectedDeck');
+      const defaultDeck = storedDeck || loadedDecks[0]?.deckName || '';
+      setSelectedDeck(defaultDeck || null); // Set default deck selection
 
-        // Retrieve stored category from AsyncStorage, if any
-        const storedCategory = await AsyncStorage.getItem('selectedCategory');
-        if (storedCategory) {
-          setSelectedCategory(storedCategory);
-        }
-
-        // Retrieve stored duration from AsyncStorage, if any
-        const storedDuration = await AsyncStorage.getItem('selectedDuration');
-        if (storedDuration) {
-          setSelectedDuration(storedDuration);
-        }
-      } catch (error) {
-        await errorService.logError(
-          ErrorActionType.TOAST,
-          23,
-          'Unable to load decks and settings.',
-          error
-        );
+      // Retrieve stored category from AsyncStorage, if any
+      const storedCategory = await AsyncStorage.getItem('selectedCategory');
+      if (storedCategory) {
+        setSelectedCategory(storedCategory);
       }
-    };
 
+      // Retrieve stored duration from AsyncStorage, if any
+      const storedDuration = await AsyncStorage.getItem('selectedDuration');
+      if (storedDuration) {
+        setSelectedDuration(storedDuration);
+      }
+    } catch (error) {
+      await errorService.logError(
+        ErrorActionType.TOAST,
+        23,
+        'Unable to load decks and settings.',
+        error
+      );
+    }
+  }, [deckService, errorService]);
+
+  useEffect(() => {
     fetchDecks();
-  }, []); // Empty dependency array ensures this runs once on mount
+  }, [fetchDecks]); // Fetch decks on mount
 
-  // useEffect to update category options when selected deck changes
+  // Update category options when selected deck changes
   useEffect(() => {
     if (selectedDeck) {
       // Find the selected deck object from the list
@@ -148,30 +151,31 @@ export default function NewGameScreen() {
       await errorService.logError(
         ErrorActionType.TOAST,
         24,
-        'Failed to start the game..',
+        'Failed to start the game.',
         error
       );
     }
   };
 
   // Handle dropdown open state changes
-  const handleOpenChange = (
-    setOpen: React.Dispatch<React.SetStateAction<boolean>>
-  ) => {
-    return (value: boolean | ((prev: boolean) => boolean)) => {
-      // Close all dropdowns before opening the selected one
-      setOpenDecks(false);
-      setOpenCategories(false);
-      setOpenDurations(false);
+  const handleOpenChange = useCallback(
+    (setOpen: React.Dispatch<React.SetStateAction<boolean>>) => {
+      return (value: boolean | ((prev: boolean) => boolean)) => {
+        // Close all dropdowns before opening the selected one
+        setOpenDecks(false);
+        setOpenCategories(false);
+        setOpenDurations(false);
 
-      // Set the target dropdown open state
-      if (typeof value === 'function') {
-        setOpen((prev) => value(prev));
-      } else {
-        setOpen(value);
-      }
-    };
-  };
+        // Set the target dropdown open state
+        if (typeof value === 'function') {
+          setOpen((prev) => value(prev));
+        } else {
+          setOpen(value);
+        }
+      };
+    },
+    []
+  );
 
   return (
     <ThemedScreen title="New Game">

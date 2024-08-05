@@ -1,34 +1,59 @@
 import React, { useState, useEffect } from 'react';
-import { ScrollView, StyleSheet } from 'react-native';
+import { ScrollView, StyleSheet, ActivityIndicator } from 'react-native';
+
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedScreen } from '@/components/ThemedScreen';
+
 import { ErrorService } from '../services/ErrorService';
-import { type ErrorLog } from '../types/ErrorTypes';
+import { type ErrorLog, ErrorActionType } from '../types/ErrorTypes';
 
 export default function Errors() {
+  // Get a singleton instance of the ErrorService
   const errorService = ErrorService.getInstance();
 
-  const [errors, setErrors] = useState<any>(null);
+  // State to store the list of errors
+  const [errors, setErrors] = useState<ErrorLog[] | null>(null);
+
+  // State to manage loading state
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
+    // Function to retrieve errors from the ErrorService
     const getErrors = async () => {
-      const e = (await errorService.getErrors()) as ErrorLog[];
-      setErrors(e || null);
+      try {
+        const e = await errorService.getErrors(); // Fetch errors from the service
+        setErrors(e || null); // Update state with fetched errors or set to null if no errors
+      } catch (error) {
+        await errorService.logError(
+          ErrorActionType.TOAST,
+          55,
+          'Failed to fetch errors.',
+          error
+        );
+      } finally {
+        setLoading(false); // Set loading to false regardless of success or failure
+      }
     };
 
-    getErrors();
+    getErrors(); // Invoke the function to fetch errors on component mount
   }, []);
 
   return (
     <ThemedScreen title="Errors">
       <ScrollView contentContainerStyle={styles.scrollContainer}>
+        {/* Information about the purpose of the screen */}
         <ThemedText style={styles.errorNote}>
-          This screen is used for support if application becomes unstable.
+          This screen is used for support if the application becomes unstable.
         </ThemedText>
-        {errors && errors.length > 1 ? (
-          errors.map((error: ErrorLog, index: number) => (
-            <ThemedView key={index} style={styles.errorContainer}>
+
+        {loading ? (
+          // Show loading indicator while fetching data
+          <ActivityIndicator size="large" color="#0000ff" />
+        ) : errors && errors.length > 0 ? (
+          // Render error logs if available
+          errors.map((error: ErrorLog) => (
+            <ThemedView key={error.errorId} style={styles.errorContainer}>
               <ThemedView style={styles.errorHeader}>
                 <ThemedText style={styles.errorText}>
                   {error.datetime} / {error.errorId}
@@ -40,6 +65,7 @@ export default function Errors() {
             </ThemedView>
           ))
         ) : (
+          // Show message if no errors are logged
           <ThemedText style={styles.errorText}>
             No errors have been logged.
           </ThemedText>
@@ -62,8 +88,6 @@ const styles = StyleSheet.create({
   },
   errorHeader: {
     flexDirection: 'column',
-    // justifyContent: 'space-between',
-    // alignItems: 'center',
   },
   errorNote: {
     fontSize: 14,

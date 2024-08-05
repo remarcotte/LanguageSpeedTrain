@@ -1,287 +1,51 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useRef, useCallback } from 'react';
 import {
   TextInput as RTextInput,
   StyleSheet,
-  Alert,
   TouchableOpacity,
   Modal,
 } from 'react-native';
+import Ionicons from '@expo/vector-icons/Ionicons';
+
+import { useGameLogic } from '../hooks/useGameLogic'; // Import the custom hook
+import { useThemeColor } from '@/hooks/useThemeColor';
+
 import { ThemedTextInput } from '@/components/ThemedTextInput';
 import { ThemedPressable } from '@/components/ThemedPressable';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedScreen } from '@/components/ThemedScreen';
-import { router } from 'expo-router';
-import { LoggingService } from '../services/LoggingService';
-import { DeckService } from '../services/DeckService';
-import { Deck } from '../types/DeckTypes';
-import { TurnAnswer } from '../types/LoggingTypes';
-import Ionicons from '@expo/vector-icons/Ionicons';
-import { useLocalSearchParams } from 'expo-router';
-import { useThemeColor } from '@/hooks/useThemeColor';
-import { ErrorService } from '../services/ErrorService';
-import { ErrorActionType } from '../types/ErrorTypes';
-
-type IoniconName = keyof typeof Ionicons.glyphMap;
 
 export default function StartGame() {
-  const errorService = ErrorService.getInstance();
+  const {
+    timeLeft,
+    isPaused,
+    userResponse,
+    currentText,
+    currentCategory,
+    numberCorrect,
+    totalShown,
+    resultIcon,
+    handleBackPress,
+    handlePausePress,
+    handleResumePress,
+    handleSkipPress,
+    handleSubmitPress,
+    setUserResponse,
+    showGameOver,
+  } = useGameLogic(); // Use the custom hook for game logic
+
   const inputBackgroundColor = useThemeColor({}, 'inputBackground');
-
-  const { deckName, category, duration } = useLocalSearchParams<{
-    deckName: string;
-    category: string;
-    duration: string;
-  }>();
-
-  const [timeLeft, setTimeLeft] = useState(parseInt(duration));
-  const [isPaused, setIsPaused] = useState(false);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [userResponse, setUserResponse] = useState('');
-  const [totalShown, setTotalShown] = useState(0);
-  const [numberCorrect, setNumberCorrect] = useState(0);
-  const [turns, setTurns] = useState<TurnAnswer[]>([]);
-  const [currentCategory, setCurrentCategory] = useState(category);
-  const [deck, setDeck] = useState<Deck | null>(null);
-  const [randomizedTexts, setRandomizedTexts] = useState<string[]>([]);
-  const [resultIcon, setResultIcon] = useState<{
-    name: IoniconName;
-    color: string;
-  } | null>(null);
-  const [showGameOver, setShowGameOver] = useState(false); // New state variable
-  const timerIdRef = useRef<NodeJS.Timeout | null>(null);
-  const isMountedRef = useRef(true);
-  const loggingService = LoggingService.getInstance();
-  const deckService = DeckService.getInstance();
   const textInputRef = useRef<RTextInput>(null);
 
-  useEffect(() => {
-    isMountedRef.current = true;
-
-    const loadDeck = async () => {
-      try {
-        const fetchedDeck: Deck | null = await deckService.getDeck(deckName);
-        if (fetchedDeck) {
-          setDeck(fetchedDeck);
-          const randomizedNames = randomizeNames(
-            fetchedDeck.items.map((item) => item[0])
-          );
-          setRandomizedTexts(randomizedNames);
-          // Set the initial category based on the first randomized text
-          if (category === 'Random') {
-            setCurrentCategory(
-              fetchedDeck.categories[randomizeCategoryIndex(fetchedDeck)]
-            );
-          } else {
-            setCurrentCategory(category);
-          }
-        }
-      } catch (error) {
-        await errorService.logError(
-          ErrorActionType.TOAST,
-          25,
-          'Unable to get deck.',
-          error
-        );
-      }
-    };
-
-    loadDeck();
-
-    if (timeLeft > 0 && !isPaused) {
-      timerIdRef.current = setInterval(() => {
-        setTimeLeft((prevTime) => prevTime - 1);
-      }, 1000);
-    }
-
-    return () => {
-      isMountedRef.current = false;
-      if (timerIdRef.current) {
-        clearInterval(timerIdRef.current);
-      }
-    };
-  }, []);
-
-  useEffect(() => {
-    if (timeLeft === 0) {
-      if (isMountedRef.current) {
-        handleGameEnd();
-      }
-      if (timerIdRef.current) {
-        clearInterval(timerIdRef.current);
-        timerIdRef.current = null;
-      }
-    }
-  }, [timeLeft]);
-
-  useEffect(() => {
-    if (isPaused) {
-      if (timerIdRef.current) {
-        clearInterval(timerIdRef.current);
-        timerIdRef.current = null;
-      }
-    } else {
-      if (timeLeft > 0 && !timerIdRef.current) {
-        timerIdRef.current = setInterval(() => {
-          setTimeLeft((prevTime) => prevTime - 1);
-        }, 1000);
-      }
-    }
-  }, [isPaused]);
-
-  const randomizeNames = (names: string[]): string[] => {
-    const array = [...names];
-    for (let i = array.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [array[i], array[j]] = [array[j], array[i]];
-    }
-    return array;
-  };
-
-  const randomizeCategoryIndex = (deck: Deck) => {
-    return Math.floor(Math.random() * deck.categories.length);
-  };
-
-  const handleBackPress = () => {
-    setIsPaused(true);
-    Alert.alert('Exit Game', 'Going back will cancel this game. Exit game?', [
-      { text: 'Cancel', onPress: () => setIsPaused(false) },
-      {
-        text: 'Exit',
-        onPress: () => router.navigate('/newGame'),
-        style: 'destructive',
-      },
-    ]);
-  };
-
-  const handlePausePress = () => {
-    setIsPaused(true);
-  };
-
-  const handleResumePress = () => {
-    setIsPaused(false);
-  };
-
-  const handleSkipPress = () => {
-    if (!deck) return;
-
-    const currentText = randomizedTexts[currentIndex];
-    const deckItem = deck.items.find((item) => item[0] === currentText);
-    const answer = deckItem
-      ? deckItem[deck.categories.indexOf(currentCategory) + 1]
-      : '';
-
-    setTotalShown(totalShown + 1);
-    setTurns([
-      ...turns,
-      {
-        text: currentText,
-        category: currentCategory,
-        response: '',
-        isCorrect: false,
-        type: 'skip',
-        answer: answer,
-      },
-    ]);
-    advanceToNextTurn();
-  };
-
-  const handleSubmitPress = () => {
-    if (!deck) return;
-
-    const currentText = randomizedTexts[currentIndex];
-    const deckItem = deck.items.find((item) => item[0] === currentText);
-    if (!deckItem) return;
-
-    const isCorrect =
-      userResponse === deckItem[deck.categories.indexOf(currentCategory) + 1];
-    const answer = isCorrect
-      ? undefined
-      : deckItem[deck.categories.indexOf(currentCategory) + 1];
-
-    setTotalShown(totalShown + 1);
-    setNumberCorrect(numberCorrect + (isCorrect ? 1 : 0));
-    setTurns([
-      ...turns,
-      {
-        text: currentText,
-        category: currentCategory,
-        response: userResponse,
-        isCorrect: isCorrect,
-        type: 'save',
-        answer: answer,
-      },
-    ]);
-    setUserResponse('');
-    setResultIcon({
-      name: isCorrect ? 'checkmark-outline' : 'close-outline',
-      color: isCorrect ? 'green' : 'red',
-    });
-    setTimeout(() => setResultIcon(null), 500);
-    advanceToNextTurn();
-  };
-
-  const advanceToNextTurn = () => {
-    if (!deck) return;
-
-    setCurrentIndex((prevIndex) => {
-      const nextIndex = prevIndex + 1;
-      if (nextIndex >= randomizedTexts.length) {
-        if (deck) {
-          setRandomizedTexts(randomizeNames(deck.items.map((item) => item[0])));
-        }
-        return 0;
-      }
-      return nextIndex;
-    });
-    if (category === 'Random')
-      setCurrentCategory(deck.categories[randomizeCategoryIndex(deck)]);
-    setTimeout(() => {
-      textInputRef.current?.focus();
-    }, 100);
-  };
-
-  const handleGameEnd = async () => {
-    setShowGameOver(true); // Show "Game Over" message
-    setTimeout(async () => {
-      setShowGameOver(false); // Hide "Game Over" message
-      const turnsForLogging = turns.map(({ answer, ...rest }) => rest);
-
-      try {
-        await loggingService.logGame({
-          deckName: deckName,
-          category,
-          duration: parseInt(duration),
-          turns: turnsForLogging,
-        });
-      } catch (error) {
-        await errorService.logError(
-          ErrorActionType.TOAST,
-          26,
-          'Error logging the game.',
-          error
-        );
-      }
-
-      router.navigate({
-        pathname: './gameSummary',
-        params: {
-          deckName,
-          category,
-          duration,
-          turnsStr: JSON.stringify(turns),
-        },
-      });
-    }, 2000); // 2 seconds delay
-  };
-
-  const formatTime = (seconds: number) => {
+  // Format the remaining time as MM:SS
+  const formatTime = useCallback((seconds: number) => {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
     return `${minutes < 10 ? '0' : ''}${minutes}:${
       remainingSeconds < 10 ? '0' : ''
     }${remainingSeconds}`;
-  };
+  }, []);
 
   return (
     <ThemedScreen title="Start Game">
@@ -320,9 +84,7 @@ export default function StartGame() {
       </ThemedView>
       <ThemedView style={styles.container}>
         <ThemedText style={styles.timer}>{formatTime(timeLeft)}</ThemedText>
-        <ThemedText style={styles.itemText}>
-          {randomizedTexts[currentIndex]}
-        </ThemedText>
+        <ThemedText style={styles.itemText}>{currentText}</ThemedText>
         <ThemedText style={styles.categoryText}>{currentCategory}</ThemedText>
         <ThemedTextInput
           ref={textInputRef}
@@ -388,11 +150,11 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between', // Align children within header
+    justifyContent: 'space-between',
   },
   iconContainer: {
-    position: 'relative', // Use relative positioning within header
-    marginHorizontal: 10, // Adjust positioning
+    position: 'relative',
+    marginHorizontal: 10,
   },
   stats: {
     fontSize: 18,
@@ -404,7 +166,7 @@ const styles = StyleSheet.create({
   timer: {
     fontSize: 48,
     textAlign: 'center',
-    marginVertical: 10, // Ensure sufficient space around timer
+    marginVertical: 10,
   },
   itemText: {
     fontSize: 24,

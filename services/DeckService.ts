@@ -1,21 +1,22 @@
-import hiriganaDeck from "../assets/decks/hirigana.json";
+import hiriganaDeck from "../assets/decks/hirigana.json"; // Import default decks
 import katakanaDeck from "../assets/decks/katakana.json";
 import nlpt5Deck from "../assets/decks/nlpt5.json";
 import nlpt5KanjiDeck from "../assets/decks/nlpt5-kanji.json";
-import { Deck, DeckSummary, DeckDb } from "../types/DeckTypes";
-import { DBService } from "./DBService";
-import { ErrorService } from '../services/ErrorService';
-import { ErrorActionType } from '../types/ErrorTypes';
+import { Deck, DeckSummary, DeckDb } from "../types/DeckTypes"; // Import types
+import { DBService } from "./DBService"; // Import database service
+import { ErrorService } from '../services/ErrorService'; // Import error service
+import { ErrorActionType } from '../types/ErrorTypes'; // Import error action types
 
 type Cntr = {
-  cnt: number;
+  cnt: number; // Type definition for count results
 };
 
 export class DeckService {
-  private static instance: DeckService;
-  dbService = DBService.getInstance();
-  errorService = ErrorService.getInstance();
+  private static instance: DeckService; // Singleton instance of DeckService
+  dbService = DBService.getInstance(); // Database service instance
+  errorService = ErrorService.getInstance(); // Error service instance
 
+  // Singleton pattern implementation for DeckService
   public static getInstance(): DeckService {
     if (!DeckService.instance) {
       DeckService.instance = new DeckService();
@@ -23,24 +24,26 @@ export class DeckService {
     return DeckService.instance;
   }
 
+  // Initialize decks, loading defaults if no decks are present
   public async initDecks(): Promise<void> {
     try {
-      const count = await this.getDecksCount();
+      const count = await this.getDecksCount(); // Get current deck count
       if (count === 0) {
-        await this.initializeDefaultDecks();
+        await this.initializeDefaultDecks(); // Initialize default decks if count is zero
       }
     } catch (error) {
       await this.errorService.logError(ErrorActionType.CONSOLE, 32, 'Error initializing decks.', error);
     }
   }
 
+  // Get the number of decks in the database
   private async getDecksCount(): Promise<number> {
     let count = 0;
 
     try {
-      const item = (await this.dbService.getFirstAsync(
-        "SELECT count(*) cnt from deck",
-      )) as Cntr;
+      const item = await this.dbService.getFirstAsync<Cntr>(
+        "SELECT count(*) cnt from deck", // SQL query to count decks
+      );
       if (item) {
         count = item.cnt;
       }
@@ -50,14 +53,15 @@ export class DeckService {
     return count;
   }
 
+  // Check if a deck exists by name
   public async checkDeckExists(deckName: string): Promise<number> {
     let count: number = 0;
 
     try {
-      const item = (await this.dbService.getFirstAsync(
+      const item = await this.dbService.getFirstAsync<Cntr>(
         "SELECT count(*) cnt from deck where deckName = ?",
-        [deckName],
-      )) as Cntr;
+        [deckName] // Use prepared statement to avoid SQL injection
+      );
       if (item) {
         count = item.cnt;
       }
@@ -67,6 +71,7 @@ export class DeckService {
     return count;
   }
 
+  // Initialize the default decks into the database
   private async initializeDefaultDecks(): Promise<void> {
     try {
       const defaultDecks = [
@@ -87,18 +92,20 @@ export class DeckService {
     }
   }
 
+  // Retrieve a specific deck by name
   public async getDeck(deckName: string): Promise<Deck | null> {
     let deck: Deck | null = null;
 
     try {
-      const item = (await this.dbService.getFirstAsync(
+      const item = await this.dbService.getFirstAsync<DeckDb>(
         "SELECT * from deck where deckName = ?",
-        [deckName],
-      )) as DeckDb;
+        [deckName], // Use prepared statement
+      );
       if (!item) {
         await this.errorService.logError(ErrorActionType.CONSOLE, 35, `Deck ${deckName} not found.`);
         return null;
       }
+      // Convert database item to Deck type
       deck = {
         name: item.deckName,
         categories: item.categories.split("|"),
@@ -110,12 +117,13 @@ export class DeckService {
     return deck;
   }
 
+  // Retrieve summaries of all decks
   public async getDecksSummary(): Promise<DeckSummary[]> {
     const summaries: DeckSummary[] = [];
     try {
-      const items = (await this.dbService.getAllAsync(
+      const items = await this.dbService.getAllAsync<DeckDb>(
         "SELECT * from deck order by deckName",
-      )) as DeckDb[];
+      );
       if (!items) {
         await this.errorService.logError(ErrorActionType.CONSOLE, 37, "Failed to get decks - not found.");
         return summaries;
@@ -124,6 +132,7 @@ export class DeckService {
       for (const item of items) {
         const categories = item.categories.split("|");
         const count = JSON.parse(item.items).length;
+        // Create a summary for each deck
         summaries.push({
           deckName: item.deckName,
           categories: categories,
@@ -136,6 +145,7 @@ export class DeckService {
     return summaries;
   }
 
+  // Add a new deck to the database
   public async newDeck(
     deckName: string,
     categories: string[],
@@ -148,6 +158,7 @@ export class DeckService {
     }
   }
 
+  // Add a deck to the database
   private async addDeck(
     deckName: string,
     categories: string,
@@ -163,6 +174,7 @@ export class DeckService {
     }
   }
 
+  // Update a deck in the database
   private async updateDeck(
     deckName: string,
     categories: string,
@@ -178,6 +190,7 @@ export class DeckService {
     }
   }
 
+  // Delete a deck from the database
   public async deleteDeck(deckName: string): Promise<void> {
     try {
       await this.dbService.runAsyncTx(
@@ -195,6 +208,7 @@ export class DeckService {
     }
   }
 
+  // Reset all decks in the database
   public async resetDecks(): Promise<void> {
     try {
       await this.dbService.resetAll();
@@ -204,12 +218,14 @@ export class DeckService {
     }
   }
 
+  // Sort items in a deck
   private sortItems(items: string[][]): string[][] {
     return items.sort((a, b) =>
       a[0].localeCompare(b[0], undefined, { sensitivity: "base" }),
     );
   }
 
+  // Add an item to a deck
   public async addDeckItem(deckName: string, item: string[]): Promise<void> {
     try {
       const deck = await this.getDeck(deckName);
@@ -226,6 +242,7 @@ export class DeckService {
     }
   }
 
+  // Delete an item from a deck
   public async deleteDeckItem(deckName: string, text: string): Promise<void> {
     try {
       const deck = await this.getDeck(deckName);
@@ -242,6 +259,7 @@ export class DeckService {
     }
   }
 
+  // Update an item in a deck
   public async updateDeckItem(
     deckName: string,
     text: string,
@@ -262,6 +280,7 @@ export class DeckService {
     }
   }
 
+  // Change the name of a deck
   public async changeDeckName(oldName: string, newName: string): Promise<void> {
     try {
       await this.dbService.runAsyncTx(
@@ -285,6 +304,7 @@ export class DeckService {
     }
   }
 
+  // Change the name of a category within a deck
   public async changeCategoryName(
     deckName: string,
     oldCategoryName: string,
@@ -318,6 +338,7 @@ export class DeckService {
     }
   }
 
+  // Create a new deck from CSV data
   async createDeck(deckName: string, csvData: string) {
     try {
       // Validate the deck name

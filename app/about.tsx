@@ -1,92 +1,100 @@
-import React from 'react';
-import { Alert, StyleSheet } from 'react-native';
-import { DeckService } from '../services/DeckService';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
-import { ThemedPressable } from '@/components/ThemedPressable';
-import { ThemedScreen } from '@/components/ThemedScreen';
-import { showToast } from '@/components/ThemedToast';
+import React, { useState } from 'react';
+import { Alert, StyleSheet, ActivityIndicator } from 'react-native'; // Importing necessary components and modules
 import { router } from 'expo-router';
-import { ErrorService } from '../services/ErrorService';
-import { ErrorActionType } from '../types/ErrorTypes';
+import { showToast } from '@/components/ThemedToast'; // Custom toast component
+
+import { ThemedText } from '@/components/ThemedText'; // Themed text component for consistent styling
+import { ThemedView } from '@/components/ThemedView'; // Themed view component for layout
+import { ThemedPressable } from '@/components/ThemedPressable'; // Themed pressable component for buttons
+import { ThemedScreen } from '@/components/ThemedScreen'; // Themed screen component
+
+import { DeckService } from '../services/DeckService'; // Service for managing decks
+import { ErrorService } from '../services/ErrorService'; // Service for logging errors
+import { ErrorActionType } from '../types/ErrorTypes'; // Enum for error action types
 
 const About = () => {
-  const deckService = DeckService.getInstance();
-  const errorService = ErrorService.getInstance();
+  const deckService = DeckService.getInstance(); // Singleton instance of DeckService
+  const errorService = ErrorService.getInstance(); // Singleton instance of ErrorService
 
+  // State to track loading status
+  const [loading, setLoading] = useState(false);
+
+  // Function to reset all app data
   const resetAllData = async () => {
+    setLoading(true); // Start loading
     try {
-      await deckService.resetDecks();
-      showToast('success', 'App data has been reset.');
+      await deckService.resetDecks(); // Reset decks and data
+      showToast('success', 'App data has been reset.'); // Show success toast
     } catch (error) {
+      // Log the error and show a toast notification
       await errorService.logError(
         ErrorActionType.TOAST,
         1,
         'Failed to reset app data.',
         error
       );
+    } finally {
+      setLoading(false); // Stop loading
     }
   };
 
+  // Function to confirm the reset action
   const verifyReset = () => {
     Alert.alert(
-      'Reset All Data?',
-      'Resetting all data deletes decks and statistics. Default decks will be loaded. Continue?',
+      'Reset All Data?', // Title
+      'Resetting all data deletes decks and statistics. Default decks will be loaded. Continue?', // Message
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: 'Cancel', style: 'cancel' }, // Cancel button
         {
           text: 'Continue',
-          onPress: async () => {
-            await resetAllData();
+          onPress: () => {
+            resetAllData(); // Call resetAllData if the user confirms
           },
-          style: 'destructive',
+          style: 'destructive', // Destructive style indicates the action is irreversible
         },
       ],
-      { cancelable: false }
+      { cancelable: false } // Prevent dismissing the alert by tapping outside
     );
   };
 
-  // const createError = async () => {
-  // await errorService.logError(ErrorActionType.TOAST,
-  //   1,
-  //   'Test Error',
-  //   'Error solely for purpose of testing error logging and displaying'
-  // );
-  // };
-
   return (
     <ThemedScreen title="About">
+      {/* Screen with a title */}
       <ThemedView style={styles.innerContainer}>
+        {/* Container for text and buttons */}
         <ThemedText style={styles.title}>Language Speed Train</ThemedText>
+        {/* App title */}
         <ThemedText style={styles.normal}>Version 1.0</ThemedText>
+        {/* Version information */}
         <ThemedText style={styles.normal}>Developed by Elasting</ThemedText>
+        {/* Developer information */}
         <ThemedText style={styles.normal}>
           All data collected in playing the game resides in the application on
           the phone. Your data is not sent to Elasting or anyone else.
+          {/* Privacy information */}
         </ThemedText>
         <ThemedText style={styles.copyright}>
-          © 2024, Elasting. All rights reserved.
+          © 2024, Elasting. All rights reserved. {/* Copyright information */}
         </ThemedText>
         <ThemedPressable
           title="View Errors"
-          onPress={() => router.navigate('/errors')}
+          onPress={() => router.navigate('/errors')} // Navigate to errors screen
           fontSize={20}
           style={styles.errorButton}
         />
-        {/* <ThemedPressable
-          title="Create Error"
-          onPress={createError}
-          fontSize={20}
-          style={styles.errorButton}
-        /> */}
       </ThemedView>
-      <ThemedView style={styles.footer}>
-        <ThemedPressable
-          title="Reset App Data"
-          onPress={verifyReset}
-          fontSize={20}
-        />
-      </ThemedView>
+      {loading ? (
+        // Show ActivityIndicator when loading
+        <ActivityIndicator size="large" color="#007BFF" style={styles.loader} />
+      ) : (
+        <ThemedView style={styles.footer}>
+          <ThemedPressable
+            title="Reset App Data"
+            onPress={verifyReset}
+            fontSize={20}
+          />
+        </ThemedView>
+      )}
     </ThemedScreen>
   );
 };
@@ -121,6 +129,13 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
+  },
+  loader: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    marginTop: -20,
+    marginLeft: -20,
   },
 });
 

@@ -1,20 +1,21 @@
-import React, { useEffect, useState } from "react";
-import { StyleSheet } from "react-native";
-import { ThemedPressable } from "@/components/ThemedPressable";
-import { ThemedText } from "@/components/ThemedText";
-import { ThemedView } from "@/components/ThemedView";
-import { ThemedScreen } from "@/components/ThemedScreen";
-import { router } from "expo-router";
-import { TurnAnswer } from "../types/LoggingTypes";
-import Ionicons from "@expo/vector-icons/Ionicons";
-import { useLocalSearchParams } from "expo-router";
-import { useThemeColor } from "@/hooks/useThemeColor";
+import React, { useEffect, useState } from 'react';
+import { StyleSheet } from 'react-native';
+import { ThemedPressable } from '@/components/ThemedPressable';
+import { ThemedText } from '@/components/ThemedText';
+import { ThemedView } from '@/components/ThemedView';
+import { ThemedScreen } from '@/components/ThemedScreen';
+import { router } from 'expo-router';
+import { TurnAnswer } from '../types/LoggingTypes';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { useLocalSearchParams } from 'expo-router';
+import { useThemeColor } from '@/hooks/useThemeColor';
 
-type IoniconName = keyof typeof Ionicons.glyphMap;
+type IoniconName = keyof typeof Ionicons.glyphMap; // Define type for Ionicon names
 
 export default function GameSummary() {
-  const inputBackgroundColor = useThemeColor({}, "inputBackground");
+  const inputBackgroundColor = useThemeColor({}, 'inputBackground'); // Get theme color
 
+  // Get search params from the URL
   const { deckName, category, duration, turnsStr } = useLocalSearchParams<{
     deckName: string;
     category: string;
@@ -22,15 +23,17 @@ export default function GameSummary() {
     turnsStr: string;
   }>();
 
-  const turns: TurnAnswer[] = JSON.parse(turnsStr);
+  const turns: TurnAnswer[] = JSON.parse(turnsStr); // Parse turns string to array
 
-  const [gameRating, setGameRating] = useState(1);
+  const [gameRating, setGameRating] = useState(1); // State to hold game rating
 
+  // Calculate statistics from the turns
   const total = turns.length;
   const correct = turns.filter((turn) => turn.isCorrect).length;
-  const skipped = turns.filter((turn) => turn.type === "skip").length;
+  const skipped = turns.filter((turn) => turn.type === 'skip').length;
   const incorrect = total - correct - skipped;
 
+  // Calculate percentage metrics
   const percentCorrect = (total ? (correct / total) * 100 : 0).toFixed(2);
   const percentSkipped = (total ? (skipped / total) * 100 : 0).toFixed(2);
   const correctPerMinute = (correct / (parseInt(duration) / 60)).toFixed(2);
@@ -38,7 +41,7 @@ export default function GameSummary() {
   // Calculate game rating based on percentage correct
   useEffect(() => {
     const pctCorrect = Number(percentCorrect);
-    if (pctCorrect == 100) {
+    if (pctCorrect === 100) {
       setGameRating(4);
     } else if (pctCorrect >= 85) {
       setGameRating(3);
@@ -51,23 +54,25 @@ export default function GameSummary() {
 
   return (
     <ThemedScreen title="Game Summary" style={styles.container}>
+      {/* Header buttons */}
       <ThemedView style={styles.header}>
         <ThemedPressable
           title="New Game"
           fontSize={20}
-          onPress={() => router.navigate("/newGame")}
+          onPress={() => router.navigate('/newGame')}
         />
         <ThemedPressable
           title="Replay Game"
           fontSize={20}
           onPress={() =>
             router.replace({
-              pathname: "/startGame",
+              pathname: '/startGame',
               params: { deckName, category, duration },
             })
           }
         />
       </ThemedView>
+      {/* Game options section */}
       <ThemedView style={styles.section}>
         <ThemedText style={styles.sectionLabel}>Game Options</ThemedText>
         <ThemedText style={styles.optionText}>Deck: {deckName}</ThemedText>
@@ -76,25 +81,17 @@ export default function GameSummary() {
           Time: {duration} seconds
         </ThemedText>
         <ThemedView style={styles.ratingContainer}>
-          {[...Array(4)].map((_, i) =>
-            i < gameRating ? (
-              <Ionicons
-                key={i}
-                size={30}
-                name={"star"}
-                style={{ color: "gold" }}
-              />
-            ) : (
-              <Ionicons
-                key={i}
-                size={30}
-                name={"star-outline"}
-                style={{ color: "gray" }}
-              />
-            ),
-          )}
+          {[...Array(4)].map((_, i) => (
+            <Ionicons
+              key={i}
+              size={30}
+              name={i < gameRating ? 'star' : 'star-outline'}
+              style={i < gameRating ? styles.goldStar : styles.grayStar}
+            />
+          ))}
         </ThemedView>
       </ThemedView>
+      {/* Statistics section */}
       <ThemedView style={styles.section}>
         <ThemedText style={styles.sectionLabel}>Statistics</ThemedText>
         <ThemedView style={styles.row}>
@@ -105,6 +102,7 @@ export default function GameSummary() {
           <ThemedText style={styles.statText}>Skipped: {skipped}</ThemedText>
         </ThemedView>
       </ThemedView>
+      {/* Metrics section */}
       <ThemedView style={styles.section}>
         <ThemedText style={styles.sectionLabel}>Metrics</ThemedText>
         <ThemedView style={styles.row}>
@@ -119,30 +117,29 @@ export default function GameSummary() {
           Correct/Minute: {correctPerMinute}
         </ThemedText>
       </ThemedView>
+      {/* Footer buttons */}
       <ThemedView style={styles.section}>
-        {total ? (
+        {total > 0 && (
           <ThemedPressable
             title="Game History"
             fontSize={20}
             onPress={() =>
               router.navigate({
-                pathname: "/gameHistory",
+                pathname: '/gameHistory',
                 params: { turnsStr: JSON.stringify(turns) },
               })
             }
           />
-        ) : (
-          ""
         )}
         <ThemedPressable
           title="View Statistics"
           fontSize={20}
-          onPress={() => router.navigate("/statistics")}
+          onPress={() => router.navigate('/statistics')}
         />
         <ThemedPressable
           title="Home"
           fontSize={20}
-          onPress={() => router.navigate("/home")}
+          onPress={() => router.navigate('/home')}
         />
       </ThemedView>
     </ThemedScreen>
@@ -155,39 +152,45 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     marginBottom: 16,
   },
   section: {
     marginBottom: 16,
-    alignItems: "center",
+    alignItems: 'center',
   },
   sectionLabel: {
     fontSize: 20,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     marginBottom: 8,
   },
   optionText: {
     fontSize: 16,
     marginBottom: 4,
-    textAlign: "center",
+    textAlign: 'center',
   },
   statText: {
     fontSize: 16,
     marginBottom: 4,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
   ratingContainer: {
-    flexDirection: "row",
-    justifyContent: "center",
+    flexDirection: 'row',
+    justifyContent: 'center',
     marginBottom: 8,
     marginTop: 16,
   },
   row: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    width: "100%",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
     paddingHorizontal: 16,
+  },
+  goldStar: {
+    color: 'gold',
+  },
+  grayStar: {
+    color: 'gray',
   },
 });

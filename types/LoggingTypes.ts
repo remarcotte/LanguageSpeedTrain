@@ -1,9 +1,8 @@
-// src/types/LoggingTypes.ts
-
+// Summary of a completed game: the options and basic statistics
 export type GameSummary = {
   id: number;
   datetimeEnded: number;
-  datetime?: string;
+  datetime?: string;  // for display. not persisted. populated after fetch from database
   deck: string;
   category: string;
   duration: number;
@@ -11,14 +10,7 @@ export type GameSummary = {
   correct: number;
 };
 
-export type GameDetail = {
-  text: string;
-  type: string;
-  category: string;
-  response: string;
-  isCorrect: boolean;
-};
-
+// For each deck, we summarize basic statistics across all games
 export type LogDeckSummary = {
   deck: string;
   timesPlayed: number;
@@ -30,6 +22,7 @@ export type LogDeckSummary = {
   maxCorrectPerMinute: number;
 };
 
+// For each item in a deck, we summarize basic statistics across all games
 export type DeckDetail = {
   deck: string;
   text: string;
@@ -37,6 +30,7 @@ export type DeckDetail = {
   numberCorrect: number;
 };
 
+// Base type representing a turn in the game
 export type Turn = {
   text: string;
   type: string;
@@ -45,15 +39,16 @@ export type Turn = {
   isCorrect: boolean;
 };
 
-export type TurnAnswer = {
-  text: string;
-  type: string;
-  category: string;
-  response: string;
-  isCorrect: boolean;
-  answer?: string;
-};
+// Game detail is useful for looking historically.
+// As opposed to turn which is useful during/immediately after a game.
+export type GameDetail = Turn;
 
+// Turn with an optional answer
+export interface TurnAnswer extends Turn {
+  answer?: string; // Optional answer property
+}
+
+// Full record of a completed game - the options selected & the turns
 export type GameRecord = {
   deckName: string;
   category: string;
