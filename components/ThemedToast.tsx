@@ -10,13 +10,11 @@ import { Colors } from '../constants/Colors'; // Adjust the import path as neede
 const VISIBILITY_TIME = 1500;
 const TOP_OFFSET = 50;
 
-const theme = useColorScheme() || 'light'; // Get the current color scheme (light/dark)
-
-// Define custom toast styles using your color themes
 // Define custom toast styles using your color themes
 export const ThemedToast = () => {
-  const theme = useColorScheme() || 'light'; // Compute the theme once
+  const theme = useColorScheme() || 'light'; // Compute the theme once within the component
 
+  // Move the toastConfig inside the component where the hook is used
   const toastConfig: ToastConfig = {
     success: (props: ToastProps) => (
       <BaseToast

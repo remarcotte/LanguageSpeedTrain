@@ -50,7 +50,7 @@ export function ThemedPressable({
       {...props} // Spread additional props
     >
       <Text style={[styles.buttonText, { color: buttonTextColor, fontSize }]}>
-        {title} {/* Display title text */}
+        {title}
       </Text>
     </Pressable>
   );

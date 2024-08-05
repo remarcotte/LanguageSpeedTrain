@@ -208,7 +208,7 @@ export default function Statistics() {
         setValue={setSelectedDeck}
         setItems={setItems}
         placeholder="Select a deck"
-        onChangeValue={(value) => handleDeckChange(value ? value : '')}
+        onChangeValue={(value: any) => handleDeckChange(value ? value : '')}
         style={styles.dropdown}
         textStyle={styles.dropdownText}
         dropDownContainerStyle={styles.dropdownContainer}

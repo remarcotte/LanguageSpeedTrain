@@ -14,19 +14,17 @@ export default function Home() {
 
   return (
     <ThemedScreen style={styles.container} title="Home">
-      {/* Display the logo image */}
       <Image
         style={styles.logoImage}
         source={require('@/assets/images/logo.png')}
         contentFit="contain"
       />
-      {/* Navigation buttons */}
       <ThemedPressable
         title="New Game"
         fontSize={32}
         style={styles.button}
         onPress={() => {
-          router.navigate('/newGame'); // Navigate to the New Game screen
+          router.navigate('/newGame');
         }}
       />
       <ThemedPressable
@@ -34,7 +32,7 @@ export default function Home() {
         fontSize={32}
         style={styles.button}
         onPress={() => {
-          router.navigate('/manageDecks'); // Navigate to the Manage Decks screen
+          router.navigate('/manageDecks');
         }}
       />
       <ThemedPressable
@@ -42,7 +40,7 @@ export default function Home() {
         fontSize={32}
         style={styles.button}
         onPress={() => {
-          router.navigate('/statistics'); // Navigate to the Statistics screen
+          router.navigate('/statistics');
         }}
       />
       <ThemedPressable
@@ -50,7 +48,7 @@ export default function Home() {
         fontSize={32}
         style={styles.button}
         onPress={() => {
-          router.navigate('/about'); // Navigate to the About screen
+          router.navigate('/about');
         }}
       />
       <ThemedPressable
@@ -58,7 +56,7 @@ export default function Home() {
         fontSize={32}
         style={styles.button}
         onPress={() => {
-          router.navigate('/debug'); // Navigate to the Debug screen
+          router.navigate('/debug');
         }}
       />
     </ThemedScreen>

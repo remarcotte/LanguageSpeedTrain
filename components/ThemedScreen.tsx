@@ -47,7 +47,8 @@ export function ThemedScreen({
           headerRight: () => headerRight, // Render the custom header right component if provided
         }}
       />
-      {children} {/* Render children components */}
+      {/* Render children components */}
+      {children}
     </View>
   );
 }

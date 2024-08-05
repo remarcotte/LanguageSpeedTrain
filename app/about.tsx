@@ -74,7 +74,7 @@ const About = () => {
           {/* Privacy information */}
         </ThemedText>
         <ThemedText style={styles.copyright}>
-          © 2024, Elasting. All rights reserved. {/* Copyright information */}
+          © 2024, Elasting. All rights reserved.
         </ThemedText>
         <ThemedPressable
           title="View Errors"
