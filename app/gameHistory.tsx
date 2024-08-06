@@ -1,23 +1,24 @@
 // gameHistory.tsx
 
-import React from "react";
-import { StyleSheet, ScrollView } from "react-native";
-import Ionicons from "@expo/vector-icons/Ionicons";
-import { useLocalSearchParams } from "expo-router";
+import React from 'react';
+import { StyleSheet } from 'react-native';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { useLocalSearchParams } from 'expo-router';
 
-import { useThemeColor } from "@/hooks/useThemeColor";
+import { useThemeColor } from '@/hooks/useThemeColor';
 
-import { ThemedText } from "@/components/ThemedText";
-import { ThemedView } from "@/components/ThemedView";
-import { ThemedScreen } from "@/components/ThemedScreen";
+import { ThemedText } from '@/components/ThemedText';
+import { ThemedView } from '@/components/ThemedView';
+import { ThemedScreen } from '@/components/ThemedScreen';
+import { ThemedFlatList } from '@/components/ThemedFlatList'; // Assuming you have this component
 
-import { TurnAnswer } from "@/types/LoggingTypes";
+import { TurnAnswer } from '@/types/LoggingTypes';
 
 type IoniconName = keyof typeof Ionicons.glyphMap; // Type for Ionicon names
 
 export default function GameHistory() {
-  const backgroundColor = useThemeColor({}, "background"); // Get background color from theme
-  const textColor = useThemeColor({}, "text"); // Get text color from theme
+  const backgroundColor = useThemeColor({}, 'background'); // Get background color from theme
+  const textColor = useThemeColor({}, 'text'); // Get text color from theme
 
   // Retrieve the serialized turns string from URL parameters
   const { turnsStr } = useLocalSearchParams<{
@@ -27,43 +28,49 @@ export default function GameHistory() {
   // Parse the serialized turns string into an array of TurnAnswer objects
   const turns: TurnAnswer[] = JSON.parse(turnsStr);
 
+  // Render item function for FlatList
+  const renderItem = ({ item }: { item: TurnAnswer }) => (
+    <ThemedView style={styles.turnContainer}>
+      <ThemedView style={styles.turnHeader}>
+        {/* Display a checkmark if the answer is correct, otherwise display a cross */}
+        {item.isCorrect ? (
+          <Ionicons
+            size={22}
+            name="checkmark-circle"
+            style={styles.correctIcon}
+          />
+        ) : (
+          item.type !== 'skip' && (
+            <Ionicons
+              size={22}
+              name="close-circle"
+              style={styles.incorrectIcon}
+            />
+          )
+        )}
+        <ThemedText style={styles.turnText}>
+          {item.text} ({item.category})
+        </ThemedText>
+      </ThemedView>
+      <ThemedText style={styles.responseText}>
+        Your response: {item.response || 'Skipped'}
+      </ThemedText>
+      {(!item.isCorrect || item.type === 'skip') && (
+        <ThemedText style={styles.correctResponseText}>
+          Correct response: {item.answer}
+        </ThemedText>
+      )}
+    </ThemedView>
+  );
+
   return (
     <ThemedScreen title="Game History">
-      <ScrollView style={styles.scrollContainer}>
-        {turns.map((turn: TurnAnswer, index: number) => (
-          <ThemedView key={index} style={styles.turnContainer}>
-            <ThemedView style={styles.turnHeader}>
-              {/* Display a checkmark if the answer is correct, otherwise display a cross */}
-              {turn.isCorrect ? (
-                <Ionicons
-                  size={22}
-                  name="checkmark-circle"
-                  style={styles.correctIcon}
-                />
-              ) : (
-                turn.type !== "skip" && (
-                  <Ionicons
-                    size={22}
-                    name="close-circle"
-                    style={styles.incorrectIcon}
-                  />
-                )
-              )}
-              <ThemedText style={styles.turnText}>
-                {turn.text} ({turn.category})
-              </ThemedText>
-            </ThemedView>
-            <ThemedText style={styles.responseText}>
-              Your response: {turn.response || "Skipped"}
-            </ThemedText>
-            {(!turn.isCorrect || turn.type === "skip") && (
-              <ThemedText style={styles.correctResponseText}>
-                Correct response: {turn.answer}
-              </ThemedText>
-            )}
-          </ThemedView>
-        ))}
-      </ScrollView>
+      <ThemedFlatList
+        data={turns}
+        renderItem={renderItem}
+        keyExtractor={(item, index) => index.toString()}
+        contentContainerStyle={styles.scrollContainer}
+      />
     </ThemedScreen>
   );
 }
@@ -71,16 +78,17 @@ export default function GameHistory() {
 const styles = StyleSheet.create({
   scrollContainer: {
     flexGrow: 1,
+    paddingVertical: 8,
   },
   turnContainer: {
     marginBottom: 12,
     borderBottomWidth: 1,
-    borderBottomColor: "#ccc",
+    borderBottomColor: '#ccc',
     paddingBottom: 8,
   },
   turnHeader: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   turnText: {
     fontSize: 18,
@@ -91,14 +99,14 @@ const styles = StyleSheet.create({
   },
   correctResponseText: {
     fontSize: 18,
-    color: "green",
+    color: 'green',
   },
   correctIcon: {
-    color: "green",
-    fontWeight: "900",
+    color: 'green',
+    fontWeight: '900',
   },
   incorrectIcon: {
-    color: "red",
-    fontWeight: "900",
+    color: 'red',
+    fontWeight: '900',
   },
 });

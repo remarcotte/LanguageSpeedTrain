@@ -1,10 +1,10 @@
 // ThemedScreen.tsx
 
-import React from "react";
-import { View, type ViewProps, StyleSheet } from "react-native";
-import { Stack } from "expo-router"; // Importing Stack for screen navigation options
+import React from 'react';
+import { View, type ViewProps, StyleSheet } from 'react-native';
+import { Stack } from 'expo-router'; // Importing Stack for screen navigation options
 
-import { useThemeColor } from "@/hooks/useThemeColor"; // Custom hook for theme colors
+import { useThemeColor } from '@/hooks/useThemeColor'; // Custom hook for theme colors
 
 // Define props for ThemedScreen, extending ViewProps and adding custom properties
 export type ThemedScreenProps = ViewProps & {
@@ -12,6 +12,7 @@ export type ThemedScreenProps = ViewProps & {
   darkColor?: string; // Optional dark color theme
   title: string; // Title for the screen header
   children: React.ReactNode; // Children components to be rendered within the screen
+  showBackButton?: boolean;
   headerRight?: React.ReactNode; // Optional custom header right component
 };
 
@@ -23,18 +24,19 @@ export function ThemedScreen({
   title,
   children,
   headerRight,
+  showBackButton = true,
   ...otherProps
 }: ThemedScreenProps) {
   // Determine background color based on theme
   const backgroundColor = useThemeColor(
     { light: lightColor, dark: darkColor },
-    "background",
+    'background'
   );
 
   // Determine text color based on theme
   const textColor = useThemeColor(
     { light: lightColor, dark: darkColor },
-    "text",
+    'text'
   );
 
   return (
@@ -45,9 +47,11 @@ export function ThemedScreen({
           headerStyle: { backgroundColor }, // Style the header with the background color
           headerTintColor: textColor, // Set the text color for header elements
           headerTitleStyle: {
-            fontWeight: "bold", // Make the header title bold
+            fontWeight: 'bold', // Make the header title bold
           },
           headerRight: () => headerRight, // Render the custom header right component if provided
+          headerBackVisible: showBackButton, // Conditionally show or hide the back button
+          headerLeft: showBackButton ? undefined : () => null, // Override the headerLeft to remove back button if needed
         }}
       />
       {/* Render children components */}
@@ -60,6 +64,6 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1, // Full-screen flex layout
     padding: 16, // Padding around the content
-    justifyContent: "flex-start", // Align content to the start of the screen
+    justifyContent: 'flex-start', // Align content to the start of the screen
   },
 });

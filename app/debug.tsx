@@ -1,17 +1,20 @@
 // debug.tsx
 
-import React, { useState, useEffect } from "react";
-import { ScrollView, StyleSheet } from "react-native";
+import React, { useState, useEffect } from 'react';
+import { ScrollView, StyleSheet } from 'react-native';
 
-import { ThemedText } from "@/components/ThemedText";
-import { ThemedScreen } from "@/components/ThemedScreen";
+import { ThemedText } from '@/components/ThemedText';
+import { ThemedScreen } from '@/components/ThemedScreen';
 
-import { LoggingService } from "@/services/LoggingService";
+import { LoggingService } from '@/services/LoggingService';
+import { ErrorService } from '@/services/ErrorService';
 
 // an uncommented free-for-all for looking directly at the data
 export default function Debug() {
   const loggingService = LoggingService.getInstance();
+  const errorService = ErrorService.getInstance();
 
+  const [item0, setItem0] = useState<any>(null);
   const [item1, setItem1] = useState<any>(null);
   const [item2, setItem2] = useState<any>(null);
   const [item3, setItem3] = useState<any>(null);
@@ -23,7 +26,9 @@ export default function Debug() {
 
   useEffect(() => {
     const doDebug = async () => {
-      const d = (await loggingService.getDeckSummary("Hirigana")) as any;
+      const e = (await errorService.getErrors()) as any;
+      setItem0(e || null);
+      const d = (await loggingService.getDeckSummary('Hirigana')) as any;
       setItem6(d?.summary || null);
       setItem7(d?.games || null);
       setItem8(d?.details || null);
@@ -41,6 +46,8 @@ export default function Debug() {
   return (
     <ThemedScreen title="Debug">
       <ScrollView contentContainerStyle={styles.scrollContainer}>
+        <ThemedText style={styles.title}>Errors</ThemedText>
+        <ThemedText style={styles.normal}>{JSON.stringify(item0)}</ThemedText>
         <ThemedText style={styles.title}>Logging getDeckSummary</ThemedText>
         <ThemedText style={styles.label}>Summary</ThemedText>
         <ThemedText style={styles.normal}>{JSON.stringify(item6)}</ThemedText>
@@ -68,7 +75,7 @@ export default function Debug() {
 const styles = StyleSheet.create({
   title: {
     fontSize: 24,
-    textAlign: "center",
+    textAlign: 'center',
     marginBottom: 16,
   },
   scrollContainer: {
@@ -76,8 +83,8 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 20,
-    fontWeight: "bold",
-    textAlign: "center",
+    fontWeight: 'bold',
+    textAlign: 'center',
     marginBottom: 16,
   },
   normal: {

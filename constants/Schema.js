@@ -16,7 +16,8 @@ export const CREATETABLEERRORS = `
           logDatetime INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
           error TEXT NOT NULL,
           message TEXT NOT NULL
-        );`;
+        );
+        CREATE INDEX IF NOT EXISTS errors_k1 ON errors (logDatetime DESC);`;
 
 // The decks loaded for game play
 export const CREATETABLEDECK = `
@@ -36,7 +37,8 @@ export const CREATETABLEGAMESUMMARY = `
           duration INTEGER NOT NULL,
           attempted INTEGER NOT NULL,
           correct INTEGER NOT NULL
-        );`;
+        );
+        CREATE INDEX IF NOT EXISTS game_summary_k1 ON game_summary (deckname, datetimeEnded DESC);`;
 
 // Details for each game played. This table could grow large so it is
 // pruned to keep only details for the last N games (initially 200).
@@ -49,7 +51,8 @@ export const CREATETABLEGAMEDETAIL = `
           category TEXT NOT NULL,
           response TEXT NOT NULL,
           isCorrect TINYINT NOT NULL
-        );`;
+        );
+        CREATE INDEX IF NOT EXISTS game_detail_k1 ON game_detail (gameId, id);`;
 
 // Statistics at deck level rolled up across all games played
 export const CREATETABLEDECKSUMMARY = `
@@ -72,7 +75,8 @@ export const CREATETABLEDECKDETAIL = `
           text TEXT NOT NULL,
           numberAttempts INTEGER NOT NULL,
           numberCorrect INTEGER NOT NULL
-        );`;
+        );
+        CREATE INDEX IF NOT EXISTS deck_detail_k1 ON deck_detail (deckName);`;
 
 export const DROPTABLEERRORS = `
         DROP TABLE IF EXISTS errors;`;

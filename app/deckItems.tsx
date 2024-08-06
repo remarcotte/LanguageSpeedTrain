@@ -19,6 +19,8 @@ import { DeckService } from '@/services/DeckService';
 import { ErrorService } from '@/services/ErrorService';
 import { ErrorActionType } from '@/types/ErrorTypes';
 
+import { LIST_ITEM_HEIGHTS } from '@/constants/General';
+
 // Interface for deck items
 interface DeckItem {
   text: string;
@@ -139,14 +141,14 @@ export default function DeckItems() {
   const getItemHeight = useCallback((categories: string[]): number => {
     switch (categories.length) {
       case 1:
-        return 70;
+        return LIST_ITEM_HEIGHTS[0];
       case 2:
-        return 90;
+        return LIST_ITEM_HEIGHTS[1];
       case 3:
-        return 110;
+        return LIST_ITEM_HEIGHTS[2];
       case 4:
       default:
-        return 130;
+        return LIST_ITEM_HEIGHTS[3];
     }
   }, []);
 

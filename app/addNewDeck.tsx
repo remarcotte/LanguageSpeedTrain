@@ -1,116 +1,94 @@
 // addNewDeck.tsx
 
-import React, { useState, useRef } from "react";
-import {
-  KeyboardAvoidingView,
-  Platform,
-  StyleSheet,
-  TextInput as RNTextInput,
-} from "react-native";
-import { router } from "expo-router";
+import React, { useState, useRef } from 'react';
+import { Platform, StyleSheet, TextInput as RNTextInput } from 'react-native';
+import { router } from 'expo-router';
 
-import { ThemedText } from "@/components/ThemedText"; // Custom themed text component
-import { ThemedTextInput } from "@/components/ThemedTextInput"; // Custom themed text input component
-import { ThemedPressable } from "@/components/ThemedPressable"; // Custom themed pressable component
-import { ThemedScreen } from "@/components/ThemedScreen"; // Custom themed screen component
-import { ThemedKeyboardAwareScrollView } from "@/components/ThemedKeyboardAwareScrollView"; // Custom themed scroll view component
+import { ThemedText } from '@/components/ThemedText';
+import { ThemedTextInput } from '@/components/ThemedTextInput';
+import { ThemedPressable } from '@/components/ThemedPressable';
+import { ThemedScreen } from '@/components/ThemedScreen';
+import { ThemedView } from '@/components/ThemedView'; // Use a simple scroll view now
 
-import { DeckService } from "@/services/DeckService"; // Service for handling deck-related operations
-import { ErrorService } from "@/services/ErrorService"; // Service for error logging
-import { ErrorActionType } from "@/types/ErrorTypes"; // Enum for error action types
+import { DeckService } from '@/services/DeckService';
+import { ErrorService } from '@/services/ErrorService';
+import { ErrorActionType } from '@/types/ErrorTypes';
 
 export default function AddNewDeck() {
-  // Get instances of the services
   const deckService = DeckService.getInstance();
   const errorService = ErrorService.getInstance();
 
-  // State for deck name and data
-  const [deckName, setDeckName] = useState(""); // Deck name state
-  const [deckData, setDeckData] = useState(""); // Deck data state
+  const [deckName, setDeckName] = useState('');
+  const [deckData, setDeckData] = useState('');
 
-  // Establish refs for the input fields
   const deckNameInputRef = useRef<RNTextInput>(null);
   const deckDataInputRef = useRef<RNTextInput>(null);
 
-  // Function to add a new deck
   const addNewDeck = async () => {
+    let msg = '';
     try {
-      // Create a new deck using the deck service
-      await deckService.createDeck(deckName, deckData);
-      // Navigate to the manage decks screen after successful creation
-      router.navigate("/manageDecks");
+      msg = await deckService.createDeck(deckName, deckData);
+      if (msg === '') router.navigate('/manageDecks');
+      if (msg) {
+        await errorService.logError(
+          ErrorActionType.TOASTONLY,
+          57,
+          'Error adding new deck.'
+        );
+      }
     } catch (error) {
-      // Log the error and show a toast notification
       await errorService.logError(
         ErrorActionType.TOAST,
         2,
-        "Error adding new deck.",
-        error,
+        'Error adding new deck.',
+        error
       );
     }
   };
 
   return (
     <ThemedScreen title="Add New Deck">
-      <KeyboardAvoidingView
-        style={styles.container}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        keyboardVerticalOffset={100} // Adjust this value according to your header height
-      >
-        <ThemedKeyboardAwareScrollView>
-          <ThemedText style={styles.normal}>
-            First name your new deck. No two decks may share the same name.
-          </ThemedText>
-          <ThemedTextInput
-            ref={deckNameInputRef}
-            placeholder="Deck Name"
-            value={deckName}
-            autoCorrect={false}
-            autoCapitalize="none"
-            onChangeText={setDeckName}
-            returnKeyType="next" // Set the return key type to "next"
-            onSubmitEditing={() => deckDataInputRef.current?.focus()} // Move to the next input
-            blurOnSubmit={false} // Prevent keyboard from dismissing
-            style={styles.input}
-          />
-          <ThemedText style={styles.normal}>
-            Here's a sample of the format for your deck data.
-          </ThemedText>
-          <ThemedText style={styles.example}>
-            text,English,Français,Español
-          </ThemedText>
-          <ThemedText style={styles.example}>1,one,un,uno</ThemedText>
-          <ThemedText style={styles.example}>2,two,deux,dos</ThemedText>
-          <ThemedText style={styles.example}>3,three,trois,tres</ThemedText>
-          <ThemedText style={styles.normal}>
-            Follow the same format for your deck.
-          </ThemedText>
-          <ThemedText style={styles.normal}>
-            Note: The only commas allowed in the data are those separating the
-            different categories
-          </ThemedText>
-          <ThemedText style={styles.normal}>
-            Paste your deck data here, then click the Add button.
-          </ThemedText>
-          <ThemedTextInput
-            ref={deckDataInputRef}
-            placeholder="Data (CSV format)"
-            value={deckData}
-            autoCorrect={false}
-            autoCapitalize="none"
-            onChangeText={setDeckData}
-            style={[styles.input, styles.multilineInput]}
-            multiline
-            returnKeyType="default" // Allow return key to create a new line
-            blurOnSubmit={false} // Prevent keyboard from dismissing for multiline
-          />
-          <ThemedPressable
-            title="Add"
-            onPress={addNewDeck}
-            disabled={!deckName || !deckData} // Disable the button if name or data is empty
-          />
-        </ThemedKeyboardAwareScrollView>
-      </KeyboardAvoidingView>
+      <ThemedView>
+        <ThemedPressable
+          title="How to Format Decks"
+          onPress={() => router.navigate('/deckFormatInfo')}
+        />
+        <ThemedText style={styles.normal}>
+          Your new deck needs a name. No two decks may share the same name.
+        </ThemedText>
+        <ThemedTextInput
+          ref={deckNameInputRef}
+          placeholder="Deck Name"
+          value={deckName}
+          autoCorrect={false}
+          autoCapitalize="none"
+          onChangeText={setDeckName}
+          returnKeyType="next"
+          onSubmitEditing={() => deckDataInputRef.current?.focus()}
+          blurOnSubmit={false}
+          style={styles.input}
+        />
+        <ThemedText style={styles.normal}>
+          Paste your deck data here, then click the Add button.
+        </ThemedText>
+        <ThemedTextInput
+          ref={deckDataInputRef}
+          placeholder="Data (CSV format)"
+          value={deckData}
+          autoCorrect={false}
+          autoCapitalize="none"
+          onChangeText={setDeckData}
+          style={[styles.input, styles.multilineInput]}
+          multiline
+          returnKeyType="default"
+          blurOnSubmit={false}
+        />
+        <ThemedPressable
+          title="Add"
+          onPress={addNewDeck}
+          disabled={!deckName.trim() || !deckData.trim()}
+        />
+      </ThemedView>
     </ThemedScreen>
   );
 }
@@ -121,29 +99,26 @@ const styles = StyleSheet.create({
   },
   input: {
     height: 40,
-    borderColor: "gray",
+    borderColor: 'gray',
     borderWidth: 1,
-    marginLeft: 12,
-    marginBottom: 16,
+    marginHorizontal: 12,
+    marginBottom: 8,
     padding: 8,
   },
   normal: {
-    fontSize: 20,
-    marginLeft: 12,
-    marginRight: 16,
-    marginBottom: 16,
-    marginTop: 8,
-  },
-  example: {
     fontSize: 16,
-    marginLeft: 50,
+    marginHorizontal: 12,
     marginRight: 16,
-    marginBottom: 4,
-    marginTop: 0,
+    marginBottom: 8,
+    marginTop: 8,
   },
   multilineInput: {
     height: 120,
     marginLeft: 12,
-    textAlignVertical: "top", // Ensure text input starts at the top
+    textAlignVertical: 'top',
+  },
+  button: {
+    marginBottom: 8,
+    marginHorizontal: 12,
   },
 });

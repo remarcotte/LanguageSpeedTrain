@@ -11,6 +11,10 @@ export type ErrorLog = {
   message?: string; // application supplied error message
 };
 
+export type LoggedError = Omit<Required<ErrorLog>, 'error'> & {
+  error?: string; // 'error' remains optional
+};
+
 // enumeration of how logs are to be handled. All are logged to database except
 // TOASTONLY.
 export enum ErrorActionType {

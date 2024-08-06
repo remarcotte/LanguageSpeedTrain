@@ -1,14 +1,15 @@
 // statisticsDeckDetail.tsx
 
-import React, { useMemo } from "react";
-import { StyleSheet, FlatList } from "react-native";
-import { useLocalSearchParams } from "expo-router";
+import React, { useMemo } from 'react';
+import { StyleSheet, FlatList } from 'react-native';
+import { useLocalSearchParams } from 'expo-router';
 
-import { ThemedText } from "@/components/ThemedText";
-import { ThemedView } from "@/components/ThemedView";
-import { ThemedScreen } from "@/components/ThemedScreen";
+import { ThemedText } from '@/components/ThemedText';
+import { ThemedView } from '@/components/ThemedView';
+import { ThemedScreen } from '@/components/ThemedScreen';
+import { ThemedFlatList } from '@/components/ThemedFlatList';
 
-import { DeckDetail } from "@/types/LoggingTypes";
+import { DeckDetail } from '@/types/LoggingTypes';
 
 export default function StatisticsDeckDetail() {
   // Extract deckName and detailsStr from route parameters
@@ -20,13 +21,13 @@ export default function StatisticsDeckDetail() {
   // Parse the JSON string to get the deck details
   const details: DeckDetail[] = useMemo(
     () => JSON.parse(detailsStr),
-    [detailsStr],
+    [detailsStr]
   );
 
   return (
     <ThemedScreen title="Deck Detail Statistics">
       <ThemedText style={styles.title}>{deckName} History</ThemedText>
-      <FlatList
+      <ThemedFlatList
         data={details}
         keyExtractor={(item, index) => index.toString()} // Ensure unique keys for each item
         renderItem={({ item }) => (
@@ -37,8 +38,8 @@ export default function StatisticsDeckDetail() {
                 <ThemedText style={styles.detailTextRight}>
                   {((100 * item.numberCorrect) / item.numberAttempts)
                     .toFixed(2) // Round to two decimal places
-                    .replace(/\.00$/, "") // Remove trailing .00
-                    .replace(/(\.\d)0$/, "$1")}
+                    .replace(/\.00$/, '') // Remove trailing .00
+                    .replace(/(\.\d)0$/, '$1')}
                   %
                 </ThemedText>
               )}
@@ -57,8 +58,8 @@ export default function StatisticsDeckDetail() {
 const styles = StyleSheet.create({
   title: {
     fontSize: 24,
-    fontWeight: "bold",
-    textAlign: "center",
+    fontWeight: 'bold',
+    textAlign: 'center',
     marginBottom: 16,
   },
   contentContainer: {
@@ -69,13 +70,13 @@ const styles = StyleSheet.create({
   detailContainer: {
     marginBottom: 12,
     borderBottomWidth: 1,
-    borderBottomColor: "#ccc",
+    borderBottomColor: '#ccc',
     paddingBottom: 8,
   },
   detailHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   detailTextLeft: {
     fontSize: 18,

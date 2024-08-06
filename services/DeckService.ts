@@ -429,16 +429,18 @@ export class DeckService {
   }
 
   // Create a new deck from CSV data
-  async createDeck(deckName: string, csvData: string) {
+  async createDeck(deckName: string, csvData: string): Promise<string> {
+    let msg = ''
     try {
       // Validate the deck name
       if (!deckName.trim()) {
+        msg = 'Deck name cannot be empty.';
         await this.errorService.logError(
           ErrorActionType.CONSOLE,
           49,
-          "Deck name cannot be empty.",
+          msg,
         );
-        return;
+        return msg;
       }
 
       const lines = csvData
@@ -448,12 +450,13 @@ export class DeckService {
 
       // Validate CSV data has at least two lines
       if (lines.length < 2) {
+        msg = 'CSV data is incomplete.';
         await this.errorService.logError(
           ErrorActionType.CONSOLE,
           50,
-          "CSV data is incomplete.",
+          msg,
         );
-        return;
+        return msg;
       }
 
       // Process headers
@@ -461,12 +464,13 @@ export class DeckService {
 
       // Validate the first column
       if (headers[0] !== "text") {
+        msg = 'The first column must be text.';
         await this.errorService.logError(
           ErrorActionType.CONSOLE,
           51,
-          "The first column must be text.",
+          msg,
         );
-        return;
+        return msg;
       }
 
       const categories = headers.slice(1);
@@ -478,35 +482,39 @@ export class DeckService {
 
         // Validate the number of values matches the number of headers
         if (values.length !== headers.length) {
+          msg = 'Mismatch in the number of categories';
           await this.errorService.logError(
             ErrorActionType.CONSOLE,
             52,
-            "Mismatch in the number of categories",
+            msg,
           );
-          return; // Exit early if mismatch is found
+          return msg;
         }
         items.push(values);
       }
 
       // Validate there are items to process
       if (items.length === 0) {
+        msg = 'Deck must have at least one item.';
         await this.errorService.logError(
           ErrorActionType.CONSOLE,
           53,
-          "Deck must have at least one item",
+          msg,
         );
-        return;
+        return msg;
       }
 
       // Proceed with creating the new deck
       await this.newDeck(deckName, categories, items);
     } catch (error) {
+      msg = 'Failed to create deck.';
       await this.errorService.logError(
         ErrorActionType.CONSOLE,
         54,
-        "Failed to create deck.",
+        msg,
         error,
       );
     }
+    return msg;
   }
 }

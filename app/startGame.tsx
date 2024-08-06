@@ -45,7 +45,7 @@ export default function StartGame() {
   }, []);
 
   return (
-    <ThemedScreen title="Start Game">
+    <ThemedScreen title="Game On!" showBackButton={false}>
       {showGameOver && (
         <ThemedView
           style={[styles.overlay, { backgroundColor: inputBackgroundColor }]}

@@ -1,21 +1,20 @@
-// errors.tsx
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, ActivityIndicator } from 'react-native';
 
-import React, { useState, useEffect } from "react";
-import { ScrollView, StyleSheet, ActivityIndicator } from "react-native";
+import { ThemedText } from '@/components/ThemedText';
+import { ThemedView } from '@/components/ThemedView';
+import { ThemedScreen } from '@/components/ThemedScreen';
+import { ThemedFlatList } from '@/components/ThemedFlatList'; // Import ThemedFlatList
 
-import { ThemedText } from "@/components/ThemedText";
-import { ThemedView } from "@/components/ThemedView";
-import { ThemedScreen } from "@/components/ThemedScreen";
-
-import { ErrorService } from "@/services/ErrorService";
-import { type ErrorLog, ErrorActionType } from "@/types/ErrorTypes";
+import { ErrorService } from '@/services/ErrorService';
+import { type LoggedError, ErrorActionType } from '@/types/ErrorTypes';
 
 export default function Errors() {
   // Get a singleton instance of the ErrorService
   const errorService = ErrorService.getInstance();
 
   // State to store the list of errors
-  const [errors, setErrors] = useState<ErrorLog[] | null>(null);
+  const [errors, setErrors] = useState<LoggedError[] | null>(null);
 
   // State to manage loading state
   const [loading, setLoading] = useState<boolean>(true);
@@ -30,8 +29,8 @@ export default function Errors() {
         await errorService.logError(
           ErrorActionType.TOAST,
           55,
-          "Failed to fetch errors.",
-          error,
+          'Failed to fetch errors.',
+          error
         );
       } finally {
         setLoading(false); // Set loading to false regardless of success or failure
@@ -41,38 +40,43 @@ export default function Errors() {
     getErrors(); // Invoke the function to fetch errors on component mount
   }, []);
 
+  // Render item function for FlatList
+  const renderErrorItem = ({ item }: { item: LoggedError }) => (
+    <ThemedView style={styles.errorContainer}>
+      <ThemedView style={styles.errorHeader}>
+        <ThemedText style={styles.errorText}>
+          {item.datetime} / {item.errorId}
+        </ThemedText>
+        <ThemedText style={styles.errorText}>{item.message}</ThemedText>
+      </ThemedView>
+    </ThemedView>
+  );
+
   return (
     <ThemedScreen title="Errors">
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
-        {/* Information about the purpose of the screen */}
-        <ThemedText style={styles.errorNote}>
-          This screen is used for support if the application becomes unstable.
-        </ThemedText>
+      {/* Information about the purpose of the screen */}
+      <ThemedText style={styles.errorNote}>
+        This screen is used for support if the application becomes unstable.
+      </ThemedText>
 
-        {loading ? (
-          // Show loading indicator while fetching data
-          <ActivityIndicator size="large" color="#0000ff" />
-        ) : errors && errors.length > 0 ? (
-          // Render error logs if available
-          errors.map((error: ErrorLog) => (
-            <ThemedView key={error.errorId} style={styles.errorContainer}>
-              <ThemedView style={styles.errorHeader}>
-                <ThemedText style={styles.errorText}>
-                  {error.datetime} / {error.errorId}
-                </ThemedText>
-                <ThemedText style={styles.errorText}>
-                  {error.message}
-                </ThemedText>
-              </ThemedView>
-            </ThemedView>
-          ))
-        ) : (
-          // Show message if no errors are logged
-          <ThemedText style={styles.errorText}>
-            No errors have been logged.
-          </ThemedText>
-        )}
-      </ScrollView>
+      {loading ? (
+        // Show loading indicator while fetching data
+        <ActivityIndicator size="large" color="#0000ff" />
+      ) : errors && errors.length > 0 ? (
+        // Render errors using ThemedFlatList
+        <ThemedFlatList
+          data={errors}
+          renderItem={renderErrorItem}
+          keyExtractor={(item) => item.id.toString()}
+          contentContainerStyle={styles.scrollContainer}
+          // Optional: Configure the FlatList further if needed
+        />
+      ) : (
+        // Show message if no errors are logged
+        <ThemedText style={styles.errorText}>
+          No errors have been logged.
+        </ThemedText>
+      )}
     </ThemedScreen>
   );
 }
@@ -85,17 +89,17 @@ const styles = StyleSheet.create({
   errorContainer: {
     marginBottom: 12,
     borderBottomWidth: 1,
-    borderBottomColor: "#ccc",
+    borderBottomColor: '#ccc',
     paddingBottom: 8,
   },
   errorHeader: {
-    flexDirection: "column",
+    flexDirection: 'column',
   },
   errorNote: {
     fontSize: 14,
     marginLeft: 8,
     marginBottom: 16,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
   errorText: {
     fontSize: 14,

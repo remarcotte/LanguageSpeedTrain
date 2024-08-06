@@ -1,15 +1,15 @@
 // ThemedPressable.tsx
 
-import React from "react";
+import React from 'react';
 import {
   Text,
   Pressable,
   PressableProps,
   StyleSheet,
   ViewStyle,
-} from "react-native";
+} from 'react-native';
 
-import { useThemeColor } from "@/hooks/useThemeColor";
+import { useThemeColor } from '@/hooks/useThemeColor';
 
 // Define props for ThemedPressable, extending PressableProps and adding custom properties
 export type ThemedPressableProps = PressableProps & {
@@ -24,7 +24,7 @@ export type ThemedPressableProps = PressableProps & {
 // ThemedPressable component using React Native's Pressable and Text
 export function ThemedPressable({
   title,
-  fontSize = 16,
+  fontSize = 20,
   disabled,
   lightColor,
   darkColor,
@@ -34,20 +34,20 @@ export function ThemedPressable({
 }: ThemedPressableProps) {
   // Determine background color based on theme and transparency
   const buttonBackgroundColor = isTransparent
-    ? useThemeColor({ light: lightColor, dark: darkColor }, "background")
-    : useThemeColor({ light: lightColor, dark: darkColor }, "button");
+    ? useThemeColor({ light: lightColor, dark: darkColor }, 'background')
+    : useThemeColor({ light: lightColor, dark: darkColor }, 'button');
 
   // Determine text color based on theme and transparency
   const buttonTextColor = isTransparent
-    ? useThemeColor({ light: lightColor, dark: darkColor }, "text")
-    : useThemeColor({ light: lightColor, dark: darkColor }, "buttonText");
+    ? useThemeColor({ light: lightColor, dark: darkColor }, 'text')
+    : useThemeColor({ light: lightColor, dark: darkColor }, 'buttonText');
 
   return (
     <Pressable
       style={({ pressed }) => [
         styles.button,
         { backgroundColor: buttonBackgroundColor }, // Apply background color
-        typeof style === "function" ? style({ pressed }) : style, // Apply style function or static style
+        typeof style === 'function' ? style({ pressed }) : style, // Apply style function or static style
       ]}
       disabled={disabled} // Disable button if necessary
       {...props} // Spread additional props
@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
     padding: 8, // Padding inside the button
     margin: 2, // Margin around the button
     borderRadius: 5, // Rounded corners
-    alignItems: "center", // Center text horizontally
+    alignItems: 'center', // Center text horizontally
   },
   buttonText: {
     fontSize: 16, // Default font size for text

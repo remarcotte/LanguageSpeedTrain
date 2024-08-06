@@ -12,6 +12,8 @@ import { TurnAnswer } from "@/types/LoggingTypes";
 import { Deck } from "@/types/DeckTypes";
 import { ErrorActionType } from "@/types/ErrorTypes";
 
+import { GAME_RESPONSE_STATUS_TIME, GAME_OVER_STATUS_TIME } from '@/constants/General';
+
 export type GameLogic = {
   timeLeft: number;
   isPaused: boolean;
@@ -230,7 +232,7 @@ export const useGameLogic = (): GameLogic => {
       name: isCorrect ? "checkmark-outline" : "close-outline",
       color: isCorrect ? "green" : "red",
     });
-    setTimeout(() => setResultIcon(null), 500);
+    setTimeout(() => setResultIcon(null), GAME_RESPONSE_STATUS_TIME);
     advanceToNextTurn();
   }, [currentIndex, deck, currentCategory, userResponse, randomizedTexts]);
 
@@ -286,7 +288,7 @@ export const useGameLogic = (): GameLogic => {
           turnsStr: JSON.stringify(turns),
         },
       });
-    }, 2000); // 2 seconds delay
+    }, GAME_OVER_STATUS_TIME); // delay
   }, [turns, deckName, category, duration]);
 
   return {

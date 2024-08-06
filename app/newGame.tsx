@@ -1,29 +1,31 @@
 // newGame.tsx
 
-import React, { useState, useEffect, useCallback } from "react"; // Import React hooks
-import { StyleSheet } from "react-native"; // Import StyleSheet from React Native
-import { router } from "expo-router"; // Router for navigation
-import AsyncStorage from "@react-native-async-storage/async-storage"; // AsyncStorage for persistent storage
+import React, { useState, useEffect, useCallback } from 'react'; // Import React hooks
+import { StyleSheet } from 'react-native'; // Import StyleSheet from React Native
+import { router } from 'expo-router'; // Router for navigation
+import AsyncStorage from '@react-native-async-storage/async-storage'; // AsyncStorage for persistent storage
 
-import { useThemeColor } from "@/hooks/useThemeColor"; // Hook for theme color
+import { useThemeColor } from '@/hooks/useThemeColor'; // Hook for theme color
 
-import { showToast } from "@/components/ThemedToast"; // Custom themed toast for notifications
-import { ThemedText } from "@/components/ThemedText"; // Custom themed text component
-import { ThemedView } from "@/components/ThemedView"; // Custom themed view component
-import { ThemedPressable } from "@/components/ThemedPressable"; // Custom themed pressable component
-import { ThemedScreen } from "@/components/ThemedScreen"; // Custom themed screen component
-import { ThemedDropdownPicker } from "@/components/ThemedDropdownPicker"; // Custom themed dropdown picker
+import { showToast } from '@/components/ThemedToast'; // Custom themed toast for notifications
+import { ThemedText } from '@/components/ThemedText'; // Custom themed text component
+import { ThemedView } from '@/components/ThemedView'; // Custom themed view component
+import { ThemedPressable } from '@/components/ThemedPressable'; // Custom themed pressable component
+import { ThemedScreen } from '@/components/ThemedScreen'; // Custom themed screen component
+import { ThemedDropdownPicker } from '@/components/ThemedDropdownPicker'; // Custom themed dropdown picker
 
-import { DeckService } from "@/services/DeckService"; // Service for deck operations
-import { DeckSummary } from "@/types/DeckTypes"; // Type definition for deck summary
-import { ErrorService } from "@/services/ErrorService"; // Service for error logging
-import { ErrorActionType } from "@/types/ErrorTypes"; // Error action types
+import { DeckService } from '@/services/DeckService'; // Service for deck operations
+import { DeckSummary } from '@/types/DeckTypes'; // Type definition for deck summary
+import { ErrorService } from '@/services/ErrorService'; // Service for error logging
+import { ErrorActionType } from '@/types/ErrorTypes'; // Error action types
+
+import { GAME_DURATIONS, getSecondsForDuration } from '@/constants/General';
 
 type Deck = { name: string; categories: string[] }; // Type definition for a deck
 
 export default function NewGame() {
   // Hook to get theme color for list button background
-  const listButtonBackgroundColor = useThemeColor({}, "listButtonBackground");
+  const listButtonBackgroundColor = useThemeColor({}, 'listButtonBackground');
   const deckService = DeckService.getInstance(); // Get instance of deck service
   const errorService = ErrorService.getInstance(); // Get instance of error service
 
@@ -31,7 +33,7 @@ export default function NewGame() {
   const [decks, setDecks] = useState<DeckSummary[]>([]); // List of decks
   const [selectedDeck, setSelectedDeck] = useState<string | null>(null); // Selected deck
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null); // Selected category
-  const [selectedDuration, setSelectedDuration] = useState<string | null>(null); // Selected duration
+  const [selectedDuration, setSelectedDuration] = useState<number | null>(null); // Selected duration
   const [openDecks, setOpenDecks] = useState(false); // Dropdown state for decks
   const [openCategories, setOpenCategories] = useState(false); // Dropdown state for categories
   const [openDurations, setOpenDurations] = useState(false); // Dropdown state for durations
@@ -39,12 +41,7 @@ export default function NewGame() {
     { label: string; value: string }[]
   >([]); // Category items for dropdown
 
-  // Array of available durations for the game
-  const durations = [
-    "Sprint (90 seconds)",
-    "Race (3 minutes)",
-    "Marathon (6 minutes)",
-  ];
+  const durations = GAME_DURATIONS;
 
   // Fetch decks and saved selections from AsyncStorage
   const fetchDecks = useCallback(async () => {
@@ -53,32 +50,32 @@ export default function NewGame() {
       // Sort decks alphabetically by name
       setDecks(
         loadedDecks.sort((a, b) =>
-          a.deckName.toLowerCase().localeCompare(b.deckName.toLowerCase()),
-        ),
+          a.deckName.toLowerCase().localeCompare(b.deckName.toLowerCase())
+        )
       );
 
       // Retrieve stored deck from AsyncStorage, if any
-      const storedDeck = await AsyncStorage.getItem("selectedDeck");
-      const defaultDeck = storedDeck || loadedDecks[0]?.deckName || "";
+      const storedDeck = await AsyncStorage.getItem('selectedDeck');
+      const defaultDeck = storedDeck || loadedDecks[0]?.deckName || '';
       setSelectedDeck(defaultDeck || null); // Set default deck selection
 
       // Retrieve stored category from AsyncStorage, if any
-      const storedCategory = await AsyncStorage.getItem("selectedCategory");
+      const storedCategory = await AsyncStorage.getItem('selectedCategory');
       if (storedCategory) {
         setSelectedCategory(storedCategory);
       }
 
       // Retrieve stored duration from AsyncStorage, if any
-      const storedDuration = await AsyncStorage.getItem("selectedDuration");
+      const storedDuration = await AsyncStorage.getItem('selectedDuration');
       if (storedDuration) {
-        setSelectedDuration(storedDuration);
+        setSelectedDuration(parseInt(storedDuration, 10));
       }
     } catch (error) {
       await errorService.logError(
         ErrorActionType.TOAST,
         23,
-        "Unable to load decks and settings.",
-        error,
+        'Unable to load decks and settings.',
+        error
       );
     }
   }, [deckService, errorService]);
@@ -92,12 +89,12 @@ export default function NewGame() {
     if (selectedDeck) {
       // Find the selected deck object from the list
       const selectedDeckObj = decks.find(
-        (deck) => deck.deckName === selectedDeck,
+        (deck) => deck.deckName === selectedDeck
       );
       if (selectedDeckObj) {
         // Sort categories alphabetically
         const sortedCategories = selectedDeckObj.categories.sort((a, b) =>
-          a.toLowerCase().localeCompare(b.toLowerCase()),
+          a.toLowerCase().localeCompare(b.toLowerCase())
         );
         // Create category options for dropdown
         const categoryOptions =
@@ -108,11 +105,11 @@ export default function NewGame() {
                   label: category,
                   value: category,
                 })),
-                { label: "Random", value: "Random" }, // Add "Random" option
+                { label: 'Random', value: 'Random' }, // Add "Random" option
               ];
         setCategoryItems(categoryOptions); // Update category items state
         setSelectedCategory(
-          categoryOptions.length === 1 ? categoryOptions[0].value : "Random",
+          categoryOptions.length === 1 ? categoryOptions[0].value : 'Random'
         ); // Set default category selection
       }
     }
@@ -123,26 +120,25 @@ export default function NewGame() {
     try {
       // Ensure all selections are made
       if (!selectedDeck || !selectedCategory || !selectedDuration) {
-        showToast("warning", "Please make all selections"); // Show warning if not all selections are made
+        showToast('warning', 'Please make all selections'); // Show warning if not all selections are made
         return;
       }
 
-      // Convert selected duration to seconds
-      const durationInSeconds =
-        selectedDuration === "Sprint (90 seconds)"
-          ? 90
-          : selectedDuration === "Race (3 minutes)"
-            ? 180
-            : 360;
-
+      // Get seconds for selected duration
+      const durationInSeconds = getSecondsForDuration(
+        GAME_DURATIONS.find((d) => d.value === selectedDuration)?.text || ''
+      );
       // Save selections to AsyncStorage
-      await AsyncStorage.setItem("selectedDeck", selectedDeck);
-      await AsyncStorage.setItem("selectedCategory", selectedCategory || "");
-      await AsyncStorage.setItem("selectedDuration", selectedDuration);
+      await AsyncStorage.setItem('selectedDeck', selectedDeck);
+      await AsyncStorage.setItem('selectedCategory', selectedCategory || '');
+      await AsyncStorage.setItem(
+        'selectedDuration',
+        selectedDuration.toString()
+      );
 
       // Navigate to the game start screen with selected parameters
       router.navigate({
-        pathname: "./startGame",
+        pathname: './startGame',
         params: {
           deckName: selectedDeck,
           category: selectedCategory,
@@ -153,8 +149,8 @@ export default function NewGame() {
       await errorService.logError(
         ErrorActionType.TOAST,
         24,
-        "Failed to start the game.",
-        error,
+        'Failed to start the game.',
+        error
       );
     }
   };
@@ -169,14 +165,14 @@ export default function NewGame() {
         setOpenDurations(false);
 
         // Set the target dropdown open state
-        if (typeof value === "function") {
+        if (typeof value === 'function') {
           setOpen((prev) => value(prev));
         } else {
           setOpen(value);
         }
       };
     },
-    [],
+    []
   );
 
   return (
@@ -234,8 +230,8 @@ export default function NewGame() {
           open={openDurations}
           value={selectedDuration}
           items={durations.map((duration) => ({
-            label: duration,
-            value: duration,
+            label: duration.text,
+            value: duration.value,
           }))}
           setOpen={handleOpenChange(setOpenDurations)}
           setValue={setSelectedDuration}
@@ -266,8 +262,8 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 20,
-    textAlign: "center",
-    fontWeight: "bold",
+    textAlign: 'center',
+    fontWeight: 'bold',
     marginVertical: 12,
   },
   dropdown: {
@@ -283,14 +279,14 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   centeredText: {
-    textAlign: "center",
+    textAlign: 'center',
     fontSize: 20, // Same as label but not bold
   },
   footer: {
     padding: 16,
     borderTopWidth: 1,
-    borderTopColor: "#ddd",
-    position: "absolute",
+    borderTopColor: '#ddd',
+    position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,

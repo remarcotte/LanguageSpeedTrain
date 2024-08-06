@@ -13,6 +13,8 @@ import { DBService } from "./DBService"; // Import database service
 import { ErrorService } from "@/services/ErrorService"; // Import error service
 import { ErrorActionType } from "@/types/ErrorTypes"; // Import error action types
 
+import { MAX_GAME_LOG_SIZE } from '@/constants/General';
+
 export class LoggingService {
   private static instance: LoggingService; // Singleton instance of LoggingService
 
@@ -133,8 +135,8 @@ export class LoggingService {
 
     try {
       const result = await this.dbService.getAllAsync<GameSummary>(
-        "SELECT * FROM game_summary ORDER BY id DESC LIMIT 200;",
-        [],
+        "SELECT * FROM game_summary ORDER BY id DESC LIMIT ?;",
+        [MAX_GAME_LOG_SIZE],
       );
       if (result) {
         summaries = result.map((item: any) => ({
@@ -173,8 +175,8 @@ export class LoggingService {
       }
 
       const gameSummaries = await this.dbService.getAllAsync<GameSummary>(
-        "SELECT * FROM game_summary where deckName = ? ORDER BY id DESC LIMIT 200;",
-        [deckName],
+        "SELECT * FROM game_summary where deckName = ? ORDER BY id DESC LIMIT ?;",
+        [deckName, MAX_GAME_LOG_SIZE],
       );
       if (gameSummaries) {
         games = gameSummaries.map((item: any) => ({
@@ -184,7 +186,7 @@ export class LoggingService {
       }
 
       const detailsResult = await this.dbService.getAllAsync<DeckDetail>(
-        "SELECT * FROM deck_detail WHERE deckName = ? order by numberAttempts desc, numberCorrect desc;",
+        "SELECT * FROM deck_detail WHERE deckName = ? order by numberAttempts desc, numberCorrect desc, text;",
         [deckName],
       );
       if (detailsResult) {
@@ -305,7 +307,8 @@ export class LoggingService {
       }
 
       await this.dbService.runAsync(
-        `DELETE FROM game_detail WHERE gameId NOT IN (SELECT id FROM game_summary ORDER BY id DESC LIMIT 200);`,
+        `DELETE FROM game_detail WHERE gameId NOT IN (SELECT id FROM game_summary ORDER BY id DESC LIMIT ?);`,
+        [MAX_GAME_LOG_SIZE]
       );
     } catch (error) {
       await this.errorService.logError(

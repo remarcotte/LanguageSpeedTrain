@@ -3,7 +3,9 @@
 import { showToast } from "@/components/ThemedToast"; // Import custom toast component
 
 import { DBService } from "./DBService"; // Import database service
-import { ErrorLog, ErrorActionType } from "@/types/ErrorTypes"; // Import error-related types
+import { ErrorLog, LoggedError, ErrorActionType } from "@/types/ErrorTypes"; // Import error-related types
+
+import { MAX_ERROR_MSG_DB_SIZE, MAX_LOG_SIZE } from '@/constants/General';
 
 // Singleton class for managing error logging and actions
 export class ErrorService {
@@ -27,10 +29,10 @@ export class ErrorService {
 
   // Process the error object and return a truncated error message
   private processError(error: unknown): string {
-    if (error instanceof Error) {
-      return error.message.slice(0, 400); // Limit to 400 characters
-    } else if (typeof error === "string") {
-      return error.slice(0, 400); // Limit to 400 characters
+    if (typeof error === "string") {
+      return error.slice(0, MAX_ERROR_MSG_DB_SIZE); // Limit to 400 characters
+    } else if (error instanceof Error) {
+      return error.message.slice(0, MAX_ERROR_MSG_DB_SIZE); // Limit to 400 characters
     }
     return ""; // Return empty string for other types
   }
@@ -74,7 +76,7 @@ export class ErrorService {
       // Log the error to the database if not only showing a toast
       if (actionType !== ErrorActionType.TOASTONLY) {
         await this.dbService.runAsync(
-          `INSERT INTO errors (errorId, error, message)
+          `INSERT INTO errors (errorId, message, error)
           VALUES (?, ?, ?);`,
           [errorId, message, processedError],
         );
@@ -94,8 +96,9 @@ export class ErrorService {
   // Prune old error logs to limit the number of stored entries
   private async pruneErrorLogs() {
     try {
-      await this.dbService.execAsync(
-        `DELETE FROM errors WHERE id NOT IN (SELECT id FROM errors ORDER BY id DESC LIMIT 200);`,
+      await this.dbService.runAsync(
+        `DELETE FROM errors WHERE id NOT IN (SELECT id FROM errors ORDER BY id DESC LIMIT ?);`,
+        [MAX_LOG_SIZE]
       );
     } catch (error) {
       console.error("Failed to prune error logs", error);
@@ -103,7 +106,7 @@ export class ErrorService {
   }
 
   // Retrieve the entire list of errors in reverse chronological order
-  async getErrors(): Promise<ErrorLog[] | null> {
+  async getErrors(): Promise<LoggedError[] | null> {
     let logs: ErrorLog[] = [];
 
     const errors = await this.dbService.getAllAsync<ErrorLog>(
@@ -117,6 +120,6 @@ export class ErrorService {
         datetime: this.dbService.dbDateToString(item.logDatetime),
       }));
     }
-    return logs;
+    return (logs as LoggedError[]);
   }
 }
