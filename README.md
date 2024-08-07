@@ -43,3 +43,12 @@ The following language features were used in creating the app:
 This list may not be exhaustive - other features may have been included.
 
 Should I need to use these features in the future, I have the option rely on this code as a reference/template for feature use.
+
+In the future, the galaxy may be expanded by adding uses of:
+
+- API use
+- Interationalization
+- Accessibility
+- Centralizing error messages
+- Use of context
+- and more
