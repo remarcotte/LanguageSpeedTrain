@@ -214,11 +214,70 @@ export class DeckService {
         "INSERT INTO deck (deckName, categories, items) VALUES (?, ?, ?);",
         [deckName, categories, items],
       );
+
+      await this.dbService.runAsync(
+        `INSERT INTO deck_summary (
+          deckName, timesPlayed, minCorrect, maxCorrect, minCorrectPerAttempt,
+          maxCorrectPerAttempt, minCorrectPerMinute, maxCorrectPerMinute)
+          VALUES (?, 0, 0, 0, 0, 0, 0, 0);`,
+        [deckName],
+      );
+
+      // Add items to deck_detail table
+      await this.syncDeckDetail(deckName, items);
+
     } catch (error) {
       await this.errorService.logError(
         ErrorActionType.CONSOLE,
         40,
         `Failed to add deck ${deckName}.`,
+        error,
+      );
+    }
+  }
+
+  private async syncDeckDetail(deckName: string, items: string) {
+    try {
+      const parsedItems = JSON.parse(items);
+
+      // Step 1: Remove rows not in the given data
+      // Extract texts from parsedItems
+      const texts = parsedItems.map((item: string[]) => item[0]);
+
+      // Generate placeholders for the texts in SQL
+      const placeholders = texts.map(() => '?').join(',');
+
+      // Remove any row where deckName & text combination is not in the given data
+      await this.dbService.runAsync(
+        `DELETE FROM deck_detail
+         WHERE deckName = ?
+         AND text NOT IN (${placeholders});`,
+        [deckName, ...texts]
+      );
+
+      // Step 2: Add new rows for any combo not in deck_detail
+      for (const text of texts) {
+        // Check if the combination already exists
+        const existingEntry = await this.dbService.getFirstAsync(
+          `SELECT id FROM deck_detail
+           WHERE deckName = ? AND text = ?;`,
+          [deckName, text]
+        );
+
+        // If it does not exist, insert a new row
+        if (!existingEntry) {
+          await this.dbService.runAsync(
+            `INSERT INTO deck_detail (deckName, text, numberAttempts, numberCorrect)
+             VALUES (?, ?, 0, 0);`,
+            [deckName, text]
+          );
+        }
+      }
+    } catch (error) {
+      await this.errorService.logError(
+        ErrorActionType.CONSOLE,
+        58,
+        `Synch deck_detail error: ${deckName}.`,
         error,
       );
     }
@@ -235,6 +294,9 @@ export class DeckService {
         "UPDATE deck SET categories = ?, items = ? where deckName = ?;",
         [categories, items, deckName],
       );
+
+      // Synch items to deck_detail table
+      await this.syncDeckDetail(deckName, items);
     } catch (error) {
       await this.errorService.logError(
         ErrorActionType.CONSOLE,
@@ -296,11 +358,18 @@ export class DeckService {
       const deck = await this.getDeck(deckName);
       if (deck) {
         const items = this.sortItems([...deck.items, item]);
+
         await this.updateDeck(
           deckName,
           deck.categories.join("|"),
-          JSON.stringify(items),
+          JSON.stringify(items)
         );
+
+        // Add new item to deck_detail
+        await this.dbService.runAsync(
+          `INSERT INTO deck_detail (deckName, text, numberAttempts, numberCorrect)
+             VALUES (?, ?, 0, 0);`,
+          [deckName, item[0]]);
       }
     } catch (error) {
       await this.errorService.logError(
@@ -323,6 +392,11 @@ export class DeckService {
           deck.categories.join("|"),
           JSON.stringify(items),
         );
+
+        // Add new item to deck_detail
+        await this.dbService.runAsync(
+          `delete from deck_detail where deckName = ? and text = ?;`,
+          [deckName, text]);
       }
     } catch (error) {
       await this.errorService.logError(
@@ -337,8 +411,8 @@ export class DeckService {
   // Update an item in a deck
   public async updateDeckItem(
     deckName: string,
-    text: string,
-    item: string[],
+    text: string,   // existing text (used to locate item to replace)
+    item: string[], // new item
   ): Promise<void> {
     try {
       const deck = await this.getDeck(deckName);
@@ -349,6 +423,11 @@ export class DeckService {
           deck.categories.join("|"),
           JSON.stringify(this.sortItems(items)),
         );
+
+        // Add new item to deck_detail
+        await this.dbService.runAsync(
+          `update deck_detail set text = ? where deckName = ? and text = ?;`,
+          [item[0], deckName, text]);
       }
     } catch (error) {
       await this.errorService.logError(

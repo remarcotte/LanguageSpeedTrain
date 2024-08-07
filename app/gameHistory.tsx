@@ -48,15 +48,15 @@ export default function GameHistory() {
             />
           )
         )}
-        <ThemedText style={styles.turnText}>
+        <ThemedText type="list-item">
           {item.text} ({item.category})
         </ThemedText>
       </ThemedView>
-      <ThemedText style={styles.responseText}>
+      <ThemedText type="list-item">
         Your response: {item.response || 'Skipped'}
       </ThemedText>
       {(!item.isCorrect || item.type === 'skip') && (
-        <ThemedText style={styles.correctResponseText}>
+        <ThemedText type="list-item" style={styles.correctResponseText}>
           Correct response: {item.answer}
         </ThemedText>
       )}
@@ -98,7 +98,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
   correctResponseText: {
-    fontSize: 18,
     color: 'green',
   },
   correctIcon: {

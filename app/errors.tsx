@@ -44,10 +44,12 @@ export default function Errors() {
   const renderErrorItem = ({ item }: { item: LoggedError }) => (
     <ThemedView style={styles.errorContainer}>
       <ThemedView style={styles.errorHeader}>
-        <ThemedText style={styles.errorText}>
+        <ThemedText type="smaller" style={styles.errorText}>
           {item.datetime} / {item.errorId}
         </ThemedText>
-        <ThemedText style={styles.errorText}>{item.message}</ThemedText>
+        <ThemedText type="smaller" style={styles.errorText}>
+          {item.message}
+        </ThemedText>
       </ThemedView>
     </ThemedView>
   );
@@ -55,7 +57,7 @@ export default function Errors() {
   return (
     <ThemedScreen title="Errors">
       {/* Information about the purpose of the screen */}
-      <ThemedText style={styles.errorNote}>
+      <ThemedText type="normal" style={styles.note}>
         This screen is used for support if the application becomes unstable.
       </ThemedText>
 
@@ -73,9 +75,7 @@ export default function Errors() {
         />
       ) : (
         // Show message if no errors are logged
-        <ThemedText style={styles.errorText}>
-          No errors have been logged.
-        </ThemedText>
+        <ThemedText type="normal">No errors have been logged.</ThemedText>
       )}
     </ThemedScreen>
   );
@@ -95,14 +95,10 @@ const styles = StyleSheet.create({
   errorHeader: {
     flexDirection: 'column',
   },
-  errorNote: {
-    fontSize: 14,
-    marginLeft: 8,
-    marginBottom: 16,
-    fontWeight: 'bold',
+  note: {
+    marginBottom: 20,
   },
   errorText: {
-    fontSize: 14,
     marginLeft: 8,
   },
 });

@@ -51,10 +51,8 @@ export default function StartGame() {
           style={[styles.overlay, { backgroundColor: inputBackgroundColor }]}
         >
           <ThemedText
-            style={[
-              styles.gameOverText,
-              { backgroundColor: inputBackgroundColor },
-            ]}
+            type="huge"
+            style={[{ backgroundColor: inputBackgroundColor }]}
           >
             Game Over
           </ThemedText>
@@ -65,16 +63,16 @@ export default function StartGame() {
           style={[styles.overlay, { backgroundColor: inputBackgroundColor }]}
         >
           <ThemedPressable
+            type="normal"
             title="Game paused. Tap to continue."
-            fontSize={20}
             onPress={handleResumePress}
           />
         </ThemedView>
       )}
       <ThemedView style={styles.header}>
         <ThemedPressable
+          type="normal"
           title="Exit Game"
-          fontSize={20}
           onPress={handleBackPress}
         />
         <ThemedView style={styles.iconContainer}>
@@ -86,14 +84,12 @@ export default function StartGame() {
             />
           )}
         </ThemedView>
-        <ThemedText
-          style={styles.stats}
-        >{`${numberCorrect} / ${totalShown}`}</ThemedText>
+        <ThemedText type="normal-bold">{`${numberCorrect} / ${totalShown}`}</ThemedText>
       </ThemedView>
       <ThemedView style={styles.container}>
-        <ThemedText style={styles.timer}>{formatTime(timeLeft)}</ThemedText>
-        <ThemedText style={styles.itemText}>{currentText}</ThemedText>
-        <ThemedText style={styles.categoryText}>{currentCategory}</ThemedText>
+        <ThemedText type="huge">{formatTime(timeLeft)}</ThemedText>
+        <ThemedText type="bigger">{currentText}</ThemedText>
+        <ThemedText type="head2">{currentCategory}</ThemedText>
         <ThemedTextInput
           ref={textInputRef}
           style={styles.input}
@@ -111,17 +107,18 @@ export default function StartGame() {
         />
         <ThemedView style={styles.buttonContainer}>
           <ThemedPressable
+            type="normal"
             title="Skip"
-            fontSize={20}
             onPress={handleSkipPress}
           />
           <ThemedPressable
+            type="normal"
             title="Submit"
-            fontSize={20}
             onPress={handleSubmitPress}
             disabled={!userResponse}
           />
           <ThemedPressable
+            type="normal"
             title="Pause"
             fontSize={20}
             onPress={handlePausePress}
@@ -152,11 +149,6 @@ const styles = StyleSheet.create({
   },
   resultIcon: {
     marginLeft: 10,
-  },
-  timer: {
-    fontSize: 48,
-    textAlign: 'center',
-    marginVertical: 10,
   },
   itemText: {
     fontSize: 24,

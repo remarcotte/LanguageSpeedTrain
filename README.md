@@ -1,50 +1,45 @@
-# Welcome to your Expo app 👋
+# Language Speed Train - A "Hello, Galaxy" for React Native/Expo
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+## Not a "Hello, World"
 
-## Get started
+While "Hello, World"s are common to describe features in software development. They aren't always useful in seeing how features may be integrated into a larger application. Language Speed Train is a "Hello, Galaxy" for React Native/Expo - an integration of many features into a robust app.
 
-1. Install dependencies
+## Purpose
 
-   ```bash
-   npm install
-   ```
+This code base was the result of:
 
-2. Start the app
+1. Seeing how effective ChatGPT would be in creating a robust app. - The results were decidedly mixed though leaning towards disappointing. A write-up of the results is being written. Link to the article will be included when complete.
+2. Creating an app with some basic useful functionality.
+3. Creating a template for different features/practices in React Native/Expo.
 
-   ```bash
-    npx expo start
-   ```
+## The Application
 
-In the output, you'll find options to open the app in a
+The application is a timed flashcard system. Given a deck of cards, the goal is to improve accuracy and speed through repeated game playing.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+Users may add their own decks directly in the app. The app runs completely on device. There is no communication for ads, sending usage data, or anything else.
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+## Features Used
 
-## Get a fresh project
+The following language features were used in creating the app:
 
-When you're ready, run:
+- Async storage
+- Custom splash page - always show
+- SQLite database for deck and statistics storage
+- CSV loading/parsing of new decks
+- Timer
+- Simple histogram charts
+- Themed visual components
+- Dropdown picker
+- Light/dark mode theming
+- Swipeable lists
+- Toast
+- Integrated error handling and logging
+- Customize screen headers
+- useState, useEffect, useRef, useCallback
+- Custom navigation between text input fields
+- File read
+- Initialize on app start
 
-```bash
-npm run reset-project
-```
+This list may not be exhaustive - other features may have been included.
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+Should I need to use these features in the future, I have the option rely on this code as a reference/template for feature use.

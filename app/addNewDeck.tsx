@@ -50,10 +50,12 @@ export default function AddNewDeck() {
     <ThemedScreen title="Add New Deck">
       <ThemedView>
         <ThemedPressable
+          type="wide"
           title="How to Format Decks"
+          style={styles.press}
           onPress={() => router.navigate('/deckFormatInfo')}
         />
-        <ThemedText style={styles.normal}>
+        <ThemedText type="normal">
           Your new deck needs a name. No two decks may share the same name.
         </ThemedText>
         <ThemedTextInput
@@ -68,7 +70,7 @@ export default function AddNewDeck() {
           blurOnSubmit={false}
           style={styles.input}
         />
-        <ThemedText style={styles.normal}>
+        <ThemedText type="normal">
           Paste your deck data here, then click the Add button.
         </ThemedText>
         <ThemedTextInput
@@ -84,7 +86,9 @@ export default function AddNewDeck() {
           blurOnSubmit={false}
         />
         <ThemedPressable
+          type="wide"
           title="Add"
+          style={styles.press}
           onPress={addNewDeck}
           disabled={!deckName.trim() || !deckData.trim()}
         />
@@ -97,6 +101,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  press: {
+    marginVertical: 15,
+  },
   input: {
     height: 40,
     borderColor: 'gray',
@@ -105,20 +112,9 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     padding: 8,
   },
-  normal: {
-    fontSize: 16,
-    marginHorizontal: 12,
-    marginRight: 16,
-    marginBottom: 8,
-    marginTop: 8,
-  },
   multilineInput: {
-    height: 120,
+    height: 100,
     marginLeft: 12,
     textAlignVertical: 'top',
-  },
-  button: {
-    marginBottom: 8,
-    marginHorizontal: 12,
   },
 });

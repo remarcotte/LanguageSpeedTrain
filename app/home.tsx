@@ -24,42 +24,37 @@ export default function Home() {
         contentFit="contain"
       />
       <ThemedPressable
+        type="big"
         title="New Game"
-        fontSize={32}
-        style={styles.button}
         onPress={() => {
           router.navigate('/newGame');
         }}
       />
       <ThemedPressable
+        type="big"
         title="Manage Decks"
-        fontSize={32}
-        style={styles.button}
         onPress={() => {
           router.navigate('/manageDecks');
         }}
       />
       <ThemedPressable
+        type="big"
         title="Statistics"
-        fontSize={32}
-        style={styles.button}
         onPress={() => {
           router.navigate('/statistics');
         }}
       />
       <ThemedPressable
+        type="big"
         title="About"
-        fontSize={32}
-        style={styles.button}
         onPress={() => {
           router.navigate('/about');
         }}
       />
       {SHOW_DEBUG_SCREEN && (
         <ThemedPressable
+          type="big"
           title="Debug"
-          fontSize={32}
-          style={styles.button}
           onPress={() => {
             router.navigate('/debug');
           }}
@@ -72,12 +67,6 @@ export default function Home() {
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center', // Center align items horizontally
-  },
-  button: {
-    paddingVertical: 10, // Vertical padding for buttons
-    paddingHorizontal: 25, // Horizontal padding for buttons
-    marginVertical: 5, // Space between buttons
-    borderRadius: 5, // Rounded corners for buttons
   },
   logoImage: {
     width: '60%', // Set width to 60% of the container

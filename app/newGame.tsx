@@ -19,7 +19,7 @@ import { DeckSummary } from '@/types/DeckTypes'; // Type definition for deck sum
 import { ErrorService } from '@/services/ErrorService'; // Service for error logging
 import { ErrorActionType } from '@/types/ErrorTypes'; // Error action types
 
-import { GAME_DURATIONS, getSecondsForDuration } from '@/constants/General';
+import { GAME_DURATIONS } from '@/constants/General';
 
 type Deck = { name: string; categories: string[] }; // Type definition for a deck
 
@@ -124,10 +124,6 @@ export default function NewGame() {
         return;
       }
 
-      // Get seconds for selected duration
-      const durationInSeconds = getSecondsForDuration(
-        GAME_DURATIONS.find((d) => d.value === selectedDuration)?.text || ''
-      );
       // Save selections to AsyncStorage
       await AsyncStorage.setItem('selectedDeck', selectedDeck);
       await AsyncStorage.setItem('selectedCategory', selectedCategory || '');
@@ -142,7 +138,7 @@ export default function NewGame() {
         params: {
           deckName: selectedDeck,
           category: selectedCategory,
-          duration: durationInSeconds,
+          duration: selectedDuration,
         },
       });
     } catch (error) {
@@ -178,7 +174,7 @@ export default function NewGame() {
   return (
     <ThemedScreen title="New Game">
       <ThemedView style={styles.innerContainer}>
-        <ThemedText style={styles.label}>Deck</ThemedText>
+        <ThemedText type="head2">Deck</ThemedText>
         {decks.length > 1 ? ( // Show dropdown if more than one deck
           <ThemedDropdownPicker
             open={openDecks}
@@ -196,10 +192,10 @@ export default function NewGame() {
             zIndex={3000}
           />
         ) : (
-          <ThemedText style={styles.label}>{selectedDeck}</ThemedText> // Show text if only one deck
+          <ThemedText type="head2">{selectedDeck}</ThemedText> // Show text if only one deck
         )}
 
-        <ThemedText style={styles.label}>Category</ThemedText>
+        <ThemedText type="head2">Category</ThemedText>
         {selectedDeck && categoryItems.length > 0 ? (
           categoryItems.length > 1 ? ( // Show dropdown if more than one category
             <ThemedDropdownPicker
@@ -215,17 +211,13 @@ export default function NewGame() {
               zIndex={2000}
             />
           ) : (
-            <ThemedText style={styles.centeredText}>
-              {selectedCategory}
-            </ThemedText> // Show text if only one category
+            <ThemedText type="head2">{selectedCategory}</ThemedText> // Show text if only one category
           )
         ) : (
-          <ThemedText style={[styles.label, styles.centeredText]}>
-            {selectedCategory}
-          </ThemedText> // Show selected category if no items
+          <ThemedText type="head2">{selectedCategory}</ThemedText> // Show selected category if no items
         )}
 
-        <ThemedText style={styles.label}>Duration</ThemedText>
+        <ThemedText type="head2">Duration</ThemedText>
         <ThemedDropdownPicker
           open={openDurations}
           value={selectedDuration}
@@ -247,8 +239,8 @@ export default function NewGame() {
         style={[styles.footer, { borderTopColor: listButtonBackgroundColor }]}
       >
         <ThemedPressable
+          type="wide"
           title="Start Game"
-          fontSize={20}
           onPress={handleStart} // Button to start the game
         />
       </ThemedView>
@@ -259,12 +251,6 @@ export default function NewGame() {
 const styles = StyleSheet.create({
   innerContainer: {
     marginBottom: 16,
-  },
-  label: {
-    fontSize: 20,
-    textAlign: 'center',
-    fontWeight: 'bold',
-    marginVertical: 12,
   },
   dropdown: {
     marginBottom: 16,
@@ -277,10 +263,6 @@ const styles = StyleSheet.create({
   dropdownContainer: {
     borderWidth: 1,
     borderRadius: 5,
-  },
-  centeredText: {
-    textAlign: 'center',
-    fontSize: 20, // Same as label but not bold
   },
   footer: {
     padding: 16,

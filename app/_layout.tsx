@@ -23,6 +23,8 @@ export default function Layout() {
                 isTransparent={true}
               />
             ),
+          headerBackTitleVisible: true, // Hide the default back title
+          headerBackTitle: 'Back', // Set the custom back title
         })}
       ></Stack>
       <ThemedToast />

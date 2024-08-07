@@ -53,8 +53,10 @@ export default function GameSummary() {
       setGameRating(3);
     } else if (pctCorrect >= RATING_THRESHOLDS[0]) {
       setGameRating(2);
-    } else {
+    } else if (pctCorrect > 0) {
       setGameRating(1);
+    } else {
+      setGameRating(0);
     }
   }, [percentCorrect]);
 
@@ -67,13 +69,13 @@ export default function GameSummary() {
       {/* Header buttons */}
       <ThemedView style={styles.header}>
         <ThemedPressable
+          type="normal"
           title="New Game"
-          fontSize={20}
           onPress={() => router.navigate('/newGame')}
         />
         <ThemedPressable
+          type="normal"
           title="Replay Game"
-          fontSize={20}
           onPress={() =>
             router.replace({
               pathname: '/startGame',
@@ -84,10 +86,14 @@ export default function GameSummary() {
       </ThemedView>
       {/* Game options section */}
       <ThemedView style={styles.section}>
-        <ThemedText style={styles.sectionLabel}>Game Options</ThemedText>
-        <ThemedText style={styles.optionText}>Deck: {deckName}</ThemedText>
-        <ThemedText style={styles.optionText}>Category: {category}</ThemedText>
-        <ThemedText style={styles.optionText}>
+        <ThemedText type="head2">Game Options</ThemedText>
+        <ThemedText type="normal" style={styles.optionsText}>
+          Deck: {deckName}
+        </ThemedText>
+        <ThemedText type="normal" style={styles.optionsText}>
+          Category: {category}
+        </ThemedText>
+        <ThemedText type="normal" style={styles.optionsText}>
           Time: {duration} seconds
         </ThemedText>
         <ThemedView style={styles.ratingContainer}>
@@ -103,27 +109,21 @@ export default function GameSummary() {
       </ThemedView>
       {/* Statistics section */}
       <ThemedView style={styles.section}>
-        <ThemedText style={styles.sectionLabel}>Statistics</ThemedText>
+        <ThemedText type="head2">Statistics</ThemedText>
         <ThemedView style={styles.row}>
-          <ThemedText style={styles.statText}>Correct: {correct}</ThemedText>
-          <ThemedText style={styles.statText}>
-            Incorrect: {incorrect}
-          </ThemedText>
-          <ThemedText style={styles.statText}>Skipped: {skipped}</ThemedText>
+          <ThemedText type="normal-bold">Correct: {correct}</ThemedText>
+          <ThemedText type="normal-bold">Incorrect: {incorrect}</ThemedText>
+          <ThemedText type="normal-bold">Skipped: {skipped}</ThemedText>
         </ThemedView>
       </ThemedView>
       {/* Metrics section */}
       <ThemedView style={styles.section}>
-        <ThemedText style={styles.sectionLabel}>Metrics</ThemedText>
+        <ThemedText type="head2">Metrics</ThemedText>
         <ThemedView style={styles.row}>
-          <ThemedText style={styles.statText}>
-            Correct: {percentCorrect}%
-          </ThemedText>
-          <ThemedText style={styles.statText}>
-            Skipped: {percentSkipped}%
-          </ThemedText>
+          <ThemedText type="normal-bold">Correct: {percentCorrect}%</ThemedText>
+          <ThemedText type="normal-bold">Skipped: {percentSkipped}%</ThemedText>
         </ThemedView>
-        <ThemedText style={styles.statText}>
+        <ThemedText type="normal-bold">
           Correct/Minute: {correctPerMinute}
         </ThemedText>
       </ThemedView>
@@ -131,8 +131,8 @@ export default function GameSummary() {
       <ThemedView style={styles.section}>
         {total > 0 && (
           <ThemedPressable
+            type="wide"
             title="Game History"
-            fontSize={20}
             onPress={() =>
               router.navigate({
                 pathname: '/gameHistory',
@@ -142,13 +142,13 @@ export default function GameSummary() {
           />
         )}
         <ThemedPressable
+          type="wide"
           title="View Statistics"
-          fontSize={20}
           onPress={() => router.navigate('/statistics')}
         />
         <ThemedPressable
+          type="wide"
           title="Home"
-          fontSize={20}
           onPress={() => router.navigate('/home')}
         />
       </ThemedView>
@@ -175,8 +175,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 8,
   },
-  optionText: {
-    fontSize: 16,
+  optionsText: {
     marginBottom: 4,
     textAlign: 'center',
   },
@@ -196,6 +195,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     width: '100%',
     paddingHorizontal: 16,
+    marginBottom: 12,
   },
   goldStar: {
     color: 'gold',

@@ -69,24 +69,24 @@ const About = () => {
       {/* Screen with a title */}
       <ThemedView style={styles.innerContainer}>
         {/* Container for text and buttons */}
-        <ThemedText style={styles.title}>Language Speed Train</ThemedText>
+        <ThemedText type="head1">Language Speed Train</ThemedText>
         {/* App title */}
-        <ThemedText style={styles.normal}>Version 1.0</ThemedText>
+        <ThemedText type="normal">Version 1.0</ThemedText>
         {/* Version information */}
-        <ThemedText style={styles.normal}>Developed by Elasting</ThemedText>
+        <ThemedText type="normal">Developed by Elasting</ThemedText>
         {/* Developer information */}
-        <ThemedText style={styles.normal}>
+        <ThemedText type="normal">
           All data collected in playing the game resides in the application on
           the phone. Your data is not sent to Elasting or anyone else.
           {/* Privacy information */}
         </ThemedText>
-        <ThemedText style={styles.copyright}>
+        <ThemedText type="normal" style={styles.copyright}>
           © 2024, Elasting. All rights reserved.
         </ThemedText>
         <ThemedPressable
+          type="normal"
           title="View Errors"
           onPress={() => router.navigate('/errors')} // Navigate to errors screen
-          fontSize={20}
           style={styles.errorButton}
         />
       </ThemedView>
@@ -96,6 +96,7 @@ const About = () => {
       ) : (
         <ThemedView style={styles.footer}>
           <ThemedPressable
+            type="wide"
             title="Reset App Data"
             onPress={verifyReset}
             fontSize={20}
@@ -109,16 +110,6 @@ const About = () => {
 const styles = StyleSheet.create({
   innerContainer: {
     marginBottom: 16,
-  },
-  title: {
-    fontSize: 24,
-    marginBottom: 20,
-  },
-  normal: {
-    fontSize: 16,
-    marginBottom: 10,
-    marginLeft: 25,
-    marginRight: 25,
   },
   copyright: {
     marginTop: 50,

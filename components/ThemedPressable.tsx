@@ -1,5 +1,3 @@
-// ThemedPressable.tsx
-
 import React from 'react';
 import {
   Text,
@@ -13,6 +11,7 @@ import { useThemeColor } from '@/hooks/useThemeColor';
 
 // Define props for ThemedPressable, extending PressableProps and adding custom properties
 export type ThemedPressableProps = PressableProps & {
+  type?: 'normal' | 'big' | 'wide';
   title: string; // Title text for the button
   lightColor?: string; // Optional light color theme
   darkColor?: string; // Optional dark color theme
@@ -23,8 +22,9 @@ export type ThemedPressableProps = PressableProps & {
 
 // ThemedPressable component using React Native's Pressable and Text
 export function ThemedPressable({
+  type = 'normal',
   title,
-  fontSize = 20,
+  fontSize = 0, // Default to 0 to rely on type settings
   disabled,
   lightColor,
   darkColor,
@@ -45,14 +45,24 @@ export function ThemedPressable({
   return (
     <Pressable
       style={({ pressed }) => [
-        styles.button,
+        type === 'normal' ? styles.normalPressable : undefined,
+        type === 'big' ? styles.bigPressable : undefined,
+        type === 'wide' ? styles.widePressable : undefined,
         { backgroundColor: buttonBackgroundColor }, // Apply background color
         typeof style === 'function' ? style({ pressed }) : style, // Apply style function or static style
       ]}
       disabled={disabled} // Disable button if necessary
       {...props} // Spread additional props
     >
-      <Text style={[styles.buttonText, { color: buttonTextColor, fontSize }]}>
+      <Text
+        style={[
+          type === 'normal' ? styles.normalText : undefined,
+          type === 'big' ? styles.bigText : undefined,
+          type === 'wide' ? styles.wideText : undefined,
+          { color: buttonTextColor },
+          fontSize > 0 ? { fontSize } : undefined, // Conditionally apply fontSize
+        ]}
+      >
         {title}
       </Text>
     </Pressable>
@@ -61,13 +71,35 @@ export function ThemedPressable({
 
 // Define styles for the button and text
 const styles = StyleSheet.create({
-  button: {
-    padding: 8, // Padding inside the button
-    margin: 2, // Margin around the button
-    borderRadius: 5, // Rounded corners
-    alignItems: 'center', // Center text horizontally
+  normalPressable: {
+    padding: 12,
+    margin: 2,
+    borderRadius: 5,
+    alignItems: 'center',
   },
-  buttonText: {
-    fontSize: 16, // Default font size for text
+  bigPressable: {
+    paddingVertical: 10, // Vertical padding for buttons
+    paddingHorizontal: 25, // Horizontal padding for buttons
+    marginVertical: 5, // Space between buttons
+    borderRadius: 5, // Rounded corners for buttons
+    margin: 2,
+    alignItems: 'center',
+  },
+  widePressable: {
+    width: '100%',
+    padding: 8,
+    marginHorizontal: 2,
+    marginVertical: 8,
+    borderRadius: 5,
+    alignItems: 'center',
+  },
+  normalText: {
+    fontSize: 20,
+  },
+  bigText: {
+    fontSize: 32,
+  },
+  wideText: {
+    fontSize: 20,
   },
 });

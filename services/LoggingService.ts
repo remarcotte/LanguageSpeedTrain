@@ -220,6 +220,7 @@ export class LoggingService {
     );
 
     try {
+      // every game gets a row in game summary
       const result = await this.dbService.runAsync(
         "INSERT INTO game_summary (deckName, category, duration, attempted, correct) VALUES (?, ?, ?, ?, ?);",
         [
@@ -232,6 +233,7 @@ export class LoggingService {
       );
       const gameId = result?.lastInsertRowId ? result.lastInsertRowId : 0;
 
+      // the turns are recorded in game_detail
       for (const turn of gameRecord.turns) {
         await this.dbService.runAsync(
           "INSERT INTO game_detail (gameId, text, type, category, response, isCorrect) VALUES (?, ?, ?, ?, ?, ?);",
@@ -245,21 +247,6 @@ export class LoggingService {
           ],
         );
       }
-
-      // Insert new row into deck_summary if doesn't exist
-      await this.dbService.runAsync(
-        `INSERT OR IGNORE INTO deck_summary (deckName, timesPlayed, minCorrect, maxCorrect, minCorrectPerAttempt, maxCorrectPerAttempt, minCorrectPerMinute, maxCorrectPerMinute)
-         VALUES (?, 0, ?, ?, ?, ?, ?, ?);`,
-        [
-          gameRecord.deckName,
-          correct,
-          correct,
-          correctAttempted,
-          correctAttempted,
-          correctPerMinute,
-          correctPerMinute,
-        ],
-      );
 
       // Update deck summary setting min/max vaues if conditions are met
       await this.dbService.runAsync(
@@ -289,13 +276,6 @@ export class LoggingService {
         ],
       );
 
-      // Insert new row into deck_detail if doesn't exist
-      await this.dbService.runAsync(
-        `INSERT OR IGNORE INTO deck_detail (deckName, text, numberAttempts, numberCorrect)
-         SELECT ?, text, 0, 0 FROM game_detail WHERE gameId IN (SELECT id FROM game_summary WHERE deckName = ?) GROUP BY text;`,
-        [gameRecord.deckName, gameRecord.deckName],
-      );
-
       for (const turn of gameRecord.turns) {
         await this.dbService.runAsync(
           `UPDATE deck_detail SET
@@ -323,6 +303,35 @@ export class LoggingService {
   // Retrieve debugging information from various tables
   async getDebug() {
     try {
+      const counts = await this.dbService.getAllAsync(
+        `select 'deck' t, count(*) c from deck union
+          select 'game_summary' t, count(*) c from game_summary union
+          select 'game_detail' t, count(*) c from game_detail union
+          select 'deck_summary' t, count(*) c from deck_summary union
+          select 'deck_detail' t, count(*) c from deck_detail union
+
+          select 'game_summary (no deck)' t, sum(cnt) c
+          from (
+            select deckName, count(*) cnt
+            from game_summary
+            where deckName not in (select deckName from deck)) x union
+
+          select 'orphan game details' t, count(*) c from game_detail
+            where gameId not in (select id from game_summary) union
+
+          select 'multiple summaries for deck' t, sum(cnt) c
+          from (
+            select deckName, count(*) cnt
+            from deck_summary
+            group by deckName having count(*) > 1) x union
+
+          select 'dupes deckName, text for deck_detail' t, sum(cnt) c
+          from (
+            select deckName, text, count(*) cnt
+            from deck_detail
+            group by deckName, text having count(*) > 1) x
+          ;`
+      );
       const deck = await this.dbService.getFirstAsync<DeckDb>(
         `select * from deck limit 1;`,
       );
@@ -338,7 +347,7 @@ export class LoggingService {
       const deck_detail = await this.dbService.getFirstAsync<DeckDetail>(
         `select * from deck_detail order by id desc limit 1;`,
       );
-      return { deck, game_summary, game_detail, deck_summary, deck_detail };
+      return { counts, deck, game_summary, game_detail, deck_summary, deck_detail };
     } catch (error) {
       await this.errorService.logError(
         ErrorActionType.CONSOLE,

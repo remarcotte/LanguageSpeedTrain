@@ -203,7 +203,7 @@ export default function Statistics() {
 
   return (
     <ThemedScreen title="Statistics">
-      <ThemedText style={styles.label}>Select Deck</ThemedText>
+      <ThemedText type="head2">Select Deck</ThemedText>
       <ThemedDropdownPicker
         open={open}
         value={selectedDeck}
@@ -220,7 +220,9 @@ export default function Statistics() {
       />
 
       {!logDeckSummary ? (
-        <ThemedText>No Statistics - Deck has not been played.</ThemedText>
+        <ThemedText type="normal">
+          No Statistics - Deck has not been played.
+        </ThemedText>
       ) : (
         selectedDeck &&
         logDeckSummary && (
@@ -230,28 +232,26 @@ export default function Statistics() {
               if (item.key === 'summary') {
                 return (
                   <ThemedView>
-                    <ThemedText style={styles.label}>
-                      Deck Statistics
-                    </ThemedText>
-                    <ThemedText style={styles.detail}>
+                    <ThemedText type="head2">Deck Statistics</ThemedText>
+                    <ThemedText type="normal">
                       Plays: {logDeckSummary.timesPlayed}
                     </ThemedText>
-                    <ThemedText style={styles.detail}>
+                    <ThemedText type="normal">
                       Least Correct: {logDeckSummary.minCorrect}
                     </ThemedText>
-                    <ThemedText style={styles.detail}>
+                    <ThemedText type="normal">
                       Most Correct: {logDeckSummary.maxCorrect}
                     </ThemedText>
-                    <ThemedText style={styles.detail}>
+                    <ThemedText type="normal">
                       Least Correct %: {logDeckSummary.minCorrectPerAttempt}%
                     </ThemedText>
-                    <ThemedText style={styles.detail}>
+                    <ThemedText type="normal">
                       Most Correct %: {logDeckSummary.maxCorrectPerAttempt}%
                     </ThemedText>
-                    <ThemedText style={styles.detail}>
+                    <ThemedText type="normal">
                       Lowest Rate: {logDeckSummary.minCorrectPerMinute}
                     </ThemedText>
-                    <ThemedText style={styles.detail}>
+                    <ThemedText type="normal">
                       Highest Rate: {logDeckSummary.maxCorrectPerMinute}
                     </ThemedText>
                   </ThemedView>
@@ -259,15 +259,11 @@ export default function Statistics() {
               } else if (deckDetail && item.key === 'charts') {
                 return (
                   <ThemedView>
-                    <ThemedText style={styles.label}>
-                      Recent Correct/Minute
-                    </ThemedText>
+                    <ThemedText type="head2">Recent Correct/Minute</ThemedText>
                     <SimpleHistogram
                       data={histogramData.length ? histogramData : [0]} // Display histogram data
                     />
-                    <ThemedText style={styles.label}>
-                      Recent Percent Correct
-                    </ThemedText>
+                    <ThemedText type="head2">Recent Percent Correct</ThemedText>
                     <SimpleHistogram
                       data={histogramData.length ? lineChartData : [0]} // Display line chart data
                     />
@@ -277,28 +273,24 @@ export default function Statistics() {
                 return (
                   <ThemedView>
                     <ThemedPressable
+                      type="wide"
                       title="Deck Detail Statistics"
                       onPress={showDeckDetail} // Navigate to deck details
-                      fontSize={20}
-                      style={styles.bottomButton}
                     />
                     <ThemedPressable
+                      type="wide"
                       title="Clear Deck Statistics"
                       onPress={() => verifyClear(true)} // Verify before clearing deck statistics
-                      fontSize={20}
-                      style={styles.bottomButton}
                     />
                     <ThemedPressable
+                      type="wide"
                       title="Clear All Statistics"
                       onPress={() => verifyClear(false)} // Verify before clearing all statistics
-                      fontSize={20}
-                      style={styles.bottomButton}
                     />
                     <ThemedPressable
+                      type="wide"
                       title="Home"
-                      fontSize={20}
                       onPress={() => router.navigate('/home')} // Navigate to home
-                      style={styles.bottomButton}
                     />
                   </ThemedView>
                 );

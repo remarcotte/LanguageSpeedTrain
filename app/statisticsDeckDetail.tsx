@@ -26,16 +26,18 @@ export default function StatisticsDeckDetail() {
 
   return (
     <ThemedScreen title="Deck Detail Statistics">
-      <ThemedText style={styles.title}>{deckName} History</ThemedText>
+      <ThemedText type="head2">{deckName} History</ThemedText>
       <ThemedFlatList
         data={details}
         keyExtractor={(item, index) => index.toString()} // Ensure unique keys for each item
         renderItem={({ item }) => (
           <ThemedView style={styles.detailContainer}>
             <ThemedView style={styles.detailHeader}>
-              <ThemedText style={styles.detailTextLeft}>{item.text}</ThemedText>
+              <ThemedText type="list-item-title" style={styles.detailTextLeft}>
+                {item.text}
+              </ThemedText>
               {item.numberAttempts > 0 && (
-                <ThemedText style={styles.detailTextRight}>
+                <ThemedText type="list-item" style={styles.detailTextRight}>
                   {((100 * item.numberCorrect) / item.numberAttempts)
                     .toFixed(2) // Round to two decimal places
                     .replace(/\.00$/, '') // Remove trailing .00
@@ -44,7 +46,7 @@ export default function StatisticsDeckDetail() {
                 </ThemedText>
               )}
             </ThemedView>
-            <ThemedText style={styles.metricText}>
+            <ThemedText type="list-item">
               Attempts: {item.numberAttempts}, Correct: {item.numberCorrect}
             </ThemedText>
           </ThemedView>
@@ -79,14 +81,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   detailTextLeft: {
-    fontSize: 18,
     marginLeft: 8,
   },
   detailTextRight: {
-    fontSize: 18,
     marginRight: 8,
-  },
-  metricText: {
-    fontSize: 18,
   },
 });

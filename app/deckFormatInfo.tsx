@@ -10,18 +10,27 @@ export default function DeckFormatInfo() {
   return (
     <ThemedScreen title="How to Format Decks">
       <ThemedScrollView>
-        <ThemedText style={styles.normal}>
+        <ThemedText type="normal">
           Here's a sample of the format for your deck data.
         </ThemedText>
-        <ThemedText style={styles.example}>
+        <ThemedText type="smaller" style={styles.example}>
           text,English,Français,Español
         </ThemedText>
-        <ThemedText style={styles.example}>1,one,un,uno</ThemedText>
-        <ThemedText style={styles.example}>2,two,deux,dos</ThemedText>
-        <ThemedText style={styles.example}>3,three,trois,tres</ThemedText>
-        <ThemedText style={styles.normal}>
-          Follow the same format for your deck. Note: The only commas allowed in
-          the data are those separating the different categories.
+        <ThemedText type="smaller" style={styles.example}>
+          1,one,un,uno
+        </ThemedText>
+        <ThemedText type="smaller" style={styles.example}>
+          2,two,deux,dos
+        </ThemedText>
+        <ThemedText type="smaller" style={styles.example}>
+          3,three,trois,tres
+        </ThemedText>
+        <ThemedText type="normal">
+          Follow the same format for your deck.
+        </ThemedText>
+        <ThemedText type="normal">
+          Note: The only commas allowed in the data are those separating the
+          different categories.
         </ThemedText>
       </ThemedScrollView>
     </ThemedScreen>
@@ -29,18 +38,9 @@ export default function DeckFormatInfo() {
 }
 
 const styles = StyleSheet.create({
-  normal: {
-    fontSize: 18,
-    marginLeft: 12,
-    marginRight: 16,
-    marginBottom: 16,
-    marginTop: 8,
-  },
   example: {
-    fontSize: 16,
     marginLeft: 50,
     marginRight: 16,
-    marginBottom: 4,
-    marginTop: 0,
+    marginVertical: 0,
   },
 });

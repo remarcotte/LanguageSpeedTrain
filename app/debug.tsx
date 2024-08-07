@@ -23,6 +23,7 @@ export default function Debug() {
   const [item6, setItem6] = useState<any>(null);
   const [item7, setItem7] = useState<any>(null);
   const [item8, setItem8] = useState<any>(null);
+  const [item9, setItem9] = useState<any>(null);
 
   useEffect(() => {
     const doDebug = async () => {
@@ -33,6 +34,7 @@ export default function Debug() {
       setItem7(d?.games || null);
       setItem8(d?.details || null);
       const c = (await loggingService.getDebug()) as any;
+      setItem9(c?.counts || null);
       setItem1(c?.deck || null);
       setItem2(c?.deck_summary || null);
       setItem3(c?.deck_detail || null);
@@ -46,49 +48,36 @@ export default function Debug() {
   return (
     <ThemedScreen title="Debug">
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <ThemedText style={styles.title}>Errors</ThemedText>
-        <ThemedText style={styles.normal}>{JSON.stringify(item0)}</ThemedText>
-        <ThemedText style={styles.title}>Logging getDeckSummary</ThemedText>
-        <ThemedText style={styles.label}>Summary</ThemedText>
-        <ThemedText style={styles.normal}>{JSON.stringify(item6)}</ThemedText>
-        <ThemedText style={styles.label}>Games</ThemedText>
-        <ThemedText style={styles.normal}>{JSON.stringify(item7)}</ThemedText>
-        <ThemedText style={styles.label}>Details</ThemedText>
-        <ThemedText style={styles.normal}>{JSON.stringify(item8)}</ThemedText>
+        <ThemedText type="head1">Counts</ThemedText>
+        <ThemedText type="normal">{JSON.stringify(item9)}</ThemedText>
+        <ThemedText type="head1">Errors</ThemedText>
+        <ThemedText type="normal">{JSON.stringify(item0)}</ThemedText>
+        <ThemedText type="head1">Logging getDeckSummary</ThemedText>
+        <ThemedText type="head2">Summary</ThemedText>
+        <ThemedText type="normal">{JSON.stringify(item6)}</ThemedText>
+        <ThemedText type="head2">Games</ThemedText>
+        <ThemedText type="normal">{JSON.stringify(item7)}</ThemedText>
+        <ThemedText type="head2">Details</ThemedText>
+        <ThemedText type="normal">{JSON.stringify(item8)}</ThemedText>
 
-        <ThemedText style={styles.title}>Database Tests</ThemedText>
-        <ThemedText style={styles.label}>Deck</ThemedText>
-        <ThemedText style={styles.normal}>{JSON.stringify(item1)}</ThemedText>
-        <ThemedText style={styles.label}>Deck_Summary</ThemedText>
-        <ThemedText style={styles.normal}>{JSON.stringify(item2)}</ThemedText>
-        <ThemedText style={styles.label}>Deck_Detail</ThemedText>
-        <ThemedText style={styles.normal}>{JSON.stringify(item3)}</ThemedText>
-        <ThemedText style={styles.label}>Game_Summary</ThemedText>
-        <ThemedText style={styles.normal}>{JSON.stringify(item4)}</ThemedText>
-        <ThemedText style={styles.label}>Game_Detail</ThemedText>
-        <ThemedText style={styles.normal}>{JSON.stringify(item5)}</ThemedText>
+        <ThemedText type="head1">Database Tests</ThemedText>
+        <ThemedText type="head2">Deck</ThemedText>
+        <ThemedText type="normal">{JSON.stringify(item1)}</ThemedText>
+        <ThemedText type="head2">Deck_Summary</ThemedText>
+        <ThemedText type="normal">{JSON.stringify(item2)}</ThemedText>
+        <ThemedText type="head2">Deck_Detail</ThemedText>
+        <ThemedText type="normal">{JSON.stringify(item3)}</ThemedText>
+        <ThemedText type="head2">Game_Summary</ThemedText>
+        <ThemedText type="normal">{JSON.stringify(item4)}</ThemedText>
+        <ThemedText type="head2">Game_Detail</ThemedText>
+        <ThemedText type="normal">{JSON.stringify(item5)}</ThemedText>
       </ScrollView>
     </ThemedScreen>
   );
 }
 
 const styles = StyleSheet.create({
-  title: {
-    fontSize: 24,
-    textAlign: 'center',
-    marginBottom: 16,
-  },
   scrollContainer: {
     flexGrow: 1,
-  },
-  label: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 16,
-  },
-  normal: {
-    fontSize: 16,
-    marginBottom: 16,
   },
 });

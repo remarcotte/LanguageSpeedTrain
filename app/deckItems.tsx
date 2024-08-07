@@ -170,17 +170,16 @@ export default function DeckItems() {
         listButtonBackgroundColor={listButtonBackgroundColor}
       >
         <ThemedText
-          style={[styles.text, { backgroundColor: listButtonBackgroundColor }]}
+          type="list-item-title"
+          style={[{ backgroundColor: listButtonBackgroundColor }]}
         >
           {text}
         </ThemedText>
         {categories.map((value, index) => (
           <ThemedText
+            type="list-item"
             key={index}
-            style={[
-              styles.category,
-              { backgroundColor: listButtonBackgroundColor },
-            ]}
+            style={[{ backgroundColor: listButtonBackgroundColor }]}
           >
             {value}
           </ThemedText>
@@ -228,7 +227,6 @@ export default function DeckItems() {
       headerRight={
         <ThemedPressable
           title="Add Item"
-          fontSize={16}
           isTransparent={true}
           onPress={() =>
             router.navigate({
@@ -254,16 +252,6 @@ export default function DeckItems() {
 }
 
 const styles = StyleSheet.create({
-  text: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    textAlign: 'left',
-  },
-  category: {
-    fontSize: 14,
-    marginTop: 4,
-    textAlign: 'left',
-  },
   rowBack: {
     alignItems: 'center',
     flex: 1,

@@ -139,18 +139,14 @@ export default function ManageDecks() {
         listButtonBackgroundColor={listButtonBackgroundColor}
       >
         <ThemedText
-          style={[
-            styles.deckName,
-            { backgroundColor: listButtonBackgroundColor },
-          ]}
+          type="list-item-title"
+          style={[{ backgroundColor: listButtonBackgroundColor }]}
         >
           {item.deckName}
         </ThemedText>
         <ThemedText
-          style={[
-            styles.deckInfo,
-            { backgroundColor: listButtonBackgroundColor },
-          ]}
+          type="list-item"
+          style={[{ backgroundColor: listButtonBackgroundColor }]}
         >
           {item.itemCount} items, Categories: {item.categories.join(', ')}
         </ThemedText>
@@ -211,8 +207,8 @@ export default function ManageDecks() {
         style={[styles.footer, { borderTopColor: listButtonBackgroundColor }]}
       >
         <ThemedPressable
+          type="wide"
           title="Reset Decks"
-          fontSize={20}
           onPress={() => resetDecks()}
         />
       </ThemedView>
