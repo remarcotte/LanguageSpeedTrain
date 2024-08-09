@@ -20,7 +20,7 @@ export default function Home() {
     <ThemedScreen style={styles.container} title="Home">
       <Image
         style={styles.logoImage}
-        source={require('@/assets/images/logo.png')}
+        source={require('@/assets/images/logo.jpg')}
         contentFit="contain"
       />
       <ThemedPressable
@@ -67,6 +67,7 @@ export default function Home() {
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center', // Center align items horizontally
+    backgroundColor: '#938562',
   },
   logoImage: {
     width: '60%', // Set width to 60% of the container
