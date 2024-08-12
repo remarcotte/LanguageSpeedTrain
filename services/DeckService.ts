@@ -225,7 +225,6 @@ export class DeckService {
 
       // Add items to deck_detail table
       await this.syncDeckDetail(deckName, items);
-
     } catch (error) {
       await this.errorService.logError(
         ErrorActionType.CONSOLE,
@@ -245,14 +244,14 @@ export class DeckService {
       const texts = parsedItems.map((item: string[]) => item[0]);
 
       // Generate placeholders for the texts in SQL
-      const placeholders = texts.map(() => '?').join(',');
+      const placeholders = texts.map(() => "?").join(",");
 
       // Remove any row where deckName & text combination is not in the given data
       await this.dbService.runAsync(
         `DELETE FROM deck_detail
          WHERE deckName = ?
          AND text NOT IN (${placeholders});`,
-        [deckName, ...texts]
+        [deckName, ...texts],
       );
 
       // Step 2: Add new rows for any combo not in deck_detail
@@ -261,7 +260,7 @@ export class DeckService {
         const existingEntry = await this.dbService.getFirstAsync(
           `SELECT id FROM deck_detail
            WHERE deckName = ? AND text = ?;`,
-          [deckName, text]
+          [deckName, text],
         );
 
         // If it does not exist, insert a new row
@@ -269,7 +268,7 @@ export class DeckService {
           await this.dbService.runAsync(
             `INSERT INTO deck_detail (deckName, text, numberAttempts, numberCorrect)
              VALUES (?, ?, 0, 0);`,
-            [deckName, text]
+            [deckName, text],
           );
         }
       }
@@ -362,14 +361,15 @@ export class DeckService {
         await this.updateDeck(
           deckName,
           deck.categories.join("|"),
-          JSON.stringify(items)
+          JSON.stringify(items),
         );
 
         // Add new item to deck_detail
         await this.dbService.runAsync(
           `INSERT INTO deck_detail (deckName, text, numberAttempts, numberCorrect)
              VALUES (?, ?, 0, 0);`,
-          [deckName, item[0]]);
+          [deckName, item[0]],
+        );
       }
     } catch (error) {
       await this.errorService.logError(
@@ -396,7 +396,8 @@ export class DeckService {
         // Add new item to deck_detail
         await this.dbService.runAsync(
           `delete from deck_detail where deckName = ? and text = ?;`,
-          [deckName, text]);
+          [deckName, text],
+        );
       }
     } catch (error) {
       await this.errorService.logError(
@@ -411,7 +412,7 @@ export class DeckService {
   // Update an item in a deck
   public async updateDeckItem(
     deckName: string,
-    text: string,   // existing text (used to locate item to replace)
+    text: string, // existing text (used to locate item to replace)
     item: string[], // new item
   ): Promise<void> {
     try {
@@ -427,7 +428,8 @@ export class DeckService {
         // Add new item to deck_detail
         await this.dbService.runAsync(
           `update deck_detail set text = ? where deckName = ? and text = ?;`,
-          [item[0], deckName, text]);
+          [item[0], deckName, text],
+        );
       }
     } catch (error) {
       await this.errorService.logError(
@@ -509,16 +511,12 @@ export class DeckService {
 
   // Create a new deck from CSV data
   async createDeck(deckName: string, csvData: string): Promise<string> {
-    let msg = ''
+    let msg = "";
     try {
       // Validate the deck name
       if (!deckName.trim()) {
-        msg = 'Deck name cannot be empty.';
-        await this.errorService.logError(
-          ErrorActionType.CONSOLE,
-          49,
-          msg,
-        );
+        msg = "Deck name cannot be empty.";
+        await this.errorService.logError(ErrorActionType.CONSOLE, 49, msg);
         return msg;
       }
 
@@ -529,12 +527,8 @@ export class DeckService {
 
       // Validate CSV data has at least two lines
       if (lines.length < 2) {
-        msg = 'CSV data is incomplete.';
-        await this.errorService.logError(
-          ErrorActionType.CONSOLE,
-          50,
-          msg,
-        );
+        msg = "CSV data is incomplete.";
+        await this.errorService.logError(ErrorActionType.CONSOLE, 50, msg);
         return msg;
       }
 
@@ -543,12 +537,8 @@ export class DeckService {
 
       // Validate the first column
       if (headers[0] !== "text") {
-        msg = 'The first column must be text.';
-        await this.errorService.logError(
-          ErrorActionType.CONSOLE,
-          51,
-          msg,
-        );
+        msg = "The first column must be text.";
+        await this.errorService.logError(ErrorActionType.CONSOLE, 51, msg);
         return msg;
       }
 
@@ -561,12 +551,8 @@ export class DeckService {
 
         // Validate the number of values matches the number of headers
         if (values.length !== headers.length) {
-          msg = 'Mismatch in the number of categories';
-          await this.errorService.logError(
-            ErrorActionType.CONSOLE,
-            52,
-            msg,
-          );
+          msg = "Mismatch in the number of categories";
+          await this.errorService.logError(ErrorActionType.CONSOLE, 52, msg);
           return msg;
         }
         items.push(values);
@@ -574,25 +560,16 @@ export class DeckService {
 
       // Validate there are items to process
       if (items.length === 0) {
-        msg = 'Deck must have at least one item.';
-        await this.errorService.logError(
-          ErrorActionType.CONSOLE,
-          53,
-          msg,
-        );
+        msg = "Deck must have at least one item.";
+        await this.errorService.logError(ErrorActionType.CONSOLE, 53, msg);
         return msg;
       }
 
       // Proceed with creating the new deck
       await this.newDeck(deckName, categories, items);
     } catch (error) {
-      msg = 'Failed to create deck.';
-      await this.errorService.logError(
-        ErrorActionType.CONSOLE,
-        54,
-        msg,
-        error,
-      );
+      msg = "Failed to create deck.";
+      await this.errorService.logError(ErrorActionType.CONSOLE, 54, msg, error);
     }
     return msg;
   }

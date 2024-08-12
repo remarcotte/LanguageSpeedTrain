@@ -5,7 +5,7 @@ import { showToast } from "@/components/ThemedToast"; // Import custom toast com
 import { DBService } from "./DBService"; // Import database service
 import { ErrorLog, LoggedError, ErrorActionType } from "@/types/ErrorTypes"; // Import error-related types
 
-import { MAX_ERROR_MSG_DB_SIZE, MAX_LOG_SIZE } from '@/constants/General';
+import { MAX_ERROR_MSG_DB_SIZE, MAX_LOG_SIZE } from "@/constants/General";
 
 // Singleton class for managing error logging and actions
 export class ErrorService {
@@ -98,7 +98,7 @@ export class ErrorService {
     try {
       await this.dbService.runAsync(
         `DELETE FROM errors WHERE id NOT IN (SELECT id FROM errors ORDER BY id DESC LIMIT ?);`,
-        [MAX_LOG_SIZE]
+        [MAX_LOG_SIZE],
       );
     } catch (error) {
       console.error("Failed to prune error logs", error);
@@ -120,6 +120,6 @@ export class ErrorService {
         datetime: this.dbService.dbDateToString(item.logDatetime),
       }));
     }
-    return (logs as LoggedError[]);
+    return logs as LoggedError[];
   }
 }

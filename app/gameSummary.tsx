@@ -170,19 +170,9 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     alignItems: 'center',
   },
-  sectionLabel: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 8,
-  },
   optionsText: {
     marginBottom: 4,
     textAlign: 'center',
-  },
-  statText: {
-    fontSize: 16,
-    marginBottom: 4,
-    fontWeight: 'bold',
   },
   ratingContainer: {
     flexDirection: 'row',

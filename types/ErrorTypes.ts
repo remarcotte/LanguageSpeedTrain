@@ -11,7 +11,7 @@ export type ErrorLog = {
   message?: string; // application supplied error message
 };
 
-export type LoggedError = Omit<Required<ErrorLog>, 'error'> & {
+export type LoggedError = Omit<Required<ErrorLog>, "error"> & {
   error?: string; // 'error' remains optional
 };
 

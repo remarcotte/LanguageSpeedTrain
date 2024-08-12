@@ -1,6 +1,8 @@
-import React from 'react';
-import { FlatList, type FlatListProps } from 'react-native';
-import { useThemeColor } from '@/hooks/useThemeColor';
+// ThemedFlatList.tsx
+
+import React from "react";
+import { FlatList, type FlatListProps } from "react-native";
+import { useThemeColor } from "@/hooks/useThemeColor";
 
 // Define props for ThemedFlatList, extending FlatListProps and adding optional color themes
 export type ThemedFlatListProps<ItemT> = FlatListProps<ItemT> & {
@@ -18,7 +20,7 @@ export function ThemedFlatList<ItemT>({
   // Use theme color hook to determine background color based on light or dark theme
   const backgroundColor = useThemeColor(
     { light: lightColor, dark: darkColor },
-    'background'
+    "background",
   );
 
   return (

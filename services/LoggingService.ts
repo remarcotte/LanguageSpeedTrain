@@ -13,7 +13,7 @@ import { DBService } from "./DBService"; // Import database service
 import { ErrorService } from "@/services/ErrorService"; // Import error service
 import { ErrorActionType } from "@/types/ErrorTypes"; // Import error action types
 
-import { MAX_GAME_LOG_SIZE } from '@/constants/General';
+import { MAX_GAME_LOG_SIZE } from "@/constants/General";
 
 export class LoggingService {
   private static instance: LoggingService; // Singleton instance of LoggingService
@@ -288,7 +288,7 @@ export class LoggingService {
 
       await this.dbService.runAsync(
         `DELETE FROM game_detail WHERE gameId NOT IN (SELECT id FROM game_summary ORDER BY id DESC LIMIT ?);`,
-        [MAX_GAME_LOG_SIZE]
+        [MAX_GAME_LOG_SIZE],
       );
     } catch (error) {
       await this.errorService.logError(
@@ -330,7 +330,7 @@ export class LoggingService {
             select deckName, text, count(*) cnt
             from deck_detail
             group by deckName, text having count(*) > 1) x
-          ;`
+          ;`,
       );
       const deck = await this.dbService.getFirstAsync<DeckDb>(
         `select * from deck limit 1;`,
@@ -347,7 +347,14 @@ export class LoggingService {
       const deck_detail = await this.dbService.getFirstAsync<DeckDetail>(
         `select * from deck_detail order by id desc limit 1;`,
       );
-      return { counts, deck, game_summary, game_detail, deck_summary, deck_detail };
+      return {
+        counts,
+        deck,
+        game_summary,
+        game_detail,
+        deck_summary,
+        deck_detail,
+      };
     } catch (error) {
       await this.errorService.logError(
         ErrorActionType.CONSOLE,

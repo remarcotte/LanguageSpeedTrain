@@ -1,13 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, ActivityIndicator } from 'react-native';
+// errors.tsx
 
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
-import { ThemedScreen } from '@/components/ThemedScreen';
-import { ThemedFlatList } from '@/components/ThemedFlatList'; // Import ThemedFlatList
+import React, { useState, useEffect } from "react";
+import { StyleSheet, ActivityIndicator } from "react-native";
 
-import { ErrorService } from '@/services/ErrorService';
-import { type LoggedError, ErrorActionType } from '@/types/ErrorTypes';
+import { ThemedText } from "@/components/ThemedText";
+import { ThemedView } from "@/components/ThemedView";
+import { ThemedScreen } from "@/components/ThemedScreen";
+import { ThemedFlatList } from "@/components/ThemedFlatList"; // Import ThemedFlatList
+
+import { ErrorService } from "@/services/ErrorService";
+import { type LoggedError, ErrorActionType } from "@/types/ErrorTypes";
 
 export default function Errors() {
   // Get a singleton instance of the ErrorService
@@ -29,8 +31,8 @@ export default function Errors() {
         await errorService.logError(
           ErrorActionType.TOAST,
           55,
-          'Failed to fetch errors.',
-          error
+          "Failed to fetch errors.",
+          error,
         );
       } finally {
         setLoading(false); // Set loading to false regardless of success or failure
@@ -89,11 +91,11 @@ const styles = StyleSheet.create({
   errorContainer: {
     marginBottom: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
+    borderBottomColor: "#ccc",
     paddingBottom: 8,
   },
   errorHeader: {
-    flexDirection: 'column',
+    flexDirection: "column",
   },
   note: {
     marginBottom: 20,

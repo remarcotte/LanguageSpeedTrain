@@ -5,7 +5,7 @@ import { Alert, Keyboard } from "react-native";
 import { useLocalSearchParams, router } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
 
-import { useThemeColor } from '@/hooks/useThemeColor';
+import { useThemeColor } from "@/hooks/useThemeColor";
 
 import { LoggingService } from "@/services/LoggingService";
 import { DeckService } from "@/services/DeckService";
@@ -18,8 +18,8 @@ import {
   GAME_RESPONSE_STATUS_TIME,
   GAME_OVER_STATUS_TIME,
   CORRECT_ICON,
-  INCORRECT_ICON
-} from '@/constants/General';
+  INCORRECT_ICON,
+} from "@/constants/General";
 
 export type GameLogic = {
   timeLeft: number;
@@ -44,8 +44,8 @@ export const useGameLogic = (): GameLogic => {
   const loggingService = LoggingService.getInstance();
   const deckService = DeckService.getInstance();
 
-  const correctTextColor = useThemeColor({}, 'textCorrect'); // Get text color from theme
-  const incorrectTextColor = useThemeColor({}, 'textIncorrect'); // Get text color from theme
+  const correctTextColor = useThemeColor({}, "textCorrect"); // Get text color from theme
+  const incorrectTextColor = useThemeColor({}, "textIncorrect"); // Get text color from theme
 
   const { deckName, category, duration } = useLocalSearchParams<{
     deckName: string;

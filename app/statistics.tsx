@@ -328,7 +328,4 @@ const styles = StyleSheet.create({
     marginTop: 4,
     marginBottom: 4,
   },
-  bottomButton: {
-    marginHorizontal: 16,
-  },
 });

@@ -1,17 +1,19 @@
-import React from 'react';
+// ThemedPressable.tsx
+
+import React from "react";
 import {
   Text,
   Pressable,
   PressableProps,
   StyleSheet,
   ViewStyle,
-} from 'react-native';
+} from "react-native";
 
-import { useThemeColor } from '@/hooks/useThemeColor';
+import { useThemeColor } from "@/hooks/useThemeColor";
 
 // Define props for ThemedPressable, extending PressableProps and adding custom properties
 export type ThemedPressableProps = PressableProps & {
-  type?: 'normal' | 'big' | 'wide';
+  type?: "normal" | "big" | "wide";
   title: string; // Title text for the button
   lightColor?: string; // Optional light color theme
   darkColor?: string; // Optional dark color theme
@@ -22,7 +24,7 @@ export type ThemedPressableProps = PressableProps & {
 
 // ThemedPressable component using React Native's Pressable and Text
 export function ThemedPressable({
-  type = 'normal',
+  type = "normal",
   title,
   fontSize = 0, // Default to 0 to rely on type settings
   disabled,
@@ -34,31 +36,31 @@ export function ThemedPressable({
 }: ThemedPressableProps) {
   // Determine background color based on theme and transparency
   const buttonBackgroundColor = isTransparent
-    ? useThemeColor({ light: lightColor, dark: darkColor }, 'background')
-    : useThemeColor({ light: lightColor, dark: darkColor }, 'button');
+    ? useThemeColor({ light: lightColor, dark: darkColor }, "background")
+    : useThemeColor({ light: lightColor, dark: darkColor }, "button");
 
   // Determine text color based on theme and transparency
   const buttonTextColor = isTransparent
-    ? useThemeColor({ light: lightColor, dark: darkColor }, 'text')
-    : useThemeColor({ light: lightColor, dark: darkColor }, 'buttonText');
+    ? useThemeColor({ light: lightColor, dark: darkColor }, "text")
+    : useThemeColor({ light: lightColor, dark: darkColor }, "buttonText");
 
   return (
     <Pressable
       style={({ pressed }) => [
-        type === 'normal' ? styles.normalPressable : undefined,
-        type === 'big' ? styles.bigPressable : undefined,
-        type === 'wide' ? styles.widePressable : undefined,
+        type === "normal" ? styles.normalPressable : undefined,
+        type === "big" ? styles.bigPressable : undefined,
+        type === "wide" ? styles.widePressable : undefined,
         { backgroundColor: buttonBackgroundColor }, // Apply background color
-        typeof style === 'function' ? style({ pressed }) : style, // Apply style function or static style
+        typeof style === "function" ? style({ pressed }) : style, // Apply style function or static style
       ]}
       disabled={disabled} // Disable button if necessary
       {...props} // Spread additional props
     >
       <Text
         style={[
-          type === 'normal' ? styles.normalText : undefined,
-          type === 'big' ? styles.bigText : undefined,
-          type === 'wide' ? styles.wideText : undefined,
+          type === "normal" ? styles.normalText : undefined,
+          type === "big" ? styles.bigText : undefined,
+          type === "wide" ? styles.wideText : undefined,
           { color: buttonTextColor },
           fontSize > 0 ? { fontSize } : undefined, // Conditionally apply fontSize
         ]}
@@ -75,7 +77,7 @@ const styles = StyleSheet.create({
     padding: 12,
     margin: 2,
     borderRadius: 5,
-    alignItems: 'center',
+    alignItems: "center",
   },
   bigPressable: {
     paddingVertical: 10, // Vertical padding for buttons
@@ -83,15 +85,15 @@ const styles = StyleSheet.create({
     marginVertical: 5, // Space between buttons
     borderRadius: 5, // Rounded corners for buttons
     margin: 2,
-    alignItems: 'center',
+    alignItems: "center",
   },
   widePressable: {
-    width: '100%',
+    width: "100%",
     padding: 8,
     marginHorizontal: 2,
     marginVertical: 8,
     borderRadius: 5,
-    alignItems: 'center',
+    alignItems: "center",
   },
   normalText: {
     fontSize: 20,

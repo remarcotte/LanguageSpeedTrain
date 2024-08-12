@@ -155,32 +155,6 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderRadius: 5,
   },
-  centerWrapper: {
-    flex: 0, // Center wrapper takes up all remaining space
-    width: 50,
-    alignItems: 'center', // Centers the centerItem horizontally
-  },
-  centerItem: {
-    // This item now only needs to center its content
-    justifyContent: 'center', // Center the icon vertically
-  },
-  stats: {
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  resultIcon: {
-    // Remove extra margin to keep the icon centered
-  },
-  itemText: {
-    fontSize: 24,
-    textAlign: 'center',
-    marginVertical: 10,
-  },
-  categoryText: {
-    fontSize: 18,
-    textAlign: 'center',
-    marginVertical: 10,
-  },
   input: {
     height: 40,
     borderWidth: 1,
@@ -201,9 +175,5 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 1000,
-  },
-  gameOverText: {
-    fontSize: 48,
-    fontWeight: 'bold',
   },
 });

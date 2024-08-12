@@ -58,12 +58,6 @@ export default function StatisticsDeckDetail() {
 }
 
 const styles = StyleSheet.create({
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 16,
-  },
   contentContainer: {
     flexGrow: 1,
     marginTop: 8,

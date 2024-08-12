@@ -1,13 +1,13 @@
 // debug.tsx
 
-import React, { useState, useEffect } from 'react';
-import { ScrollView, StyleSheet } from 'react-native';
+import React, { useState, useEffect } from "react";
+import { ScrollView, StyleSheet } from "react-native";
 
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedScreen } from '@/components/ThemedScreen';
+import { ThemedText } from "@/components/ThemedText";
+import { ThemedScreen } from "@/components/ThemedScreen";
 
-import { LoggingService } from '@/services/LoggingService';
-import { ErrorService } from '@/services/ErrorService';
+import { LoggingService } from "@/services/LoggingService";
+import { ErrorService } from "@/services/ErrorService";
 
 // an uncommented free-for-all for looking directly at the data
 export default function Debug() {
@@ -29,7 +29,7 @@ export default function Debug() {
     const doDebug = async () => {
       const e = (await errorService.getErrors()) as any;
       setItem0(e || null);
-      const d = (await loggingService.getDeckSummary('Hirigana')) as any;
+      const d = (await loggingService.getDeckSummary("Hirigana")) as any;
       setItem6(d?.summary || null);
       setItem7(d?.games || null);
       setItem8(d?.details || null);

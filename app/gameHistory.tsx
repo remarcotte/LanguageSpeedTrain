@@ -93,13 +93,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  turnText: {
-    fontSize: 18,
-    marginLeft: 8,
-  },
-  responseText: {
-    fontSize: 18,
-  },
   correctIcon: {
     fontWeight: '900',
   },

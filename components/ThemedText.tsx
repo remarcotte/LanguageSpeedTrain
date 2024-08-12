@@ -84,9 +84,6 @@ const styles = StyleSheet.create({
     marginTop: 4,
     textAlign: 'left',
   },
-  wide: {
-    fontSize: 20,
-  },
   bigger: {
     fontSize: 24,
     textAlign: 'center',

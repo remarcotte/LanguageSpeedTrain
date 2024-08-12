@@ -98,9 +98,6 @@ export default function AddNewDeck() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
   press: {
     marginVertical: 15,
   },

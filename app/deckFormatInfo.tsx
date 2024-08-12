@@ -1,10 +1,12 @@
+// deckFormatInfo.tsx
+
 // DeckFormatInfo.tsx
 
-import React from 'react';
-import { StyleSheet } from 'react-native';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedScreen } from '@/components/ThemedScreen';
-import { ThemedScrollView } from '@/components/ThemedScrollView';
+import React from "react";
+import { StyleSheet } from "react-native";
+import { ThemedText } from "@/components/ThemedText";
+import { ThemedScreen } from "@/components/ThemedScreen";
+import { ThemedScrollView } from "@/components/ThemedScrollView";
 
 export default function DeckFormatInfo() {
   return (

@@ -217,16 +217,6 @@ export default function ManageDecks() {
 }
 
 const styles = StyleSheet.create({
-  deckName: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    textAlign: 'left',
-  },
-  deckInfo: {
-    fontSize: 14,
-    marginTop: 4,
-    textAlign: 'left',
-  },
   rowBack: {
     alignItems: 'center',
     flex: 1,

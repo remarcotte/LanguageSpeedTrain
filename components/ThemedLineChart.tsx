@@ -1,20 +1,22 @@
-import React from 'react';
-import { StyleSheet } from 'react-native';
-import { LineChart } from 'react-native-chart-kit';
-import { Dimensions } from 'react-native';
+// ThemedLineChart.tsx
 
-import { useThemeColor } from '@/hooks/useThemeColor';
+import React from "react";
+import { StyleSheet } from "react-native";
+import { LineChart } from "react-native-chart-kit";
+import { Dimensions } from "react-native";
 
-import { ThemedView } from '@/components/ThemedView';
+import { useThemeColor } from "@/hooks/useThemeColor";
+
+import { ThemedView } from "@/components/ThemedView";
 
 // Get the width of the device screen
-const screenWidth = Dimensions.get('window').width;
+const screenWidth = Dimensions.get("window").width;
 
 // SimpleLineChart component to render a themed line chart
 export function SimpleLineChart({ data }: { data: number[] }) {
   // Fetch theme colors for chart styling
-  const chartBackgroundColor = useThemeColor({}, 'chartBackground');
-  const chartTextColor = useThemeColor({}, 'chartText');
+  const chartBackgroundColor = useThemeColor({}, "chartBackground");
+  const chartTextColor = useThemeColor({}, "chartText");
 
   // Calculate maximum value for yLabel
   const maxDataValue = Math.ceil(Math.max(...data));
@@ -22,7 +24,7 @@ export function SimpleLineChart({ data }: { data: number[] }) {
 
   // Prepare the dataset for the line chart
   const dataSet = {
-    labels: data.map((_, index) => ''), // Remove X-axis labels by setting them to empty strings
+    labels: data.map((_, index) => ""), // Remove X-axis labels by setting them to empty strings
     datasets: [
       {
         data: data, // Data for the line chart
@@ -44,12 +46,12 @@ export function SimpleLineChart({ data }: { data: number[] }) {
       borderRadius: 16, // Rounded corners for the chart
     },
     propsForDots: {
-      r: '3', // Smaller radius for data point dots
-      strokeWidth: '0', // Remove the stroke around dots
-      stroke: 'transparent', // Make the stroke transparent
+      r: "3", // Smaller radius for data point dots
+      strokeWidth: "0", // Remove the stroke around dots
+      stroke: "transparent", // Make the stroke transparent
     },
     propsForBackgroundLines: {
-      stroke: 'transparent', // Make the guideline transparent
+      stroke: "transparent", // Make the guideline transparent
     },
     formatYLabel: (label: string | number) => {
       // Format labels to show 0, midpoint, and max value
@@ -87,13 +89,13 @@ export function SimpleLineChart({ data }: { data: number[] }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   container2: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   chart: {
     marginVertical: 8, // Vertical margin around the chart
