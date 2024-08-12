@@ -186,6 +186,7 @@ export default function NewGame() {
             setOpen={handleOpenChange(setOpenDecks)}
             setValue={setSelectedDeck}
             setItems={setDecks}
+            placeholder="Select a deck..."
             style={styles.dropdown}
             textStyle={styles.dropdownText}
             dropDownContainerStyle={styles.dropdownContainer}
@@ -205,6 +206,7 @@ export default function NewGame() {
               setOpen={handleOpenChange(setOpenCategories)}
               setValue={setSelectedCategory}
               setItems={setCategoryItems}
+              placeholder="Select a category..."
               style={styles.dropdown}
               textStyle={styles.dropdownText}
               dropDownContainerStyle={styles.dropdownContainer}
@@ -228,6 +230,7 @@ export default function NewGame() {
           setOpen={handleOpenChange(setOpenDurations)}
           setValue={setSelectedDuration}
           setItems={() => {}}
+          placeholder="Select a duration..."
           style={styles.dropdown}
           textStyle={styles.dropdownText}
           dropDownContainerStyle={styles.dropdownContainer}

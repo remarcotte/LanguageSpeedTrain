@@ -10,7 +10,8 @@ import { ThemedView } from '@/components/ThemedView';
 import { ThemedPressable } from '@/components/ThemedPressable';
 import { ThemedDropdownPicker } from '@/components/ThemedDropdownPicker';
 import { ThemedScreen } from '@/components/ThemedScreen';
-import { SimpleHistogram } from '@/components/ThemedHistogram'; // Import your histogram component
+import { SimpleHistogram } from '@/components/ThemedHistogram';
+import { SimpleLineChart } from '@/components/ThemedLineChart';
 
 import { LoggingService } from '@/services/LoggingService'; // Adjust the import based on your project structure
 import { DeckService } from '@/services/DeckService'; // Adjust the import based on your project structure
@@ -18,7 +19,7 @@ import { ErrorService } from '@/services/ErrorService';
 import { LogDeckSummary, GameSummary, DeckDetail } from '@/types/LoggingTypes'; // Adjust the import based on your project structure
 import { ErrorActionType } from '@/types/ErrorTypes';
 
-import { HISTOGRAM_ITEM_COUNT } from '@/constants/General';
+import { LINECHART_ITEM_COUNT } from '@/constants/General';
 
 type DropDownItem = { label: string; value: string };
 
@@ -170,10 +171,10 @@ export default function Statistics() {
   }, [selectedDeck, deckDetail]);
 
   // Prepare histogram data from games
-  const histogramData = useMemo(() => {
+  const rateCorrectData = useMemo(() => {
     return games
       ? games
-          .slice(0, HISTOGRAM_ITEM_COUNT)
+          .slice(0, LINECHART_ITEM_COUNT)
           .map((game) =>
             game?.attempted === 0
               ? 0
@@ -186,10 +187,10 @@ export default function Statistics() {
   }, [games]);
 
   // Prepare line chart data from games
-  const lineChartData = useMemo(() => {
+  const percentCorrectData = useMemo(() => {
     return games
       ? games
-          .slice(0, HISTOGRAM_ITEM_COUNT)
+          .slice(0, LINECHART_ITEM_COUNT)
           .map((game) =>
             game?.attempted === 0
               ? 0
@@ -211,7 +212,7 @@ export default function Statistics() {
         setOpen={setOpen}
         setValue={setSelectedDeck}
         setItems={setItems}
-        placeholder="Select a deck"
+        placeholder="Select a deck..."
         onChangeValue={(value: any) => handleDeckChange(value ? value : '')}
         style={styles.dropdown}
         textStyle={styles.dropdownText}
@@ -219,7 +220,7 @@ export default function Statistics() {
         zIndex={3000}
       />
 
-      {!logDeckSummary ? (
+      {!logDeckSummary || !logDeckSummary.timesPlayed ? (
         <ThemedText type="normal">
           No Statistics - Deck has not been played.
         </ThemedText>
@@ -233,39 +234,39 @@ export default function Statistics() {
                 return (
                   <ThemedView>
                     <ThemedText type="head2">Deck Statistics</ThemedText>
-                    <ThemedText type="normal">
+                    <ThemedText type="normal" style={styles.detail}>
                       Plays: {logDeckSummary.timesPlayed}
                     </ThemedText>
-                    <ThemedText type="normal">
-                      Least Correct: {logDeckSummary.minCorrect}
+                    <ThemedText type="normal" style={styles.detail}>
+                      Least/Most Correct: {logDeckSummary.minCorrect} /{' '}
+                      {logDeckSummary.maxCorrect}
                     </ThemedText>
-                    <ThemedText type="normal">
-                      Most Correct: {logDeckSummary.maxCorrect}
+                    <ThemedText type="normal" style={styles.detail}>
+                      % Least/Most Correct:{' '}
+                      {logDeckSummary.minCorrectPerAttempt}% /{' '}
+                      {logDeckSummary.maxCorrectPerAttempt}%
                     </ThemedText>
-                    <ThemedText type="normal">
-                      Least Correct %: {logDeckSummary.minCorrectPerAttempt}%
-                    </ThemedText>
-                    <ThemedText type="normal">
-                      Most Correct %: {logDeckSummary.maxCorrectPerAttempt}%
-                    </ThemedText>
-                    <ThemedText type="normal">
-                      Lowest Rate: {logDeckSummary.minCorrectPerMinute}
-                    </ThemedText>
-                    <ThemedText type="normal">
-                      Highest Rate: {logDeckSummary.maxCorrectPerMinute}
+                    <ThemedText type="normal" style={styles.detail}>
+                      Lowest/Highest Per Minute:{' '}
+                      {logDeckSummary.minCorrectPerMinute} /{' '}
+                      {logDeckSummary.maxCorrectPerMinute}
                     </ThemedText>
                   </ThemedView>
                 );
               } else if (deckDetail && item.key === 'charts') {
                 return (
                   <ThemedView>
-                    <ThemedText type="head2">Recent Correct/Minute</ThemedText>
-                    <SimpleHistogram
-                      data={histogramData.length ? histogramData : [0]} // Display histogram data
+                    <ThemedText type="head2" style={styles.label}>
+                      Recent Correct/Minute
+                    </ThemedText>
+                    <SimpleLineChart
+                      data={rateCorrectData.length ? rateCorrectData : [0]}
                     />
                     <ThemedText type="head2">Recent Percent Correct</ThemedText>
-                    <SimpleHistogram
-                      data={histogramData.length ? lineChartData : [0]} // Display line chart data
+                    <SimpleLineChart
+                      data={
+                        percentCorrectData.length ? percentCorrectData : [0]
+                      } // Display line chart data
                     />
                   </ThemedView>
                 );
@@ -308,7 +309,7 @@ export default function Statistics() {
 
 const styles = StyleSheet.create({
   dropdown: {
-    marginBottom: 16,
+    marginBottom: 8,
     borderWidth: 1,
     borderRadius: 5,
   },
@@ -320,14 +321,12 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   label: {
-    fontSize: 20,
-    textAlign: 'center',
-    fontWeight: 'bold',
-    marginVertical: 8,
+    marginTop: 12,
   },
   detail: {
     fontSize: 18,
-    paddingBottom: 2,
+    marginTop: 4,
+    marginBottom: 4,
   },
   bottomButton: {
     marginHorizontal: 16,

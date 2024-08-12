@@ -27,7 +27,7 @@ The following language features were used in creating the app:
 - SQLite database for deck and statistics storage
 - CSV loading/parsing of new decks
 - Timer
-- Simple histogram charts
+- Simple line charts
 - Themed visual components
 - Dropdown picker
 - Light/dark mode theming
@@ -44,6 +44,10 @@ This list may not be exhaustive - other features may have been included.
 
 Should I need to use these features in the future, I have the option rely on this code as a reference/template for feature use.
 
+## Evolving
+
+This code base will continue to evolve. Additional functionality may be added for the app's sake or to use different language features.
+
 In the future, the galaxy may be expanded by adding uses of:
 
 - API use
@@ -52,3 +56,8 @@ In the future, the galaxy may be expanded by adding uses of:
 - Centralizing error messages
 - Use of context
 - and more
+
+Features under consideration for adding are:
+
+- better upload issue reporting
+- smarter response checking (case insensitivity, support multiple correct responses, recognize misspellings)

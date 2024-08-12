@@ -5,6 +5,8 @@ import { Alert, Keyboard } from "react-native";
 import { useLocalSearchParams, router } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
 
+import { useThemeColor } from '@/hooks/useThemeColor';
+
 import { LoggingService } from "@/services/LoggingService";
 import { DeckService } from "@/services/DeckService";
 import { ErrorService } from "@/services/ErrorService";
@@ -12,7 +14,12 @@ import { TurnAnswer } from "@/types/LoggingTypes";
 import { Deck } from "@/types/DeckTypes";
 import { ErrorActionType } from "@/types/ErrorTypes";
 
-import { GAME_RESPONSE_STATUS_TIME, GAME_OVER_STATUS_TIME } from '@/constants/General';
+import {
+  GAME_RESPONSE_STATUS_TIME,
+  GAME_OVER_STATUS_TIME,
+  CORRECT_ICON,
+  INCORRECT_ICON
+} from '@/constants/General';
 
 export type GameLogic = {
   timeLeft: number;
@@ -36,6 +43,9 @@ export const useGameLogic = (): GameLogic => {
   const errorService = ErrorService.getInstance();
   const loggingService = LoggingService.getInstance();
   const deckService = DeckService.getInstance();
+
+  const correctTextColor = useThemeColor({}, 'textCorrect'); // Get text color from theme
+  const incorrectTextColor = useThemeColor({}, 'textIncorrect'); // Get text color from theme
 
   const { deckName, category, duration } = useLocalSearchParams<{
     deckName: string;
@@ -229,8 +239,8 @@ export const useGameLogic = (): GameLogic => {
     ]);
     setUserResponse("");
     setResultIcon({
-      name: isCorrect ? "checkmark-outline" : "close-outline",
-      color: isCorrect ? "green" : "red",
+      name: isCorrect ? CORRECT_ICON : INCORRECT_ICON,
+      color: isCorrect ? correctTextColor : incorrectTextColor,
     });
     setTimeout(() => setResultIcon(null), GAME_RESPONSE_STATUS_TIME);
     advanceToNextTurn();

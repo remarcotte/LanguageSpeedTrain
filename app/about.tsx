@@ -77,7 +77,7 @@ const About = () => {
         {/* Developer information */}
         <ThemedText type="normal">
           All data collected in playing the game resides in the application on
-          the phone. Your data is not sent to Elasting or anyone else.
+          the phone. Your data is not sent anywhere.
           {/* Privacy information */}
         </ThemedText>
         <ThemedText type="normal" style={styles.copyright}>

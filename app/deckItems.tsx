@@ -228,6 +228,7 @@ export default function DeckItems() {
         <ThemedPressable
           title="Add Item"
           isTransparent={true}
+          fontSize={16}
           onPress={() =>
             router.navigate({
               pathname: './editDeckItem',

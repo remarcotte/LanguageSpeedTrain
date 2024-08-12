@@ -13,12 +13,15 @@ import { ThemedScreen } from '@/components/ThemedScreen';
 import { ThemedFlatList } from '@/components/ThemedFlatList'; // Assuming you have this component
 
 import { TurnAnswer } from '@/types/LoggingTypes';
+import { CORRECT_ICON, INCORRECT_ICON } from '@/constants/General';
 
 type IoniconName = keyof typeof Ionicons.glyphMap; // Type for Ionicon names
 
 export default function GameHistory() {
   const backgroundColor = useThemeColor({}, 'background'); // Get background color from theme
   const textColor = useThemeColor({}, 'text'); // Get text color from theme
+  const correctTextColor = useThemeColor({}, 'textCorrect'); // Get text color from theme
+  const incorrectTextColor = useThemeColor({}, 'textIncorrect'); // Get text color from theme
 
   // Retrieve the serialized turns string from URL parameters
   const { turnsStr } = useLocalSearchParams<{
@@ -36,15 +39,15 @@ export default function GameHistory() {
         {item.isCorrect ? (
           <Ionicons
             size={22}
-            name="checkmark-circle"
-            style={styles.correctIcon}
+            name={CORRECT_ICON}
+            style={[styles.correctIcon, { color: correctTextColor }]}
           />
         ) : (
           item.type !== 'skip' && (
             <Ionicons
               size={22}
-              name="close-circle"
-              style={styles.incorrectIcon}
+              name={INCORRECT_ICON}
+              style={[styles.incorrectIcon, { color: incorrectTextColor }]}
             />
           )
         )}
@@ -56,7 +59,7 @@ export default function GameHistory() {
         Your response: {item.response || 'Skipped'}
       </ThemedText>
       {(!item.isCorrect || item.type === 'skip') && (
-        <ThemedText type="list-item" style={styles.correctResponseText}>
+        <ThemedText type="list-item" style={{ color: correctTextColor }}>
           Correct response: {item.answer}
         </ThemedText>
       )}
@@ -97,15 +100,10 @@ const styles = StyleSheet.create({
   responseText: {
     fontSize: 18,
   },
-  correctResponseText: {
-    color: 'green',
-  },
   correctIcon: {
-    color: 'green',
     fontWeight: '900',
   },
   incorrectIcon: {
-    color: 'red',
     fontWeight: '900',
   },
 });

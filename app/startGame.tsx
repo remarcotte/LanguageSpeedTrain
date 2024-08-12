@@ -70,21 +70,24 @@ export default function StartGame() {
         </ThemedView>
       )}
       <ThemedView style={styles.header}>
-        <ThemedPressable
-          type="normal"
-          title="Exit Game"
-          onPress={handleBackPress}
-        />
-        <ThemedView style={styles.iconContainer}>
-          {resultIcon && (
-            <Ionicons
-              size={24}
-              name={resultIcon.name}
-              style={[styles.resultIcon, { color: resultIcon.color }]}
-            />
-          )}
+        <ThemedView style={styles.edgeItem}>
+          <ThemedPressable
+            type="normal"
+            title="Exit Game"
+            onPress={handleBackPress}
+          />
         </ThemedView>
-        <ThemedText type="normal-bold">{`${numberCorrect} / ${totalShown}`}</ThemedText>
+        <ThemedView
+          style={[
+            styles.edgeItem,
+            styles.statsView,
+            { borderColor: resultIcon?.color },
+          ]}
+        >
+          <ThemedText type="normal-bold" style={{ color: resultIcon?.color }}>
+            {`${numberCorrect} / ${totalShown}`}
+          </ThemedText>
+        </ThemedView>
       </ThemedView>
       <ThemedView style={styles.container}>
         <ThemedText type="huge">{formatTime(timeLeft)}</ThemedText>
@@ -136,19 +139,37 @@ const styles = StyleSheet.create({
   },
   header: {
     flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    alignItems: 'center', // Vertically centers all items
+    justifyContent: 'space-between', // Distributes items evenly
+    paddingHorizontal: 16, // Adds padding to the sides of the container
   },
-  iconContainer: {
-    position: 'relative',
-    marginHorizontal: 10,
+  edgeItem: {
+    flex: 0, // Edge items should not expand
+    width: 'auto', // Ensure they size to content
+    justifyContent: 'center', // Center content within the item
+  },
+  statsView: {
+    paddingHorizontal: 16,
+    paddingVertical: 4,
+    marginHorizontal: 2,
+    borderWidth: 2,
+    borderRadius: 5,
+  },
+  centerWrapper: {
+    flex: 0, // Center wrapper takes up all remaining space
+    width: 50,
+    alignItems: 'center', // Centers the centerItem horizontally
+  },
+  centerItem: {
+    // This item now only needs to center its content
+    justifyContent: 'center', // Center the icon vertically
   },
   stats: {
     fontSize: 18,
     fontWeight: 'bold',
   },
   resultIcon: {
-    marginLeft: 10,
+    // Remove extra margin to keep the icon centered
   },
   itemText: {
     fontSize: 24,

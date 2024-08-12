@@ -1,19 +1,20 @@
 // ThemedDropdownPicker.tsx
 
-import React, { useEffect, useCallback } from "react";
+import React, { useEffect, useCallback } from 'react';
 import DropDownPicker, {
   DropDownPickerProps,
-} from "react-native-dropdown-picker";
-import { Ionicons } from "@expo/vector-icons";
+} from 'react-native-dropdown-picker';
+import { Ionicons } from '@expo/vector-icons';
 
-import { useThemeColor } from "@/hooks/useThemeColor";
-import { ThemedText } from "@/components/ThemedText";
+import { useThemeColor } from '@/hooks/useThemeColor';
+import { ThemedText } from '@/components/ThemedText';
 
 // Define props for ThemedDropdownPicker, extending DropDownPickerProps
 type ThemedDropdownPickerProps = DropDownPickerProps<any> & {
   lightColor?: string; // Optional light theme color
   darkColor?: string; // Optional dark theme color
   iconSize?: number; // Optional size for icons
+  placeholder?: string;
   emptyListText?: string; // Text to display when item list is empty
 };
 
@@ -37,7 +38,8 @@ export const ThemedDropdownPicker: React.FC<ThemedDropdownPickerProps> = ({
   lightColor,
   darkColor,
   iconSize = 18, // Default size for icons
-  emptyListText = "No items available", // Default text for empty list
+  placeholder = 'Please select...',
+  emptyListText = 'No items available', // Default text for empty list
   items = [], // Ensure items defaults to an empty array
   setValue,
   value,
@@ -46,10 +48,10 @@ export const ThemedDropdownPicker: React.FC<ThemedDropdownPickerProps> = ({
   // Use the provided colors if available, otherwise fallback to theme colors
   const backgroundColor = useThemeColor(
     { light: lightColor, dark: darkColor },
-    "inputBackground",
+    'inputBackground'
   );
 
-  const color = useThemeColor({ light: lightColor, dark: darkColor }, "text");
+  const color = useThemeColor({ light: lightColor, dark: darkColor }, 'text');
 
   // Handle single item selection automatically if only one item is available
   const handleSingleItemSelection = useCallback(() => {
@@ -66,7 +68,7 @@ export const ThemedDropdownPicker: React.FC<ThemedDropdownPickerProps> = ({
   // Display empty list text if no items are available
   if (items.length === 0) {
     return (
-      <ThemedText style={[{ textAlign: "center", fontSize: 16 }, textStyle]}>
+      <ThemedText style={[{ textAlign: 'center', fontSize: 16 }, textStyle]}>
         {emptyListText}
       </ThemedText>
     );
@@ -75,7 +77,7 @@ export const ThemedDropdownPicker: React.FC<ThemedDropdownPickerProps> = ({
   // Display single item text if only one item is available
   if (items.length === 1) {
     return (
-      <ThemedText style={[{ textAlign: "center", fontSize: 16 }, textStyle]}>
+      <ThemedText style={[{ textAlign: 'center', fontSize: 16 }, textStyle]}>
         {items[0].label}
       </ThemedText>
     );
@@ -88,6 +90,7 @@ export const ThemedDropdownPicker: React.FC<ThemedDropdownPickerProps> = ({
       value={value}
       setValue={setValue}
       multiple={false}
+      placeholder={placeholder}
       style={[{ backgroundColor, borderColor: color }, style]}
       textStyle={[{ color }, textStyle]}
       dropDownContainerStyle={[
