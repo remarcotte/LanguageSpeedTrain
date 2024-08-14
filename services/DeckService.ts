@@ -2,6 +2,8 @@
 
 import hiriganaDeck from "../assets/decks/hirigana.json"; // Import default decks
 import katakanaDeck from "../assets/decks/katakana.json";
+import hiriganaDeckFull from "../assets/decks/hirigana-full.json"; // Import default decks
+import katakanaDeckFull from "../assets/decks/katakana-full.json";
 import nlpt5Deck from "../assets/decks/nlpt5.json";
 import nlpt5KanjiDeck from "../assets/decks/nlpt5-kanji.json";
 
@@ -96,6 +98,8 @@ export class DeckService {
       const defaultDecks = [
         hiriganaDeck,
         katakanaDeck,
+        hiriganaDeckFull,
+        katakanaDeckFull,
         nlpt5Deck,
         nlpt5KanjiDeck,
       ];
