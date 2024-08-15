@@ -4,8 +4,8 @@ import hiriganaDeck from "../assets/decks/hirigana.json"; // Import default deck
 import katakanaDeck from "../assets/decks/katakana.json";
 import hiriganaDeckFull from "../assets/decks/hirigana-full.json"; // Import default decks
 import katakanaDeckFull from "../assets/decks/katakana-full.json";
-import nlpt5Deck from "../assets/decks/nlpt5.json";
-import nlpt5KanjiDeck from "../assets/decks/nlpt5-kanji.json";
+import basicDeck from "../assets/decks/basic.json";
+import basicKanjiDeck from "../assets/decks/basic-kanji.json";
 
 import { Deck, DeckSummary, DeckDb } from "../types/DeckTypes"; // Import types
 
@@ -100,8 +100,8 @@ export class DeckService {
         katakanaDeck,
         hiriganaDeckFull,
         katakanaDeckFull,
-        nlpt5Deck,
-        nlpt5KanjiDeck,
+        basicDeck,
+        basicKanjiDeck,
       ];
       for (const deck of defaultDecks) {
         await this.addDeck(
