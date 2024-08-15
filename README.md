@@ -1,5 +1,27 @@
 # Language Speed Train - A "Hello, Galaxy" for React Native/Expo
 
+## To Install & Run
+
+Requirements:
+
+- node and git installed
+- iOS Simulator running, Android Simulator running, or connected device
+
+In a new folder, run the following commands from terminal
+
+- git clone https://github.com/remarcotte/LanguageSpeedTrain.git .
+- npm install
+
+If running on a connected device...
+
+- if device is Android, type "npx expo run:android --device"
+- if device is iOS, type "npx expo run:ios --device"
+
+If running on a simulator...
+
+- if running Android simulator, type "a"
+- if running iOS simulator, type "i"
+
 ## Not a "Hello, World"
 
 While "Hello, World"s are common to describe features in software development. They aren't always useful in seeing how features may be integrated into a larger application. Language Speed Train is a "Hello, Galaxy" for React Native/Expo - an integration of many features into a robust app.
