@@ -1,5 +1,7 @@
 # Language Speed Train - A "Hello, Galaxy" for React Native/Expo
 
+For more information on "Hello, Galaxy", please see [hellogalaxy](https://github.com/remarcotte/hellogalaxy)
+
 ## To Install & Run
 
 Requirements:
@@ -19,8 +21,8 @@ If running on a connected device...
 
 If running on a simulator...
 
-- if running Android simulator, type "a"
-- if running iOS simulator, type "i"
+- if running Android simulator, type "npx expo run:android"
+- if running iOS simulator, type "npx expo run:android"
 
 ## Not a "Hello, World"
 
@@ -69,6 +71,8 @@ Should I need to use these features in the future, I have the option rely on thi
 ## Evolving
 
 This code base will continue to evolve. Additional functionality may be added for the app's sake or to use different language features.
+
+Significant more Android testing is upcoming. As is the integration of jest tests.
 
 In the future, the galaxy may be expanded by adding uses of:
 
